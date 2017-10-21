@@ -6,7 +6,7 @@ import {
 } from './lambda';
 
 // export let accepts = function(types) {
-//   return exports.boostrap(async function(req, res) {
+//   return exports.bootstrap(async function(req, res) {
 //     res.mediaType = req.accepts(types);
 //     if (!res.mediaType) {
 //       return res.sendError(406);
@@ -15,7 +15,7 @@ import {
 // };
 
 // export let is = function(types) {
-//   return exports.boostrap(async function(req, res) {
+//   return exports.bootstrap(async function(req, res) {
 //     req.mediaType = req.is(types);
 //     if (!req.mediaType) {
 //       return res.sendError(415);
