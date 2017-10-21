@@ -112,8 +112,6 @@ export let bootstrap = function(fn, {pkg}) {
   });
 };
 
-export default bootstrap;
-
 export let mergeEnvCtx = async function({e, ctx, pkg}) {
   console.log('mergeEnvCtx: Get env from event and context...');
 
@@ -343,3 +341,5 @@ export let getRequestInstance = function(req) {
   let {ctx} = req;
   return `${ctx.invokedFunctionArn}#request:${ctx.awsRequestId}`;
 };
+
+export default bootstrap;
