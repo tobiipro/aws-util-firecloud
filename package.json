@@ -16,7 +16,7 @@
     "express": "4.15.3",
     "express-bearer-token": "2.1.0",
     "http-lambda": "git://github.com/tobiipro/http-lambda.git#v0.0.6",
-    "lodash-firecloud": "git://github.com/tobiipro/lodash-firecloud.git#v0.0.2",
+    "lodash-firecloud": "git://github.com/tobiipro/lodash-firecloud.git#v0.0.4",
     "response-time": "2.3.2"
   },
   "devDependencies": {
