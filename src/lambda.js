@@ -288,6 +288,7 @@ export let setupLogging = function({e, ctx}) {
     req_id: ctx.awsRequestId,
     streams
   });
+  logger.resolveLevel = bunyan.resolveLevel;
 
   logger.trace({e, ctx}, `Logger started. ${logger.level()}`);
 
