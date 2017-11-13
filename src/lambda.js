@@ -220,7 +220,7 @@ export let _getEnvCtx = _.memoize(async function({ctx: {env}, tags}) {
 
   await _.consoleLogTime('_getEnvCtx: Fetching env ctx...', async function() {
     let result = await s3.getObject({
-      Bucket: `config-${env.AWS_ACCOUNT_ID}-tobiicloud-com-${env.AWS_REGION}`,
+      Bucket: `config-${env.AWS_ACCOUNT_ID}-${env.PROJECT_DOMAIN_NAME}-${env.AWS_REGION}`,
       Key: `${env.ENV_NAME}.json`,
       IfMatch: (_.defaultTo(exports._getEnvCtx.oldCache[cacheKey], {})).etag
     }).promise();
