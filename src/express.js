@@ -150,7 +150,7 @@ export let express = function({e}) {
 
   // FIXME hack!!!
   let host = _.get(e, 'headers.Host', _.get(e, 'headers.host'));
-  if (host === 'api-git.tobiicloud.com') {
+  if (_.startsWith(host, 'api-git.')) {
     // using the api-git apigateway-domainname (ci stack)
     let basePath = _.split(url.parse(e.path).pathname, '/')[1];
     app.lazyrouter();
