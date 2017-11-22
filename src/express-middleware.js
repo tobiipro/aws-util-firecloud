@@ -41,6 +41,8 @@ export let bootstrap = function(fn) {
         trace = err.stack ? _.split(err.stack, '\n') : err;
       }
 
+      res.ctx.callbackWaitsForEmptyEventLoop = false;
+
       res.status(500);
       res.set('content-type', 'application/problem+json');
       res.send({
