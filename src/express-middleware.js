@@ -52,10 +52,7 @@ export let bootstrap = function(fn) {
         trace
       });
 
-      setTimeout(function() {
-        // eslint-disable-next-line no-process-exit
-        process.exit();
-      }, 100);
+      // don't process.exit()
     }
   });
 };
