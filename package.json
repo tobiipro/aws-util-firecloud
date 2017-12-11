@@ -4,9 +4,6 @@
   "description": "Collection of AWS utils.",
   "version": "0.0.10",
   "license": "Apache-2.0",
-  "peerDependencies": {
-    "aws-sdk": "^2.53.0"
-  },
   "dependencies": {
     "aws-sdk": "2.138.0",
     "bluebird": "3.5.0",
