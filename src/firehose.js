@@ -1,11 +1,12 @@
 import _ from 'lodash-firecloud';
 import aws from 'aws-sdk';
 
-export let batchByteSizeLimit = 4 * 1024 * 1024;
-
-export let batchRecordLimit = 500;
-
-export let recordByteSizeLimit = 1000 * 1024;
+// see https://docs.aws.amazon.com/firehose/latest/dev/limits.html
+export let limits = {
+  batchByteSize: 4 * 1024 * 1024,
+  batchRecord: 500,
+  recordByteSize: 1000 * 1024
+};
 
 export let _putRecordBatches = async function({firehose, recordBatches}) {
   if (_.isEmpty(recordBatches)) {
@@ -36,15 +37,13 @@ export let putRecords = async function({
     Data = `${Data}\n`;
     let dataLength = Buffer.byteLength(Data);
 
-    if (dataLength > recordByteSizeLimit) {
-      // 1000 KB (not 1 MB) hard limit in Firehose http://docs.aws.amazon.com/firehose/latest/dev/limits.html
-      ctx.log.error(`Skipping record larger than ${recordByteSizeLimit / 1024} KB: ${dataLength / 1024} KB.`, {record});
+    if (dataLength > exports.limits.recordByteSize) {
+      ctx.log.error(`Skipping record larger than ${exports.limits.recordByteSize / 1024} KB: ${dataLength / 1024} KB.`, {record});
       return;
     }
 
-    // PutRecordBatch has a 4 MB limit and 500 records
-    if (recordBatch.byteSize + dataLength > batchByteSizeLimit ||
-        recordBatch.Records.length + 1 > batchRecordLimit) {
+    if (recordBatch.byteSize + dataLength > exports.limits.batchByteSize ||
+        recordBatch.Records.length + 1 > exports.limits.batchRecord) {
       recordBatches.push(recordBatch);
       recordBatch = {
         DeliveryStreamName,

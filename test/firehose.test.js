@@ -40,10 +40,10 @@ describe('firehose', function() {
     });
 
 
-    it(`should split record batches in chunks of ${firehose.batchRecordLimit} records,
-when batch byteSize < ${firehose.batchByteSizeLimit / 1024 / 1024} MB`, async function() {
+    it(`should split record batches in chunks of ${firehose.limits.batchRecord} records,
+when batch byteSize < ${firehose.limits.batchByteSize / 1024 / 1024} MB`, async function() {
       let byteSize = 25 - byteSizeOverhead;
-      let records = _.times(firehose.batchRecordLimit + 1, function() {
+      let records = _.times(firehose.limits.batchRecord + 1, function() {
         return {
           content: generate({byteSize})
         };
@@ -55,7 +55,7 @@ when batch byteSize < ${firehose.batchByteSizeLimit / 1024 / 1024} MB`, async fu
           })
           .mockImplementationOnce(async function({recordBatches}) {
             expect(recordBatches).toHaveLength(2);
-            expect(recordBatches[0].Records).toHaveLength(firehose.batchRecordLimit);
+            expect(recordBatches[0].Records).toHaveLength(firehose.limits.batchRecord);
             expect(recordBatches[1].Records).toHaveLength(1);
           });
 
@@ -70,9 +70,9 @@ when batch byteSize < ${firehose.batchByteSizeLimit / 1024 / 1024} MB`, async fu
     });
 
 
-    it(`should split record batches in chunks of < ${firehose.batchByteSizeLimit / 1024 / 1024} MB records,
-when batch count < ${firehose.batchRecordLimit}`, async function() {
-      let byteSize = firehose.recordByteSizeLimit - byteSizeOverhead;
+    it(`should split record batches in chunks of < ${firehose.limits.batchByteSize / 1024 / 1024} MB records,
+when batch count < ${firehose.limits.batchRecord}`, async function() {
+      let byteSize = firehose.limits.recordByteSize - byteSizeOverhead;
       let records = _.times(5, function() {
         return {
           content: generate({byteSize})
@@ -100,8 +100,8 @@ when batch count < ${firehose.batchRecordLimit}`, async function() {
     });
 
 
-    it(`cannot handle records larger than ${firehose.recordByteSizeLimit / 1024} KB`, async function() {
-      let byteSize = firehose.recordByteSizeLimit - byteSizeOverhead + 1;
+    it(`cannot handle records larger than ${firehose.limits.recordByteSize / 1024} KB`, async function() {
+      let byteSize = firehose.limits.recordByteSize - byteSizeOverhead + 1;
       let records = _.times(1, function() {
         return {
           content: generate({byteSize})
