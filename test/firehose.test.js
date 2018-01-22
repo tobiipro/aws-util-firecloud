@@ -40,7 +40,7 @@ describe('firehose', function() {
     });
 
 
-    it(`should split record batches in chunks of ${firehose.limits.batchRecord} records,
+    it(`should split record batches in chunks of ${firehose.limits.batchRecord} records, \
 when batch byteSize < ${firehose.limits.batchByteSize / 1024 / 1024} MB`, async function() {
       let byteSize = 25 - byteSizeOverhead;
       let records = _.times(firehose.limits.batchRecord + 1, function() {
@@ -70,7 +70,7 @@ when batch byteSize < ${firehose.limits.batchByteSize / 1024 / 1024} MB`, async 
     });
 
 
-    it(`should split record batches in chunks of < ${firehose.limits.batchByteSize / 1024 / 1024} MB records,
+    it(`should split record batches in chunks of < ${firehose.limits.batchByteSize / 1024 / 1024} MB records, \
 when batch count < ${firehose.limits.batchRecord}`, async function() {
       let byteSize = firehose.limits.recordByteSize - byteSizeOverhead;
       let records = _.times(5, function() {

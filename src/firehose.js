@@ -38,7 +38,8 @@ export let putRecords = async function({
     let dataLength = Buffer.byteLength(Data);
 
     if (dataLength > exports.limits.recordByteSize) {
-      ctx.log.error(`Skipping record larger than ${exports.limits.recordByteSize / 1024} KB: ${dataLength / 1024} KB.`, {record});
+      ctx.log.error(`Skipping record larger than ${exports.limits.recordByteSize / 1024} KB: \
+${dataLength / 1024} KB.`, {record});
       return;
     }
 
