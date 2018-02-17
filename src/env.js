@@ -1,6 +1,7 @@
 import _ from 'lodash-firecloud';
 
 export let envProxy = function({env}) {
+  // eslint-disable-next-line fp/no-proxy
   return new Proxy(env, {
     get: function(target, property, _receiver) {
       if (property === '_') {
@@ -14,6 +15,9 @@ export let envProxy = function({env}) {
   });
 };
 
-export let env = exports.envProxy({env: process.env});
+export let current = exports.envProxy({env: process.env});
 
-export default env;
+// backward compat alias
+export let env = current;
+
+export default current;

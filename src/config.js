@@ -1,3 +1,4 @@
+import env from './env';
 import logger from './logger';
 
 export let get = function({env}) {
@@ -9,3 +10,7 @@ export let get = function({env}) {
     logger
   };
 };
+
+export let current = exports.get({env});
+
+export default exports;
