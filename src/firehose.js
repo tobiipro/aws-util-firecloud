@@ -1,6 +1,12 @@
 import _ from 'lodash-firecloud';
 import aws from 'aws-sdk';
 
+import {
+  getLambdaTableName
+} from './dynamodb';
+
+export let getLambdaStreamName = getLambdaTableName;
+
 // see https://docs.aws.amazon.com/firehose/latest/dev/limits.html
 export let limits = {
   batchByteSize: 4 * 1024 * 1024,

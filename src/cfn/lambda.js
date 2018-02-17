@@ -10,38 +10,6 @@ import {
   get as getPrincipal
 } from '../principal';
 
-import {
-  getBucketName as genericGetBucketName
-} from '../s3';
-
-export let getBucketName = function({
-  env,
-  pkg,
-  region
-}) {
-  let name = genericGetBucketName({
-    env,
-    prefix: `${pkg.name}-${env.ENV_NAME}`,
-    region
-  });
-
-  return name;
-};
-
-export let getTableName = function({
-  env,
-  pkg,
-  suffix = ''
-}) {
-  if (suffix) {
-    suffix = `-${suffix}`;
-  }
-
-  return `${env.ENV_NAME}-Lambda-${pkg.name}${suffix}`;
-};
-
-export let getStreamName = getTableName;
-
 export let getCodeChecksum = async function({
   Code,
   algorithm = 'sha256',
