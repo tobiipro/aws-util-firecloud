@@ -343,4 +343,4 @@ export let getRequestInstance = function(req) {
   return `${ctx.invokedFunctionArn}#request:${ctx.awsRequestId}`;
 };
 
-export default bootstrap;
+export default exports;
