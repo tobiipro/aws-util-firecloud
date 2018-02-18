@@ -22,23 +22,17 @@ export let build = async function({
   env,
   incs = [],
   partial = false,
-  baseTpl,
   resNs
 }) {
   let tpl = {};
 
   if (!_.isUndefined(dir)) {
     if (fs.existsSync(dir)) {
-      incs = _.filter(await sortedReaddir({dir}), function(inc) {
+      let dirIncs = _.filter(await sortedReaddir({dir}), function(inc) {
         return /\.cfn\.js$/.test(inc);
       });
-    } else {
-      incs = [];
+      incs = _.concat(incs, dirIncs);
     }
-  }
-
-  if (!partial && !_.isUndefined(baseTpl)) {
-    incs.unshift(baseTpl);
   }
 
   let vars = {};
