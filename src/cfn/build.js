@@ -22,6 +22,7 @@ export let build = async function({
   env,
   incs = [],
   partial = false,
+  baseTpl,
   resNs
 }) {
   let tpl = {};
@@ -36,8 +37,8 @@ export let build = async function({
     }
   }
 
-  if (!partial) {
-    incs.unshift('./tpl/core.cfn.js');
+  if (!partial && !_.isUndefined(baseTpl)) {
+    incs.unshift(baseTpl);
   }
 
   let vars = {};
