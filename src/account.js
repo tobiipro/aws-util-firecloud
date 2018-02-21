@@ -2,28 +2,30 @@ import _ from 'lodash-firecloud';
 import env from './env';
 
 export let get = function({env}) {
-  let account = {
-    DEV: {
-      CI_USER: process.env.DEV_CI_USER,
-      ID: env.DEV_AWS_ACCOUNT_ID,
-      NAME: 'dev',
-      NS: _.split(env.DEV_NS, ',')
-    },
+  let awsAccountIdVars = _.filter(_.keys(env._), /_AWS_ACCOUNT_ID$/);
+  let accounts = {};
 
-    PROD: {
-      CI_USER: process.env.PROD_CI_USER,
-      ID: env.PROD_AWS_ACCOUNT_ID,
-      NAME: 'prod',
-      NS: _.split(env.PROD_NS, ',')
-    }
-  };
+  _.forEach(awsAccountIdVars, function(awsAccountIdVar) {
+    let prefix = _.replace(awsAccountIdVar, /_AWS_ACCOUNT_ID$/, '');
+    let NAME = _.toLowerCase(prefix);
+    let ID = env[awsAccountIdVar];
 
-  account[env.DEV_AWS_ACCOUNT_ID] = account.DEV;
-  account[env.PROD_AWS_ACCOUNT_ID] = account.PROD;
+    let account = {
+      NAME,
+      ID,
+      // using env._ because the vars are optional
+      CI_USER: env._[`${prefix}_CI_USER`],
+      NS: _.split(_.defaultsTo(env._[`${prefix}_NS`], ''), ',')
+    };
 
-  _.assign(account, account[env.AWS_ACCOUNT_ID]);
+    accounts[ID] = account;
+    accounts[prefix] = account;
+    accounts[NAME] = account;
+  });
 
-  return account;
+  _.assign(accounts, accounts[env.AWS_ACCOUNT_ID]);
+
+  return accounts;
 };
 
 export let current = exports.get({env});
