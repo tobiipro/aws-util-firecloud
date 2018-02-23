@@ -7,7 +7,7 @@ export let get = function({env}) {
 
   _.forEach(awsAccountIdVars, function(awsAccountIdVar) {
     let prefix = _.replace(awsAccountIdVar, /_AWS_ACCOUNT_ID$/, '');
-    let NAME = _.toLowerCase(prefix);
+    let NAME = _.toLower(prefix);
     let ID = env[awsAccountIdVar];
 
     let account = {
@@ -15,7 +15,7 @@ export let get = function({env}) {
       ID,
       // using env._ because the vars are optional
       CI_USER: env._[`${prefix}_CI_USER`],
-      NS: _.split(_.defaultsTo(env._[`${prefix}_NS`], ''), ',')
+      NS: _.split(_.defaultTo(env._[`${prefix}_NS`], ''), ',')
     };
 
     accounts[ID] = account;
