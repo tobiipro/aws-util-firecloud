@@ -34,7 +34,6 @@ export let hostedZones = {
     'ap-southeast-1': 'Z16FZ9L249IFLT',
     'ap-southeast-2': 'Z2PCDNR3VC2G1N',
     'ap-northeast-1': 'Z1R25G3KIG2GBW',
-    'cn-northwest-1': 'None',
     'eu-central-1': 'Z1FRNW7UH4DEZJ',
     'eu-west-1': 'Z2NYPWQ7DFZAZH',
     'eu-west-2': 'Z1GKAAAUGATPF1',
