@@ -6,6 +6,18 @@ import {
   getDomain as getRegionDomain
 } from './region';
 
+// https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_website_region_endpoints
+export let _hyphenRegions = [
+  'us-east-1',
+  'us-west-1',
+  'us-west-2',
+  'ap-southeast-1',
+  'ap-southeast-2',
+  'ap-northeast-1',
+  'eu-west-1',
+  'sa-east-1'
+];
+
 export let _getBucketName = function({
   prefix,
   region,
@@ -55,9 +67,9 @@ export let getBucketDomainName = function({
   env
 }) {
   region = _.defaultTo(region, getRegion({env}));
-  let domain = getRegionDomain({region, env});
+  let domain = exports.getWebsiteDomain({region, env});
 
-  return `${bucketName}.s3-website-${region}.${domain}`;
+  return `${bucketName}.${domain}`;
 };
 
 export let getDomain = function({
@@ -71,6 +83,21 @@ export let getDomain = function({
   }
   let domain = getRegionDomain({region, env});
   return `${service}.${domain}`;
+};
+
+export let getWebsiteDomain = function({
+  region,
+  env
+}) {
+  region = _.defaultTo(region, getRegion({env}));
+  let domain = getRegionDomain({region, env});
+
+  let sep = '.';
+  if (_.includes(exports._hyphenRegions, region)) {
+    sep = '-';
+  }
+
+  return `s3-website${sep}${region}.${domain}`;
 };
 
 export default exports;
