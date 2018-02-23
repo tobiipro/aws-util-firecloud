@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for dynamodb.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="prettify.css" />
+    <link rel="stylesheet" href="base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="index.html">All files</a> dynamodb.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>0/78</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/20</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/21</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>0/61</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107</td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import _ from<span class="cstat-no" title="statement not covered" > 'lodash-firecloud';<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span></span></span>
+import aws fro<span class="cstat-no" title="statement not covered" >m 'aws-sdk';<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span>
+&nbsp;
+export let getDefaultTotalSegm<span class="cstat-no" title="statement not covered" >ents = async function(TableName) {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span>
+  let db = ne<span class="cstat-no" title="statement not covered" >w aws.DynamoDB();</span>
+  let {Table} = awai<span class="cstat-no" title="statement not covered" >t db.describeTable({TableName}).promise();</span>
+&nbsp;
+  let TwoGigabytesInBytes = 2 <span class="cstat-no" title="statement not covered" >* 1024 * 1024 * 1024;</span>
+  re<span class="cstat-no" title="statement not covered" >turn Math.floor(Table.TableSizeBytes / TwoGigabytesInBytes) + 1;</span>
+};<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+&nbsp;
+export let scanWithBackt<span class="cstat-no" title="statement not covered" >icks = function(args) {<span class="fstat-no" title="function not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" >  if (!args.FilterExpression) {</span>
+<span class="cstat-no" title="statement not covered" >    return args;</span>
+  }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  args.ExpressionAttributeNames = _.defaultTo(args.ExpressionAttributeNames, {});</span>
+<span class="cstat-no" title="statement not covered" >  args.FilterExpression = _.replace(args.FilterExpression, /`([^`]+)`/g, function(_match, attrs) <span class="fstat-no" title="function not covered" >{</span></span>
+<span class="cstat-no" title="statement not covered" >    attrs = _.split(attrs, '.');</span>
+<span class="cstat-no" title="statement not covered" >    attrs = _.map(attrs, function(attr) {<span class="fstat-no" title="function not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" >      attr = _.replace(attr, /^#/, '');</span>
+      let safeAttr = <span class="cstat-no" title="statement not covered" >_.replace(attr, /[^A-Za-z0-9]/g, '_');</span>
+<span class="cstat-no" title="statement not covered" >      safeAttr = `#${safeAttr}`;</span>
+      // FIXME should I even bother checking if this is a reserved word
+<span class="cstat-no" title="statement not covered" >      args.ExpressionAttributeNames[safeAttr] = attr;</span>
+<span class="cstat-no" title="statement not covered" >      return safeAttr;</span>
+    });
+<span class="cstat-no" title="statement not covered" >    attrs = attrs.join('.');</span>
+<span class="cstat-no" title="statement not covered" >    return attrs;</span>
+  });
+<span class="cstat-no" title="statement not covered" >  return args;</span>
+};
+&nbsp;
+export let dc<span class="cstat-no" title="statement not covered" >Scan = async funct<span class="fstat-no" title="function not covered" >io</span>n(args, iteratee)<span class="cstat-no" title="statement not covered" > {<span class="fstat-no" title="function not covered" ></span></span></span>
+  let dc = ne<span class="cstat-no" title="statement not covered" >w aws.DynamoDB.DocumentClient();</span>
+&nbsp;
+  ar<span class="cstat-no" title="statement not covered" >gs = exports.scanWithBackticks(args);</span>
+  // NOTE: we disable parallel scanning for now
+  // until we reach &gt;2GB dynamodb tables
+  // args.TotalSegments =
+  //   _.defaultTo(args.TotalSegments,
+  //   await exports.getDefaultTotalSegments(args.TableName));
+  ar<span class="cstat-no" title="statement not covered" >gs.TotalSegments = 1;</span>
+  ar<span class="cstat-no" title="statement not covered" >gs.TotalSegments = _.max([1, args.TotalSegments]);</span>
+&nbsp;
+  if<span class="cstat-no" title="statement not covered" > (args.Limit) {</span>
+    ar<span class="cstat-no" title="statement not covered" >gs.Limit = _.ceil(args.Limit / args.TotalSegments);</span>
+  }
+&nbsp;
+  let continueScan = tr<span class="cstat-no" title="statement not covered" >ue;</span>
+  let results = []<span class="cstat-no" title="statement not covered" >;</span>
+  let limit;
+&nbsp;
+  let scan = as<span class="cstat-no" title="statement not covered" >y<span class="fstat-no" title="function not covered" >nc</span> function() {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+    awai<span class="cstat-no" title="statement not covered" >t Promise.all(_.map(_.range(0, args.TotalSegments), async function(Segment) {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span>
+      let iteratorArgs = _.clon<span class="cstat-no" title="statement not covered" >eDeep(args);</span>
+      iterat<span class="cstat-no" title="statement not covered" >orArgs.Segment = Segment;</span>
+&nbsp;
+      if (re<span class="cstat-no" title="statement not covered" >sults[Segment]) {</span>
+        iterat<span class="cstat-no" title="statement not covered" >orArgs.ExclusiveStartKey = results[Segment].LastEvaluatedKey;</span>
+      }
+      result<span class="cstat-no" title="statement not covered" >s[Segment] = await dc.scan(iteratorArgs).promise();</span>
+    }));<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+&nbsp;
+    _.fo<span class="cstat-no" title="statement not covered" >rEach(results, function(result) { // eslint<span class="fstat-no" title="function not covered" >-d</span>isable-line no-loop-func</span>
+      let cbResult = _.de<span class="cstat-no" title="statement not covered" >faultTo(iteratee(result), true);</span>
+&nbsp;
+      if (<span class="cstat-no" title="statement not covered" >_.isBoolean(cbResult)) {</span>
+        cbRe<span class="cstat-no" title="statement not covered" >sult = {</span>
+          continueScan: cbResult
+        };
+      }
+&nbsp;
+      limi<span class="cstat-no" title="statement not covered" >t = _.get(cbResult, 'args.Limit');</span>
+      cont<span class="cstat-no" title="statement not covered" >inueScan =</span>
+        cbResult.continueScan !== false &amp;&amp;
+        !_.isUndefined(result.LastEvaluatedKey);
+&nbsp;
+      retu<span class="cstat-no" title="statement not covered" >rn continueScan;</span>
+    });
+&nbsp;
+    if (<span class="cstat-no" title="statement not covered" >!continueScan) {</span>
+      retu<span class="cstat-no" title="statement not covered" >rn;</span>
+    }
+&nbsp;
+    if (<span class="cstat-no" title="statement not covered" >limit) {</span>
+      args<span class="cstat-no" title="statement not covered" >.Limit = _.ceil(limit / args.TotalSegments);</span>
+    }
+&nbsp;
+    awai<span class="cstat-no" title="statement not covered" >t scan();</span>
+  };<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+&nbsp;
+  aw<span class="cstat-no" title="statement not covered" >ait scan();</span>
+};<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+&nbsp;
+export let d<span class="cstat-no" title="statement not covered" >cPut = async func<span class="fstat-no" title="function not covered" >ti</span>on(args) {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+  let dc = ne<span class="cstat-no" title="statement not covered" >w aws.DynamoDB.DocumentClient();</span>
+&nbsp;
+  ar<span class="cstat-no" title="statement not covered" >gs.Item = _.deeply(_.pickBy)(args.Item, function(value) {<span class="fstat-no" title="function not covered" ></span></span>
+    re<span class="cstat-no" title="statement not covered" >turn !_.isUndefined(value) &amp;&amp; value !== '';</span>
+  });
+&nbsp;
+  re<span class="cstat-no" title="statement not covered" >turn await dc.put(args).promise();</span>
+};<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span>
+&nbsp;
+export default exports;
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Mon Jan 22 2018 20:42:47 GMT+0100 (CET)
+</div>
+</div>
+<script src="prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="sorter.js"></script>
+</body>
+</html>
