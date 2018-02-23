@@ -1,9 +1,9 @@
+import _ from 'lodash-firecloud';
 import env from './env';
 
-import _ from 'lodash-firecloud';
-
 export const chinaRegions = [
-  'cn-north-1'
+  'cn-north-1',
+  'cn-northwest-1'
 ];
 
 export const regions = [
