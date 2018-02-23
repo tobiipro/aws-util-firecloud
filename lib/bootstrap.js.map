@@ -1,0 +1,1 @@
+{"version":3,"sources":["../src/bootstrap.js"],"names":[],"mappings":";;AAAA;;AACA;;AACA","file":"bootstrap.js","sourcesContent":["import './bootstrap/aws-sdk-logger';\nimport './bootstrap/exit-on-unhandled-rejection';\nimport './bootstrap/stacktrace';\n"]}
