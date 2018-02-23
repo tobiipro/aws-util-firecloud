@@ -2,7 +2,6 @@
 import _ from 'lodash-firecloud';
 import _express from 'express';
 import bearerToken from 'express-bearer-token';
-import bootstrapMiddleware from './express-middleware';
 import cors from 'cors';
 import http from 'http';
 import responseTime from 'response-time';
@@ -11,6 +10,10 @@ import url from 'url';
 import {
   httpLambda
 } from 'http-lambda';
+
+import {
+  bootstrap as bootstrapMiddleware
+} from './express-middleware';
 
 import {
   bootstrap as bootstrapLambda,
@@ -267,4 +270,4 @@ export let bootstrap = function(fn, {pkg}) {
   }, {pkg});
 };
 
-export default bootstrap;
+export default exports;

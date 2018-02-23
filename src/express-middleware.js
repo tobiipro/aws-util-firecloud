@@ -59,4 +59,4 @@ export let bootstrap = function(fn) {
   });
 };
 
-export default bootstrap;
+export default exports;
