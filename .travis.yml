@@ -1,7 +1,7 @@
 branches:
   except:
     - /^f\//
-    - /^v\d+\.\d+\.\d+/
+    - /^v\d+\.\d+\.\d+$/
 cache:
   directories:
     - /tmp/support-firecloud.cache
