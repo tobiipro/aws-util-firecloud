@@ -1,0 +1,1103 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/lambda.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">All files</a> / <a href="index.html">src</a> lambda.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>0/137</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/36</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/32</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>0/118</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347</td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/* eslint-dis<span class="cstat-no" title="statement not covered" >able no-console */<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span>
+import BunyanSlack <span class="cstat-no" title="statement not covered" >from 'bunyan-slack';<span class="cstat-no" title="statement not covered" ></span></span>
+import _ from 'lodash-f<span class="cstat-no" title="statement not covered" >irecloud';<span class="cstat-no" title="statement not covered" ></span></span>
+import aws fro<span class="cstat-no" title="statement not covered" >m 'aws-sdk';<span class="cstat-no" title="statement not covered" ></span></span>
+import bunyan <span class="cstat-no" title="statement not covered" >from 'bunyan';<span class="cstat-no" title="statement not covered" ></span></span>
+import bunyanFormat <span class="cstat-no" title="statement not covered" >from 'bunyan-format/lib/format-record';<span class="cstat-no" title="statement not covered" ></span></span>
+import os <span class="cstat-no" title="statement not covered" >from 'os';<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span>
+&nbsp;
+export let awsLogg<span class="cstat-no" title="statement not covered" >erRE =</span>
+  / *\[AWS ([^ ]+) ([^ ]+) ([^ ]+)s ([^ ]+) retries] ([^(]+)\(([^)]+)\).*/;
+&nbsp;
+export let asyncHan<span class="cstat-no" title="statement not covered" >dler = function(fn) {<span class="fstat-no" title="function not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" >  return <span class="fstat-no" title="function not covered" >fu</span>nction(...args) {</span>
+    let next = <span class="cstat-no" title="statement not covered" >args[args.length - 1];</span>
+<span class="cstat-no" title="statement not covered" >    fn(...args).catch(next);</span>
+  };
+};
+&nbsp;
+export let ins<span class="cstat-no" title="statement not covered" >pect = async functi<span class="fstat-no" title="function not covered" >on</span>({_e, ctx}) {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+  if<span class="cstat-no" title="statement not covered" > (ctx.log.level() &gt; ctx.log.resolveLevel('TRACE')) {</span>
+    re<span class="cstat-no" title="statement not covered" >turn;</span>
+  }
+&nbsp;
+  // Added in: v6.1.0
+  // let cpuUsage = process.cpuUsage(exports.inspect.previousCpuUsage);
+  // exports.inspect.previousCpuUsage = cpuUsage;
+&nbsp;
+  let inspection = {<span class="cstat-no" title="statement not covered" ></span>
+    process: _.merge(_.pick(process, [
+      'arch',
+      'argv',
+      'argv0',
+      'config',
+      'env',
+      'execArgv',
+      'pid',
+      'platform',
+      'release',
+      'title',
+      'version',
+      'versions'
+    ]), {
+      // cpuUsage,
+      memoryUsage: process.memoryUsage(),
+      uptime: process.uptime()
+    }),
+    os: _.mapValues(os, function(fn) {<span class="fstat-no" title="function not covered" ></span>
+      if<span class="cstat-no" title="statement not covered" > (!_.isFunction(fn)) {</span>
+        re<span class="cstat-no" title="statement not covered" >turn;</span>
+      }
+&nbsp;
+      re<span class="cstat-no" title="statement not covered" >turn fn();</span>
+    })
+  };
+&nbsp;
+  let {previousMemoryUsage} = expo<span class="cstat-no" title="statement not covered" >rts.inspect;</span>
+  if<span class="cstat-no" title="statement not covered" > (previousMemoryUsage) {</span>
+    in<span class="cstat-no" title="statement not covered" >spection.process.memoryUsageDiff = {</span>
+      rss: previousMemoryUsage.rss - inspection.process.memoryUsage.rss,
+      heapUsed: previousMemoryUsage.heapUsed - inspection.process.memoryUsage.heapUsed,
+      time: previousMemoryUsage.uptime - inspection.process.uptime
+    };
+    ex<span class="cstat-no" title="statement not covered" >ports.inspect.previousMemoryUsage = {</span>
+      rss: inspect.process.memoryUsage.rss,
+      heapUsed: inspect.process.memoryUsage.heapUsed,
+      uptime: inspect.process.uptime
+    };
+  }
+&nbsp;
+  ct<span class="cstat-no" title="statement not covered" >x.log.trace(inspection, 'Inspection');</span>
+};<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+&nbsp;
+// using console.log instead of the logger on purpose
+export let boots<span class="cstat-no" title="statement not covered" >trap = function(fn, <span class="fstat-no" title="function not covered" >{p</span>kg}) {</span>
+<span class="cstat-no" title="statement not covered" >  return exports.asyncHandler(a<span class="fstat-no" title="function not covered" >sy</span>nc function(e, ct<span class="cstat-no" title="statement not covered" >x, next) {<span class="fstat-no" title="function not covered" ></span></span></span>
+    aw<span class="cstat-no" title="statement not covered" >ait _.consoleLogTime(</span>
+      'aws-util-firecloud.lambda.bootstrap: Merging env ctx...',
+<span class="fstat-no" title="function not covered" >      as</span>ync function() {
+<span class="cstat-no" title="statement not covered" >        await exports.mergeEnvCtx({e, ctx, pkg});</span>
+      }
+    );
+&nbsp;
+    aw<span class="cstat-no" title="statement not covered" >ait _.consoleLogTime(</span>
+      'aws-util-firecloud.lambda.bootstrap: Setting up logger...',
+<span class="fstat-no" title="function not covered" >      as</span>ync function() {
+<span class="cstat-no" title="statement not covered" >        exports.setupLogging({e, ctx});</span>
+      }
+    );
+&nbsp;
+    aw<span class="cstat-no" title="statement not covered" >ait _.consoleLogTime(</span>
+      'aws-util-firecloud.lambda.bootstrap: Inspecting...',
+<span class="fstat-no" title="function not covered" >      as</span>ync function() {
+<span class="cstat-no" title="statement not covered" >        await exports.inspect({e, ctx});</span>
+      }
+    );
+&nbsp;
+    aw<span class="cstat-no" title="statement not covered" >ait _.consoleLogTime(</span>
+      'aws-util-firecloud.lambda.bootstrap: Running fn...',
+<span class="fstat-no" title="function not covered" >      as</span>ync function() {
+<span class="cstat-no" title="statement not covered" >        await fn(e, ctx, next);</span>
+      }
+    );
+&nbsp;
+    if<span class="cstat-no" title="statement not covered" > (global &amp;&amp; global.gc) {</span>
+      aw<span class="cstat-no" title="statement not covered" >ait _.consoleLogTime(</span>
+        'aws-util-firecloud.lambda.bootstrap: Garbage collection on demand...',
+<span class="fstat-no" title="function not covered" >        as</span>ync function() {
+<span class="cstat-no" title="statement not covered" >          global.gc();</span>
+        }
+      );
+    }
+  });<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+};
+&nbsp;
+export let mergeEn<span class="cstat-no" title="statement not covered" >vCtx = async function({<span class="fstat-no" title="function not covered" >e,</span> ctx, pkg}) {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+  co<span class="cstat-no" title="statement not covered" >nsole.log('mergeEnvCtx: Get env from event and context...');</span>
+&nbsp;
+  let AWS_ACCOUNT_ID =
+<span class="cstat-no" title="statement not covered" >      _.split(_.get(ctx, 'invokedFunctionArn', ''), ':')[4];</span>
+  AW<span class="cstat-no" title="statement not covered" >S_ACCOUNT_ID =</span>
+    _.defaultTo(_.get(e, 'requestContext.accountId'), AWS_ACCOUNT_ID);
+&nbsp;
+  let AWS_REGION =
+<span class="cstat-no" title="statement not covered" >      _.split(_.get(ctx, 'invokedFunctionArn', ''), ':')[3];</span>
+&nbsp;
+  let pkgNameRE = _.<span class="cstat-no" title="statement not covered" >replace(pkg.name, /([.-])/, '\\$1');</span>
+  let ENV_NAME =
+<span class="cstat-no" title="statement not covered" >      _.split(_.get(ctx, 'invokedFunctionArn', ''), ':')[6];</span>
+  EN<span class="cstat-no" title="statement not covered" >V_NAME = _.replace(ENV_NAME, new RegExp(`\\-${pkgNameRE}$`), '');</span>
+&nbsp;
+  let AWS_LAMBDA_FUNCTION_NAME =
+<span class="cstat-no" title="statement not covered" >      _.split(_.get(ctx, 'invokedFunctionArn', ''), ':')[6];</span>
+&nbsp;
+  let AWS_LAMBDA_FUNCTION_ALIAS =
+<span class="cstat-no" title="statement not covered" >      _.split(_.get(ctx, 'invokedFunctionArn', ''), ':')[7];</span>
+  AW<span class="cstat-no" title="statement not covered" >S_LAMBDA_FUNCTION_ALIAS = _.defaultTo(AWS_LAMBDA_FUNCTION_ALIAS, '$LATEST');</span>
+&nbsp;
+  _.<span class="cstat-no" title="statement not covered" >defaultsDeep(ctx, {</span>
+    env: e.stageVariables
+  }, {
+    env: {
+      AWS_ACCOUNT_ID,
+      AWS_LAMBDA_FUNCTION_ALIAS,
+      AWS_LAMBDA_FUNCTION_NAME,
+      AWS_REGION,
+      ENV_NAME
+    }
+  }, {
+    env: e.stageVariables
+  }, {
+    env: {
+      // AWS does not allow empty-string stage variables...
+      API_BASE_PATH: '',
+      API_SECONDARY_BASE_PATH: ''
+    }
+  }, {
+    env: process.env
+  });
+&nbsp;
+  co<span class="cstat-no" title="statement not covered" >nsole.log('mergeEnvCtx: Get env ctx from config bucket...');</span>
+&nbsp;
+  let envCtx = aw<span class="cstat-no" title="statement not covered" >ait exports.getEnvCtx({</span>
+    ctx,
+    tags: [
+      'lambdas',
+      `lambdas/${pkg.name}`
+    ]
+  });
+  _.<span class="cstat-no" title="statement not covered" >defaultsDeep(ctx, envCtx);</span>
+};<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+&nbsp;
+export let getEnvCtxReso<span class="cstat-no" title="statement not covered" >lver = function({ctx, tags =<span class="fstat-no" title="function not covered" > [</span>'default']}) {<span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
+  let {env} = ct<span class="cstat-no" title="statement not covered" >x;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  return [</span>
+    env.AWS_ACCOUNT_ID,
+    env.AWS_LAMBDA_FUNCTION_ALIAS,
+    env.AWS_LAMBDA_FUNCTION_NAME,
+    env.AWS_REGION,
+    env.ENV_NAME
+  ].concat(tags).join();
+};
+&nbsp;
+export let getEn<span class="cstat-no" title="statement not covered" >vCtx = async function<span class="fstat-no" title="function not covered" >({</span>ctx, tags = ['def<span class="cstat-no" title="statement not covered" >ault']}) { // eslint-disa<span class="fstat-no" title="function not covered" >bl</span>e-line no-unused-vars<span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
+  // eslint-disable-next-line fp/no-arguments
+  let cacheKey = ex<span class="cstat-no" title="statement not covered" >ports.getEnvCtxResolver(...arguments);</span>
+  let cachedResult = ex<span class="cstat-no" title="statement not covered" >ports._getEnvCtx.cache[cacheKey];</span>
+  ca<span class="cstat-no" title="statement not covered" >chedResult = _.defaultTo(cachedResult, exports._getEnvCtx.oldCache[cacheKey]);</span>
+  ca<span class="cstat-no" title="statement not covered" >chedResult = _.defaultTo(cachedResult, {});</span>
+  let aMinuteAgo = Da<span class="cstat-no" title="statement not covered" >te.now() - 60 * 1000;</span>
+&nbsp;
+  if<span class="cstat-no" title="statement not covered" > (!cachedResult.ctx) {</span>
+    co<span class="cstat-no" title="statement not covered" >nsole.log('getEnvCtx: Waiting for new env ctx...');</span>
+    // eslint-disable-next-line fp/no-arguments
+    ca<span class="cstat-no" title="statement not covered" >chedResult = await exports._getEnvCtx(...arguments);</span>
+  }
+&nbsp;
+  if<span class="cstat-no" title="statement not covered" > (cachedResult.lastFetched &lt; aMinuteAgo) {</span>
+    co<span class="cstat-no" title="statement not covered" >nsole.log('getEnvCtx: Refreshing env ctx for next call...');</span>
+    ex<span class="cstat-no" title="statement not covered" >ports._getEnvCtx.oldCache.set(cacheKey, exports._getEnvCtx.cache[cacheKey]);</span>
+    ex<span class="cstat-no" title="statement not covered" >ports._getEnvCtx.cache.delete(cacheKey);</span>
+    // eslint-disable-next-line fp/no-arguments
+    ex<span class="cstat-no" title="statement not covered" >ports._getEnvCtx(...arguments);</span>
+  }
+&nbsp;
+  co<span class="cstat-no" title="statement not covered" >nsole.log('getEnvCtx: Return env ctx...');</span>
+  re<span class="cstat-no" title="statement not covered" >turn cachedResult.ctx;</span>
+};<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+&nbsp;
+export let _getEn<span class="cstat-no" title="statement not covered" >vCtx = _.memoize(async function({ctx: {env}, tags}) {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span>
+  // eslint-disable-next-line fp/no-arguments
+  let cacheKey = ex<span class="cstat-no" title="statement not covered" >ports.getEnvCtxResolver(...arguments);</span>
+  let s3 = ne<span class="cstat-no" title="statement not covered" >w aws.S3({</span>
+    region: env.AWS_REGION,
+    signatureVersion: 'v4'
+  });
+&nbsp;
+  let Body;
+  let ETag;
+&nbsp;
+  aw<span class="cstat-no" title="statement not covered" >ait _.consoleLogTime('_getEnvCtx: Fetching env ctx...', async function() {<span class="fstat-no" title="function not covered" ></span></span>
+    let result = aw<span class="cstat-no" title="statement not covered" >ait s3.getObject({</span>
+      Bucket: env.S3_CONFIG_BUCKET,
+      Key: `${env.ENV_NAME}.json`,
+      IfMatch: (_.defaultTo(exports._getEnvCtx.oldCache[cacheKey], {})).etag
+    }).promise();
+&nbsp;
+    ({<span class="cstat-no" title="statement not covered" ></span>
+      Body,
+      ETag
+    } = result);
+  });
+  Bo<span class="cstat-no" title="statement not covered" >dy = JSON.parse(Body.toString());</span>
+&nbsp;
+  let ctx = {}<span class="cstat-no" title="statement not covered" >;</span>
+&nbsp;
+  co<span class="cstat-no" title="statement not covered" >nsole.log('_getEnvCtx: Merging env ctx...');</span>
+  _.<span class="cstat-no" title="statement not covered" >forEach(tags, function(tag) {<span class="fstat-no" title="function not covered" ></span></span>
+    ct<span class="cstat-no" title="statement not covered" >x = _.merge(ctx, _.defaultTo(Body[tag], {}));</span>
+  });
+&nbsp;
+  re<span class="cstat-no" title="statement not covered" >turn {</span>
+    ctx,
+    etag: ETag,
+    lastFetched: Date.now()
+  };
+}, ex<span class="cstat-no" title="statement not covered" >ports.g<span class="fstat-no" title="function not covered" >et</span>EnvCtxResolver<span class="cstat-no" title="statement not covered" >);</span></span>
+<span class="cstat-no" title="statement not covered" >_getEnvCtx.oldCache = new _.memoize.Cache();</span>
+&nbsp;
+export let setupLog<span class="cstat-no" title="statement not covered" >ging = function({e, ctx<span class="fstat-no" title="function not covered" >})</span> {</span>
+  let streams = <span class="cstat-no" title="statement not covered" >[{</span>
+    stream: process.stdout
+  }];
+&nbsp;
+  let [, slackUser] = <span class="cstat-no" title="statement not covered" >ctx.env.ENV_NAME.match(/^git-(keep-)?([a-z]{3})(?:-.+)?$/) || [];</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  if (ctx.env.SLACK_WEBHOOK &amp;&amp; slackUser) {</span>
+<span class="cstat-no" title="statement not covered" >    streams.push({</span>
+      level: 'DEBUG',
+      stream: new BunyanSlack({
+        webhook_url: ctx.env.SLACK_WEBHOOK,
+        channel: `@${slackUser}`, // to
+        customFormatter: <span class="fstat-no" title="function not covered" >fu</span>nction(record, _levelName) {
+          let invokedFunctionArn = <span class="cstat-no" title="statement not covered" >_.get(ctx, 'invokedFunctionArn', '');</span>
+          let log = <span class="cstat-no" title="statement not covered" >bunyanFormat(record, {</span>
+            outputMode: 'long',
+            color: false
+          });
+&nbsp;
+<span class="cstat-no" title="statement not covered" >          return {</span>
+            text: [
+              '',
+              `*${ctx.env.ENV_NAME}*`,
+              `*${invokedFunctionArn}*`,
+              log
+            ].join('\n')
+          };
+        }
+      })
+    });
+  }
+&nbsp;
+  let logger = <span class="cstat-no" title="statement not covered" >bunyan.createLogger({</span>
+    name: ctx.functionName,
+    level: _.get(ctx, 'env.LOG_LEVEL', 'INFO'),
+    serializers: bunyan.stdSerializers,
+    src: true,
+    req_id: ctx.awsRequestId,
+    streams
+  });
+<span class="cstat-no" title="statement not covered" >  logger.resolveLevel = bunyan.resolveLevel;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  logger.trace({e, ctx}, `Logger started. ${logger.level()}`);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  ctx.log = logger;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  if (ctx.log.level() &lt;= ctx.log.resolveLevel('TRACE')) {</span>
+<span class="cstat-no" title="statement not covered" >    Error.stackTraceLimit = Infinity;</span>
+<span class="cstat-no" title="statement not covered" >    if (Promise.config) {</span>
+<span class="cstat-no" title="statement not covered" >      Promise.config({</span>
+        warnings: true,
+        longStackTraces: true
+      });
+    }
+<span class="cstat-no" title="statement not covered" >    ctx.log.trace('Long stack traces enabled');</span>
+  } else <span class="cstat-no" title="statement not covered" >if (Error.stackTraceLimit === Infinity &amp;&amp; /^prod/.test(process.env.NODE_ENV)) {</span>
+<span class="cstat-no" title="statement not covered" >    ctx.log.error('Long stack traces cannot be disabled. New deployment is required!');</span>
+  }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  aws.config.logger = {</span>
+    isTTY: false,
+    log: <span class="fstat-no" title="function not covered" >fu</span>nction(message) {
+<span class="cstat-no" title="statement not covered" >      if (ctx.log.level() &gt; ctx.log.resolveLevel('TRACE')) {</span>
+<span class="cstat-no" title="statement not covered" >        return;</span>
+      }
+&nbsp;
+      let [
+        serviceIdentifier,
+        status,
+        delta,
+        retryCount,
+        operation,
+        params
+<span class="cstat-no" title="statement not covered" >      ] = exports.awsLoggerRE.exec(message).slice</span>(1);
+<span class="cstat-no" title="statement not covered" >      params = eval(`(${params})`); </span>// eslint-disable-line no-eval
+&nbsp;
+<span class="cstat-no" title="statement not covered" >      ctx.log.trace({</span>
+        aws: {
+          serviceIdentifier,
+          status,
+          delta,
+          retryCount,
+          operation,
+          params
+        }
+      }, 'Making an AWS SDK call.');
+    }
+  };
+};
+&nbsp;
+export let getRequestInst<span class="cstat-no" title="statement not covered" >ance = function(req) {<span class="fstat-no" title="function not covered" ></span></span>
+  let {ctx} = re<span class="cstat-no" title="statement not covered" >q;</span>
+<span class="cstat-no" title="statement not covered" >  return `${ctx.invokedFunctionArn}#request:${ctx.awsRequestId}`;</span>
+};<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+export default exports;
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Thu Mar 01 2018 11:21:19 GMT+0100 (CET)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

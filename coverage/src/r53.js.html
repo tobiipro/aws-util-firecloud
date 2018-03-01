@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/r53.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">All files</a> / <a href="index.html">src</a> r53.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>0/13</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/6</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/2</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>0/9</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117</td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import _ from<span class="cstat-no" title="statement not covered" > 'lodash-firecloud';<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span></span>
+&nbsp;
+export let hostedZ<span class="cstat-no" title="statement not covered" >ones = {</span>
+  apigateway: {
+    'us-east-2': 'ZOJJZC49E0EPZ',
+    'us-east-1': 'Z1UJRXOUMOOFQ8',
+    'us-west-1': 'Z2MUQ32089INYE',
+    'us-west-2': 'Z2OJLYMUO9EFXC',
+    'ap-south-1': 'Z3VO1THU9YC4UR',
+    'ap-northeast-2': 'Z20JF4UZKIW1U8',
+    'ap-northeast-3': 'Z2YQB5RD63NC85',
+    'ap-southeast-1': 'ZL327KTPIQFUL',
+    'ap-southeast-2': 'Z2RPCDW04V8134',
+    'ap-northeast-1': 'Z1YSHQZHG15GKL',
+    'ca-central-1': 'Z19DQILCV0OWEC',
+    'eu-central-1': 'Z1U9ULNL0V5AJ3',
+    'eu-west-1': 'ZLY8HYME6SFDD',
+    'eu-west-2': 'ZJ5UAJN8Y3Z2Q',
+    'eu-west-3': 'Z3KY65QIEKYHQQ',
+    'sa-east-1': 'ZCMLWB8V5SYIT'
+  },
+&nbsp;
+  cloudfront: 'Z2FDTNDATAQYW2',
+&nbsp;
+  elasticbeanstalk: {
+    'us-east-2': 'Z14LCN19Q5QHIC',
+    'us-east-1': 'Z117KPS5GTRQ2G',
+    'us-west-1': 'Z1LQECGX5PH1X',
+    'us-west-2': 'Z38NKT9BP95V3O',
+    'ca-central-1': 'ZJFCZL7SSZB5I',
+    'ap-south-1': 'Z18NTBI3Y7N9TZ',
+    'ap-northeast-2': 'Z3JE5OI70TWKCP',
+    'ap-northeast-3': 'ZNE5GEY1TIAGY',
+    'ap-southeast-1': 'Z16FZ9L249IFLT',
+    'ap-southeast-2': 'Z2PCDNR3VC2G1N',
+    'ap-northeast-1': 'Z1R25G3KIG2GBW',
+    'eu-central-1': 'Z1FRNW7UH4DEZJ',
+    'eu-west-1': 'Z2NYPWQ7DFZAZH',
+    'eu-west-2': 'Z1GKAAAUGATPF1',
+    'eu-west-3': 'Z5WN6GAYWG5OB',
+    'sa-east-1': 'Z10X7K2B4QSOFV'
+  },
+&nbsp;
+  elasticloadbalancing: {
+    'us-east-2': 'ZLMOA37VPKANP',
+    'us-east-1': 'Z26RNL4JYFTOTI',
+    'us-west-1': 'Z24FKFUX50B4VW',
+    'us-west-2': 'Z18D5FSROUN65G',
+    'ca-central-1': 'Z2EPGBW3API2WT',
+    'ap-south-1': 'ZVDDRBQ08TROA',
+    'ap-northeast-2': 'ZIBE1TIR4HY56',
+    'ap-southeast-1': 'ZKVM4W9LS7TM',
+    'ap-southeast-2': 'ZCT6FZBF4DROD',
+    'ap-northeast-1': 'Z31USIVHYNEOWT',
+    'eu-central-1': 'Z3F0SRJ5LGBH90',
+    'eu-west-1': 'Z2IFOLAFXWLO4F',
+    'eu-west-2': 'ZD4D7Y8KGAS4G',
+    'eu-west-3': 'Z1CMS0P5QUZ6D5',
+    'sa-east-1': 'ZTK26PT1VY4CU',
+&nbsp;
+    classic: {
+      'us-east-2': 'Z3AADJGX6KTTL2',
+      'us-east-1': 'Z35SXDOTRQ7X7K',
+      'us-west-1': 'Z368ELLRRE2KJ0',
+      'us-west-2': 'Z1H1FL5HABSF5',
+      'ca-central-1': 'ZQSVJUPU6J1EY',
+      'ap-south-1': 'ZP97RAFLXTNZK',
+      'ap-northeast-2': 'ZWKZPGTI48KDX',
+      'ap-northeast-3': 'Z5LXEXXYW11ES',
+      'ap-southeast-1': 'Z1LMS91P8CMLE5',
+      'ap-southeast-2': 'Z1GM3OXH4ZPM65',
+      'ap-northeast-1': 'Z14GRHDCWA56QT',
+      'eu-central-1': 'Z215JYRZR1TBD5',
+      'eu-west-1': 'Z32O12XQLNTSW2',
+      'eu-west-2': 'ZHURV8PSTC4K8',
+      'eu-west-3': 'Z3Q77PNBQS71R4',
+      'sa-east-1': 'Z2P70J7HTTTPLU'
+    }
+  },
+&nbsp;
+  's3-website': {
+    'us-east-2': 'Z2O1EMRO9K5GLX',
+    'us-east-1': 'Z3AQBSTGFYJSTF',
+    'us-west-1': 'Z2F56UZL2M1ACD',
+    'us-west-2': 'Z3BJ6K6RIION7M',
+    'ca-central-1': 'Z1QDHH18159H29',
+    'ap-south-1': 'Z11RGJOFQNVJUP',
+    'ap-northeast-2': 'Z3W03O7B5YMIYP',
+    'ap-northeast-3': 'Z2YQB5RD63NC85',
+    'ap-southeast-1': 'Z3O0J2DXBE1FTB',
+    'ap-southeast-2': 'Z1WCIGYICN2BYD',
+    'ap-northeast-1': 'Z2M4EHUR26P7ZW',
+    'eu-central-1': 'Z21DNDUVLTQW6Q',
+    'eu-west-1': 'Z1BKCTXD74EZPE',
+    'eu-west-2': 'Z3GKZC51ZF0DB4',
+    'eu-west-3': 'Z3R1K369G5AVDG',
+    'sa-east-1': 'Z7KQH4QJS55SO'
+  }
+};
+&nbsp;
+export let getHostedZo<span class="cstat-no" title="statement not covered" >neId = function({<span class="fstat-no" title="function not covered" ></span></span>
+  env,
+  region,
+  service
+}) {
+<span class="cstat-no" title="statement not covered" >  if (service === 'cloudfront') {</span>
+<span class="cstat-no" title="statement not covered" >    return exports.hostedZones[service];</span>
+  }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  region = _.defaultTo(region, exports.get({env}));</span>
+&nbsp;
+  let hostedZoneId = <span class="cstat-no" title="statement not covered" >exports.hostedZones[service][region];</span>
+<span class="cstat-no" title="statement not covered" >  return hostedZoneId;</span>
+};<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+export default exports;
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Thu Mar 01 2018 11:21:19 GMT+0100 (CET)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>
