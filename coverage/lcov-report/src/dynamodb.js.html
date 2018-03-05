@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/dynamodb.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">All files</a> / <a href="index.html">src</a> dynamodb.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">8.62% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>5/58</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/19</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/11</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">8.62% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>5/58</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import _ from 'lodash-firecloud';
+import aws from 'aws-sdk';
+&nbsp;
+export let getLambdaTableName = <span class="fstat-no" title="function not covered" >fu</span>nction({
+  pkg,
+  suffix = <span class="branch-0 cbranch-no" title="branch not covered" >'',</span>
+  env
+}) {
+<span class="cstat-no" title="statement not covered" >  if (suffix) {</span>
+<span class="cstat-no" title="statement not covered" >    suffix = `-${suffix}`;</span>
+  }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  return `${env.ENV_NAME}-Lambda-${pkg.name}${suffix}`;</span>
+};
+&nbsp;
+export let getDefaultTotalSegments = <span class="fstat-no" title="function not covered" >as</span>ync function(TableName) {
+  let db = <span class="cstat-no" title="statement not covered" >new aws.DynamoDB();</span>
+  let {Table} = <span class="cstat-no" title="statement not covered" >await db.describeTable({TableName}).promise();</span>
+&nbsp;
+  let TwoGigabytesInBytes = <span class="cstat-no" title="statement not covered" >2 * 1024 * 1024 * 1024;</span>
+<span class="cstat-no" title="statement not covered" >  return Math.floor(Table.TableSizeBytes / TwoGigabytesInBytes) + 1;</span>
+};
+&nbsp;
+export let scanWithBackticks = <span class="fstat-no" title="function not covered" >fu</span>nction(args) {
+<span class="cstat-no" title="statement not covered" >  if (!args.FilterExpression) {</span>
+<span class="cstat-no" title="statement not covered" >    return args;</span>
+  }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  args.ExpressionAttributeNames = _.defaultTo(args.ExpressionAttributeNames, {});</span>
+<span class="cstat-no" title="statement not covered" >  args.FilterExpression = _.replace(args.FilterExpression, /`([^`]+)`/g, <span class="fstat-no" title="function not covered" >fu</span>nction(_match, attrs) {</span>
+<span class="cstat-no" title="statement not covered" >    attrs = _.split(attrs, '.');</span>
+<span class="cstat-no" title="statement not covered" >    attrs = _.map(attrs, <span class="fstat-no" title="function not covered" >fu</span>nction(attr) {</span>
+<span class="cstat-no" title="statement not covered" >      attr = _.replace(attr, /^#/, '');</span>
+      let safeAttr = <span class="cstat-no" title="statement not covered" >_.replace(attr, /[^A-Za-z0-9]/g, '_');</span>
+<span class="cstat-no" title="statement not covered" >      safeAttr = `#${safeAttr}`;</span>
+      // FIXME should I even bother checking if this is a reserved word
+<span class="cstat-no" title="statement not covered" >      args.ExpressionAttributeNames[safeAttr] = attr;</span>
+<span class="cstat-no" title="statement not covered" >      return safeAttr;</span>
+    });
+<span class="cstat-no" title="statement not covered" >    attrs = attrs.join('.');</span>
+<span class="cstat-no" title="statement not covered" >    return attrs;</span>
+  });
+<span class="cstat-no" title="statement not covered" >  return args;</span>
+};
+&nbsp;
+export let dcScan = <span class="fstat-no" title="function not covered" >as</span>ync function(args, iteratee) {
+  let dc = <span class="cstat-no" title="statement not covered" >new aws.DynamoDB.DocumentClient();</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  args = exports.scanWithBackticks(args);</span>
+  // NOTE: we disable parallel scanning for now
+  // until we reach &gt;2GB dynamodb tables
+  // args.TotalSegments =
+  //   _.defaultTo(args.TotalSegments,
+  //   await exports.getDefaultTotalSegments(args.TableName));
+<span class="cstat-no" title="statement not covered" >  args.TotalSegments = 1;</span>
+<span class="cstat-no" title="statement not covered" >  args.TotalSegments = _.max([1, args.TotalSegments]);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  if (args.Limit) {</span>
+<span class="cstat-no" title="statement not covered" >    args.Limit = _.ceil(args.Limit / args.TotalSegments);</span>
+  }
+&nbsp;
+  let continueScan = <span class="cstat-no" title="statement not covered" >true;</span>
+  let results = <span class="cstat-no" title="statement not covered" >[];</span>
+  let limit;
+&nbsp;
+  let scan = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >as</span>ync function() {</span>
+<span class="cstat-no" title="statement not covered" >    await Promise.all(_.map(_.range(0, args.TotalSegments), <span class="fstat-no" title="function not covered" >as</span>ync function(Segment) {</span>
+      let iteratorArgs = <span class="cstat-no" title="statement not covered" >_.cloneDeep(args);</span>
+<span class="cstat-no" title="statement not covered" >      iteratorArgs.Segment = Segment;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >      if (results[Segment]) {</span>
+<span class="cstat-no" title="statement not covered" >        iteratorArgs.ExclusiveStartKey = results[Segment].LastEvaluatedKey;</span>
+      }
+<span class="cstat-no" title="statement not covered" >      results[Segment] = await dc.scan(iteratorArgs).promise();</span>
+    }));
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    _.forEach(results, <span class="fstat-no" title="function not covered" >fu</span>nction(result) { // eslint-disable-line no-loop-func</span>
+      let cbResult = <span class="cstat-no" title="statement not covered" >_.defaultTo(iteratee(result), true);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >      if (_.isBoolean(cbResult)) {</span>
+<span class="cstat-no" title="statement not covered" >        cbResult = {</span>
+          continueScan: cbResult
+        };
+      }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >      limit = _.get(cbResult, 'args.Limit');</span>
+<span class="cstat-no" title="statement not covered" >      continueScan =</span>
+        cbResult.continueScan !== false &amp;&amp;
+        !_.isUndefined(result.LastEvaluatedKey);
+&nbsp;
+<span class="cstat-no" title="statement not covered" >      return continueScan;</span>
+    });
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    if (!continueScan) {</span>
+<span class="cstat-no" title="statement not covered" >      return;</span>
+    }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    if (limit) {</span>
+<span class="cstat-no" title="statement not covered" >      args.Limit = _.ceil(limit / args.TotalSegments);</span>
+    }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    await scan();</span>
+  };
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  await scan();</span>
+};
+&nbsp;
+export let dcPut = <span class="fstat-no" title="function not covered" >as</span>ync function(args) {
+  let dc = <span class="cstat-no" title="statement not covered" >new aws.DynamoDB.DocumentClient();</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  args.Item = _.deeply(_.pickBy)(args.Item, <span class="fstat-no" title="function not covered" >fu</span>nction(value) {</span>
+<span class="cstat-no" title="statement not covered" >    return !_.isUndefined(value) &amp;&amp; value !== '';</span>
+  });
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  return await dc.put(args).promise();</span>
+};
+&nbsp;
+export default exports;
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Thu Mar 01 2018 12:03:08 GMT+0100 (CET)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>
