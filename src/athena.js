@@ -17,7 +17,7 @@ let _pollQueryCompletedState = async function({
     await delay(pollingDelay);
 
     // eslint-disable-next-line fp/no-arguments
-    return await _pollQueryCompletedState(arguments);
+    return await _pollQueryCompletedState(...arguments);
   }
 
   return state;
