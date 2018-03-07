@@ -12,7 +12,7 @@ let byteSizeOverhead = Buffer.byteLength(JSON.stringify({content: ''})) + 1;
 
 describe('firehose', function() {
   describe('putRecords', function() {
-    test('should call _putRecordBatches', async function() {
+    it('should call _putRecordBatches', async function() {
       let byteSize = 25 - byteSizeOverhead;
       let records = _.times(1, function() {
         return {

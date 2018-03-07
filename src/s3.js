@@ -1,5 +1,5 @@
-import _ from 'lodash-firecloud';
 import AWS_ACCOUNT from './account';
+import _ from 'lodash-firecloud';
 
 import {
   get as getRegion,

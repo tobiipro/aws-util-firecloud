@@ -8,17 +8,17 @@ import responseTime from 'response-time';
 import url from 'url';
 
 import {
-  httpLambda
-} from 'http-lambda';
+  bootstrap as bootstrapLambda,
+  getRequestInstance
+} from './lambda';
 
 import {
   bootstrap as bootstrapMiddleware
 } from './express-middleware';
 
 import {
-  bootstrap as bootstrapLambda,
-  getRequestInstance
-} from './lambda';
+  httpLambda
+} from 'http-lambda';
 
 export let _resAddLink = function(link) {
   let {target} = link;

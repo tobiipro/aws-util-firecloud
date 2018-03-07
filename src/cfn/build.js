@@ -6,7 +6,7 @@ import path from 'path';
 
 import {
   reduceToDependsOn
-} from './';
+} from '.';
 
 export let sortedReaddir = async function({dir}) {
   let files = fs.readdirSync(dir);

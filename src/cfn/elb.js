@@ -7,7 +7,7 @@ import {
 
 import {
   isIntrinsicFun
-} from './';
+} from '.';
 
 export let getLatestNodejsELB = async function({env}) {
   let ec2 = new aws.EC2(getConfig({env}));
