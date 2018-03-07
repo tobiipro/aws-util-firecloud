@@ -2,28 +2,27 @@ import _ from 'lodash-firecloud';
 import aws from 'aws-sdk';
 
 import {
-  delay,
-  promisify
+  delay
 } from 'bluebird';
 
-let _pollQueryCompletedState = async function({
+export let pollQueryCompletedState = async function({
+  athena,
   QueryExecutionId,
-  getQueryExecutionAsync,
-  pollingDelay
+  pollingDelay = 1000
 }) {
-  let data = await getQueryExecutionAsync({QueryExecutionId});
+  let data = await athena.getQueryExecution({QueryExecutionId}).promise();
   let state = data.QueryExecution.Status.State;
-  if (state === 'RUNNING' || state === 'QUEUED') {
+  if (state === 'RUNNING' || state === 'QUEUED' || state === 'SUBMITTED') {
     await delay(pollingDelay);
 
     // eslint-disable-next-line fp/no-arguments
-    return await _pollQueryCompletedState(...arguments);
+    return await pollQueryCompletedState(...arguments);
   }
 
   return state;
 };
 
-let _queryResultToObject = function(queryResult) {
+export let queryResultToObject = function(queryResult) {
   let columnsNames = [];
   _.forEach(queryResult.ResultSet.Rows[0].Data, function(value, index) {
     columnsNames[index] = value.VarCharValue;
@@ -54,17 +53,13 @@ export let executeQuery = async function({
   pollingDelay = 1000,
   initPollingDelay = pollingDelay
 }) {
-  let startQueryExecutionAsync = promisify(athena.startQueryExecution, {context: athena});
-  let getQueryExecutionAsync = promisify(athena.getQueryExecution, {context: athena});
-  let getQueryResultsAsync = promisify(athena.getQueryResults, {context: athena});
-
-  let queryExecutionData = await startQueryExecutionAsync(params);
+  let queryExecutionData = await athena.startQueryExecution(params).promise();
   let {QueryExecutionId} = queryExecutionData;
 
   await delay(initPollingDelay);
-  let status = await _pollQueryCompletedState({
+  let status = await pollQueryCompletedState({
+    athena,
     QueryExecutionId,
-    getQueryExecutionAsync,
     pollingDelay
   });
 
@@ -72,8 +67,8 @@ export let executeQuery = async function({
     throw Error("Athena: query didn't succeed.");
   }
 
-  let queryResult = await getQueryResultsAsync({QueryExecutionId});
-  let resultObject = _queryResultToObject(queryResult);
+  let queryResult = await athena.getQueryResults({QueryExecutionId}).promise();
+  let resultObject = queryResultToObject(queryResult);
   return resultObject;
 };
 
