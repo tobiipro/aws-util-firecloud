@@ -22,13 +22,11 @@ export let pollQueryCompletedState = async function({
   return state;
 };
 
-export let queryResultToObject = function(queryResult) {
-  let columnsNames = [];
-  _.forEach(queryResult.ResultSet.Rows[0].Data, function(value, index) {
-    columnsNames[index] = value.VarCharValue;
-  });
+export let queryResultToObjectsArray = function(queryResult) {
+  let columnInfo = queryResult.ResultSet.ResultSetMetadata.ColumnInfo;
+  let columnsNames = _.map(columnInfo, 'Name');
 
-  let rows = _.drop(queryResult.ResultSet.Rows, 1);
+  let rows = queryResult.ResultSet.Rows;
   let rowsObjects = _.map(rows, function(row) {
     let rowObject = {};
 
@@ -68,7 +66,8 @@ export let executeQuery = async function({
   }
 
   let queryResult = await athena.getQueryResults({QueryExecutionId}).promise();
-  let resultObject = queryResultToObject(queryResult);
+  let resultObject = queryResultToObjectsArray(queryResult);
+  resultObject = _.drop(resultObject, 1); // first row is column names
   return resultObject;
 };
 
