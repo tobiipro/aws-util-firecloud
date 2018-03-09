@@ -162,10 +162,9 @@ export let express = function({e}) {
 
   app.use(responseTime());
   app.use(cors({
-    allowedHeaders: [
-      'authorization',
-      'content-type',
-      'If-Match'
+    exposedHeaders: [
+      'location',
+      'x-response-time'
     ],
     maxAge: 24 * 60 * 60 // 24 hours
   }));
