@@ -5,24 +5,6 @@ import {
   getRequestInstance
 } from './lambda';
 
-// export let accepts = function(types) {
-//   return exports.bootstrap(async function(req, res) {
-//     res.mediaType = req.accepts(types);
-//     if (!res.mediaType) {
-//       return res.sendError(406);
-//     }
-//   });
-// };
-
-// export let is = function(types) {
-//   return exports.bootstrap(async function(req, res) {
-//     req.mediaType = req.is(types);
-//     if (!req.mediaType) {
-//       return res.sendError(415);
-//     }
-//   });
-// };
-
 export let bootstrap = function(fn) {
   return asyncHandler(async function(...args) {
     let res = args[1];
