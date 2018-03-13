@@ -70,48 +70,6 @@ export let inspect = async function({_e, ctx}) {
   ctx.log.trace(inspection, 'Inspection');
 };
 
-// using console.log instead of the logger on purpose
-export let bootstrap = function(fn, {pkg}) {
-  return exports.asyncHandler(async function(e, ctx, next) {
-    await _.consoleLogTime(
-      'aws-util-firecloud.lambda.bootstrap: Merging env ctx...',
-      async function() {
-        await exports.mergeEnvCtx({e, ctx, pkg});
-      }
-    );
-
-    await _.consoleLogTime(
-      'aws-util-firecloud.lambda.bootstrap: Setting up logger...',
-      async function() {
-        exports.setupLogging({e, ctx});
-      }
-    );
-
-    await _.consoleLogTime(
-      'aws-util-firecloud.lambda.bootstrap: Inspecting...',
-      async function() {
-        await exports.inspect({e, ctx});
-      }
-    );
-
-    await _.consoleLogTime(
-      'aws-util-firecloud.lambda.bootstrap: Running fn...',
-      async function() {
-        await fn(e, ctx, next);
-      }
-    );
-
-    if (global && global.gc) {
-      await _.consoleLogTime(
-        'aws-util-firecloud.lambda.bootstrap: Garbage collection on demand...',
-        async function() {
-          global.gc();
-        }
-      );
-    }
-  });
-};
-
 export let mergeEnvCtx = async function({e, ctx, pkg}) {
   console.log('mergeEnvCtx: Get env from event and context...');
 
@@ -207,7 +165,7 @@ export let getEnvCtx = async function({ctx, tags = ['default']}) { // eslint-dis
   return cachedResult.ctx;
 };
 
-export let _getEnvCtx = _.memoize(async function({ctx: {env}, tags}) {
+export let _getEnvCtx = async function({ctx: {env}, tags}) {
   // eslint-disable-next-line fp/no-arguments
   let cacheKey = exports.getEnvCtxResolver(...arguments);
   let s3 = new aws.S3({
@@ -244,7 +202,8 @@ export let _getEnvCtx = _.memoize(async function({ctx: {env}, tags}) {
     etag: ETag,
     lastFetched: Date.now()
   };
-}, exports.getEnvCtxResolver);
+};
+_getEnvCtx = _.memoize(exports._getEnvCtx, exports.getEnvCtxResolver);
 _getEnvCtx.oldCache = new _.memoize.Cache();
 
 export let setupLogging = function({e, ctx}) {
@@ -341,6 +300,48 @@ export let setupLogging = function({e, ctx}) {
 export let getRequestInstance = function(req) {
   let {ctx} = req;
   return `${ctx.invokedFunctionArn}#request:${ctx.awsRequestId}`;
+};
+
+// using console.log instead of the logger on purpose
+export let bootstrap = function(fn, {pkg}) {
+  return exports.asyncHandler(async function(e, ctx, next) {
+    await _.consoleLogTime(
+      'aws-util-firecloud.lambda.bootstrap: Merging env ctx...',
+      async function() {
+        await exports.mergeEnvCtx({e, ctx, pkg});
+      }
+    );
+
+    await _.consoleLogTime(
+      'aws-util-firecloud.lambda.bootstrap: Setting up logger...',
+      async function() {
+        exports.setupLogging({e, ctx});
+      }
+    );
+
+    await _.consoleLogTime(
+      'aws-util-firecloud.lambda.bootstrap: Inspecting...',
+      async function() {
+        await exports.inspect({e, ctx});
+      }
+    );
+
+    await _.consoleLogTime(
+      'aws-util-firecloud.lambda.bootstrap: Running fn...',
+      async function() {
+        await fn(e, ctx, next);
+      }
+    );
+
+    if (global && global.gc) {
+      await _.consoleLogTime(
+        'aws-util-firecloud.lambda.bootstrap: Garbage collection on demand...',
+        async function() {
+          global.gc();
+        }
+      );
+    }
+  });
 };
 
 export default exports;
