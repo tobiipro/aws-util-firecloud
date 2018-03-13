@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+/* eslint-disable no-console, import/exports-last */
 import BunyanSlack from 'bunyan-slack';
 import _ from 'lodash-firecloud';
 import aws from 'aws-sdk';
