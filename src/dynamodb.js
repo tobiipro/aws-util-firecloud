@@ -108,7 +108,7 @@ export let dcScan = async function(args, iteratee) {
 export let dcPut = async function(args) {
   let dc = new aws.DynamoDB.DocumentClient();
 
-  args.Item = _.deeply(_.pickBy)(args.Item, function(value) {
+  args.Item = _.mapValuesDeep(_.pickBy)(args.Item, function(value) {
     return !_.isUndefined(value) && value !== '';
   });
 
