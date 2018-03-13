@@ -198,34 +198,23 @@ export let bootstrap = function(fn, {pkg}) {
 
       clearInterval(timeoutInterval);
 
-      let status = 524;
+      let statusCode = 524;
       let title = 'A Timeout Occurred';
-
-      if (_.includes([
-        'OPTIONS',
-        'HEAD',
-        'GET'
-      ], e.httpMethod)) {
-        // signal API gateway to retry request
-        // see https://docs.aws.amazon.com/apigateway/api-reference/handling-errors/
-        status = 503;
-        title = 'Service Unavailable';
-      }
 
       // eslint-disable-next-line no-console
       console.error(`aws-util-firecloud.express.bootstrap: Lambda will timeout in ${remainingTimeInMillis} ms`);
       // eslint-disable-next-line no-console
-      console.error(`aws-util-firecloud.express.bootstrap: Terminating with ${status} ${title}...`);
+      console.error(`aws-util-firecloud.express.bootstrap: Terminating with ${statusCode} ${title}...`);
 
       next(undefined, { // eslint-disable-line callback-return
-        statusCode: 524,
+        statusCode,
         headers: {
           'content-type': 'application/problem+json'
         },
         body: JSON.stringify({
           type: 'about:blank',
           title,
-          status,
+          status: statusCode,
           instance: getRequestInstance({ctx}),
           renderer: 'lambda-util'
         })
