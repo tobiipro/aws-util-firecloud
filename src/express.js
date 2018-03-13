@@ -124,10 +124,27 @@ export let _xForward = function() {
   });
 };
 
+export let urlParse = function(url) {
+  return url.parse(url, true, true);
+};
+
+export let urlFormat = function(url) {
+  // eslint-disable-next-line consistent-this, no-invalid-this
+  let _ = this;
+
+  url = _.omit(url, [
+    'host',
+    'href',
+    'path',
+    'search'
+  ]);
+
+  return url;
+};
+
 export let getSelfUrl = function({req}) {
   let {env} = req.ctx;
-  let selfUrl = url.parse(`${env.API_SECONDARY_BASE_URL}${req.originalUrl}`, true, true);
-  delete selfUrl.search;
+  let selfUrl = exports.urlParse(`${env.API_SECONDARY_BASE_URL}${req.originalUrl}`);
   return selfUrl;
 };
 
@@ -139,6 +156,7 @@ export let getPageUrl = function({req, per_page, ref}) {
       ref
     }
   });
+  pageUrl = exports.urlParse(exports.urlFormat(pageUrl));
   return pageUrl;
 };
 
