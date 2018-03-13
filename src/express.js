@@ -186,23 +186,20 @@ export let bootstrap = function(fn, {pkg}) {
     // eslint-disable-next-line no-console
     console.log('aws-util-firecloud.express.bootstrap: Setting up timeout handler...');
 
-    let timeoutInterval = setInterval(function() {
-      // FIXME this could be simulated as well for a lambda-proxy environment, but not now
-      if (!ctx.getRemainingTimeInMillis) {
-        return;
-      }
-      let remainingTimeInMillis = ctx.getRemainingTimeInMillis();
-      if (remainingTimeInMillis > 1000) {
+    let timeoutInterval = 500;
+    let timeoutIntervalId = setInterval(function() {
+      let remainingTime = ctx.getRemainingTimeInMillis();
+      if (remainingTime + timeoutInterval > 1000) {
         return;
       }
 
-      clearInterval(timeoutInterval);
+      clearInterval(timeoutIntervalId);
 
       let statusCode = 524;
       let title = 'A Timeout Occurred';
 
       // eslint-disable-next-line no-console
-      console.error(`aws-util-firecloud.express.bootstrap: Lambda will timeout in ${remainingTimeInMillis} ms`);
+      console.error(`aws-util-firecloud.express.bootstrap: Lambda will timeout in ${remainingTime} ms`);
       // eslint-disable-next-line no-console
       console.error(`aws-util-firecloud.express.bootstrap: Terminating with ${statusCode} ${title}...`);
 
@@ -221,7 +218,7 @@ export let bootstrap = function(fn, {pkg}) {
       });
 
       // don't process.exit()
-    }, 500);
+    }, timeoutInterval);
 
     await _.consoleLogTime('aws-util-firecloud.express.bootstrap: Running httpLambda...', async function() {
       httpLambda(function(http, e, ctx, _next) {
