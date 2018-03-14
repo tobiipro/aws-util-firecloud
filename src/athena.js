@@ -24,14 +24,35 @@ export let pollQueryCompletedState = async function({
 
 export let queryResultToObjectsArray = function(queryResult) {
   let columnInfo = queryResult.ResultSet.ResultSetMetadata.ColumnInfo;
-  let columnsNames = _.map(columnInfo, 'Name');
+  let columns = _.map(columnInfo, function(column) {
+    return _.pick(column, ['Name', 'Type']);
+  });
 
   let rows = queryResult.ResultSet.Rows;
   let rowsObjects = _.map(rows, function(row) {
     let rowObject = {};
 
-    _.forEach(columnsNames, function(columnName, columnIndex) {
-      rowObject[columnName] = row.Data[columnIndex].VarCharValue;
+    _.forEach(columns, function(column, columnIndex) {
+      let value = row.Data[columnIndex].VarCharValue;
+
+      if (!_.isUndefined(value)) {
+        switch (_.toLower(column.Type)) {
+        case ('integer'):
+        case ('tinyint'):
+        case ('smallint'):
+        case ('bigint'):
+        case ('double'):
+          value = Number(value);
+          break;
+        case ('boolean'):
+          value = Boolean(value);
+          break;
+        default:
+          break;
+        }
+      }
+
+      rowObject[column.Name] = value;
     });
 
     return rowObject;
