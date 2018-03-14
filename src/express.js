@@ -8,6 +8,10 @@ import responseTime from 'response-time';
 import url from 'url';
 
 import {
+  LambdaHttp
+} from 'http-lambda';
+
+import {
   bootstrap as bootstrapLambda,
   getRequestInstance
 } from './lambda';
@@ -15,10 +19,6 @@ import {
 import {
   bootstrap as bootstrapMiddleware
 } from './express-middleware';
-
-import {
-  httpLambda
-} from 'http-lambda';
 
 export let _resAddLink = function(link) {
   let {target} = link;
@@ -170,7 +170,7 @@ export let getPageUrl = function({req, per_page, ref}) {
   return pageUrl;
 };
 
-export let express = function({e}) {
+export let express = function(e, _ctx, _next) {
   let app = _express();
 
   app.disable('x-powered-by');
@@ -208,78 +208,81 @@ export let express = function({e}) {
   return app;
 };
 
+export let setTimeoutHandler = function(_e, ctx, next) {
+  // eslint-disable-next-line no-console
+  console.log('aws-util-firecloud.express.bootstrap: Setting up timeout handler...');
+
+  let timeoutInterval = 500;
+  let timeoutIntervalId = setInterval(function() {
+    let remainingTime = ctx.getRemainingTimeInMillis();
+    if (remainingTime - timeoutInterval > 1000) {
+      return;
+    }
+
+    clearInterval(timeoutIntervalId);
+
+    let statusCode = 524;
+    let title = 'A Timeout Occurred';
+
+    // eslint-disable-next-line no-console
+    console.error(`aws-util-firecloud.express.bootstrap: Lambda will timeout in ${remainingTime} ms`);
+    // eslint-disable-next-line no-console
+    console.error(`aws-util-firecloud.express.bootstrap: Terminating with ${statusCode} ${title}...`);
+
+    next(undefined, { // eslint-disable-line callback-return
+      statusCode,
+      headers: {
+        'content-type': 'application/problem+json'
+      },
+      body: JSON.stringify({
+        type: 'about:blank',
+        title,
+        status: statusCode,
+        instance: getRequestInstance({ctx}),
+        renderer: 'lambda-util'
+      })
+    });
+
+    // don't process.exit()
+  }, timeoutInterval);
+
+  let clearTimeoutNext = function() {
+    clearInterval(timeoutIntervalId);
+
+    // eslint-disable-next-line fp/no-arguments
+    next(...arguments);
+  };
+
+  return clearTimeoutNext;
+};
+
 // using console.log instead of the logger on purpose
 export let bootstrap = function(fn, {pkg}) {
   return bootstrapLambda(async function(e, ctx, next) {
-    // eslint-disable-next-line no-console
-    console.log('aws-util-firecloud.express.bootstrap: Setting up timeout handler...');
+    next = setTimeoutHandler(e, ctx, next);
 
-    let timeoutInterval = 500;
-    let timeoutIntervalId = setInterval(function() {
-      let remainingTime = ctx.getRemainingTimeInMillis();
-      if (remainingTime + timeoutInterval > 1000) {
-        return;
+    let app;
+    await _.consoleLogTime(
+      'aws-util-firecloud.express.bootstrap: Creating express app...',
+      async function() {
+        app = exports.express(e, ctx, next);
       }
+    );
 
-      clearInterval(timeoutIntervalId);
+    await _.consoleLogTime(
+      'aws-util-firecloud.express.bootstrap: Setting up custom express...',
+      async function() {
+        await fn(app, e, ctx, next);
+      }
+    );
 
-      let statusCode = 524;
-      let title = 'A Timeout Occurred';
-
-      // eslint-disable-next-line no-console
-      console.error(`aws-util-firecloud.express.bootstrap: Lambda will timeout in ${remainingTime} ms`);
-      // eslint-disable-next-line no-console
-      console.error(`aws-util-firecloud.express.bootstrap: Terminating with ${statusCode} ${title}...`);
-
-      next(undefined, { // eslint-disable-line callback-return
-        statusCode,
-        headers: {
-          'content-type': 'application/problem+json'
-        },
-        body: JSON.stringify({
-          type: 'about:blank',
-          title,
-          status: statusCode,
-          instance: getRequestInstance({ctx}),
-          renderer: 'lambda-util'
-        })
-      });
-
-      // don't process.exit()
-    }, timeoutInterval);
-
-    await _.consoleLogTime('aws-util-firecloud.express.bootstrap: Running httpLambda...', async function() {
-      httpLambda(function(http, e, ctx, _next) {
-        (async function() {
-          let app;
-
-          await _.consoleLogTime(
-            'aws-util-firecloud.express.bootstrap: Creating express app...',
-            async function() {
-              app = exports.express({e});
-            }
-          );
-
-          await _.consoleLogTime(
-            'aws-util-firecloud.express.bootstrap: Setting up custom express...',
-            async function() {
-              await fn(app, e, ctx, next);
-            }
-          );
-
-          await _.consoleLogTime(
-            'aws-util-firecloud.express.bootstrap: Creating HTTP server = running request...',
-            async function() {
-              http.createServer(app);
-            }
-          );
-        })();
-      })(e, ctx, function() {
-        clearInterval(timeoutInterval);
-        // eslint-disable-next-line fp/no-arguments
-        next(...arguments);
-      });
-    });
+    await _.consoleLogTime(
+      'aws-util-firecloud.express.bootstrap: Creating HTTP server (handling request)...',
+      async function() {
+        let http = new LambdaHttp(e, ctx, next);
+        http.createServer(app);
+      }
+    );
   }, {pkg});
 };
 
