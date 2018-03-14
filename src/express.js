@@ -5,7 +5,7 @@ import bearerToken from 'express-bearer-token';
 import cors from 'cors';
 import http from 'http';
 import responseTime from 'response-time';
-import url from 'url';
+import urlLib from 'url';
 
 import {
   LambdaHttp
@@ -19,6 +19,11 @@ import {
 import {
   bootstrap as bootstrapMiddleware
 } from './express-middleware';
+
+import {
+  format as urlFormat,
+  parse as urlParse
+} from './url';
 
 export let _resAddLink = function(link) {
   let {target} = link;
@@ -111,9 +116,9 @@ export let _initExpress = function() {
     req.getSelfUrl = function() {
       return exports.getSelfUrl({req});
     };
-    req.getPageUrl = function(args) {
+    req.getPaginationUrl = function(args) {
       args.req = req;
-      return exports.getPageUrl(args);
+      return exports.getPaginationUrl(args);
     };
 
     res.addLink = _.bind(exports._resAddLink, res);
@@ -134,39 +139,23 @@ export let _xForward = function() {
   });
 };
 
-export let urlParse = function(url) {
-  return url.parse(url, true, true);
-};
-
-export let urlFormat = function(url) {
-  // eslint-disable-next-line consistent-this, no-invalid-this
-  let _ = this;
-
-  url = _.omit(url, [
-    'host',
-    'href',
-    'path',
-    'search'
-  ]);
-
-  return url;
-};
-
 export let getSelfUrl = function({req}) {
   let {env} = req.ctx;
-  let selfUrl = exports.urlParse(`${env.API_SECONDARY_BASE_URL}${req.originalUrl}`);
+  let selfUrl = urlParse(`${env.API_SECONDARY_BASE_URL}${req.originalUrl}`);
   return selfUrl;
 };
 
-export let getPageUrl = function({req, per_page, ref}) {
+export let getPaginationUrl = function({req, per_page, ref}) {
   let pageUrl = exports.getSelfUrl({req});
+
+  // FIXME use url.URL when AWS Node.js is upgraded from 6.10
   _.merge(pageUrl, {
     query: {
       per_page,
       ref
     }
   });
-  pageUrl = exports.urlParse(exports.urlFormat(pageUrl));
+  pageUrl = urlParse(urlFormat(pageUrl));
   return pageUrl;
 };
 
@@ -183,7 +172,7 @@ export let express = function(e, _ctx, _next) {
   let host = _.get(e, 'headers.Host', _.get(e, 'headers.host'));
   if (_.startsWith(host, 'api-git.')) {
     // using the api-git apigateway-domainname (ci stack)
-    let basePath = _.split(url.parse(e.path).pathname, '/')[1];
+    let basePath = _.split(urlLib.parse(e.path).pathname, '/')[1];
     app.lazyrouter();
     app.use(`/${basePath}`, app._router);
   }
