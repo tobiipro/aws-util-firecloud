@@ -197,59 +197,9 @@ export let express = function(e, _ctx, _next) {
   return app;
 };
 
-export let setTimeoutHandler = function(_e, ctx, next) {
-  // eslint-disable-next-line no-console
-  console.log('aws-util-firecloud.express.bootstrap: Setting up timeout handler...');
-
-  let timeoutInterval = 500;
-  let timeoutIntervalId = setInterval(function() {
-    let remainingTime = ctx.getRemainingTimeInMillis();
-    if (remainingTime - timeoutInterval > 1000) {
-      return;
-    }
-
-    clearInterval(timeoutIntervalId);
-
-    let statusCode = 524;
-    let title = 'A Timeout Occurred';
-
-    // eslint-disable-next-line no-console
-    console.error(`aws-util-firecloud.express.bootstrap: Lambda will timeout in ${remainingTime} ms`);
-    // eslint-disable-next-line no-console
-    console.error(`aws-util-firecloud.express.bootstrap: Terminating with ${statusCode} ${title}...`);
-
-    next(undefined, { // eslint-disable-line callback-return
-      statusCode,
-      headers: {
-        'content-type': 'application/problem+json'
-      },
-      body: JSON.stringify({
-        type: 'about:blank',
-        title,
-        status: statusCode,
-        instance: getRequestInstance({ctx}),
-        renderer: 'lambda-util'
-      })
-    });
-
-    // don't process.exit()
-  }, timeoutInterval);
-
-  let clearTimeoutNext = function() {
-    clearInterval(timeoutIntervalId);
-
-    // eslint-disable-next-line fp/no-arguments
-    next(...arguments);
-  };
-
-  return clearTimeoutNext;
-};
-
 // using console.log instead of the logger on purpose
 export let bootstrap = function(fn, {pkg}) {
   return bootstrapLambda(async function(e, ctx, next) {
-    next = setTimeoutHandler(e, ctx, next);
-
     let app;
     await _.consoleLogTime(
       'aws-util-firecloud.express.bootstrap: Creating express app...',
