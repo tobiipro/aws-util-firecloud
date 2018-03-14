@@ -106,9 +106,19 @@ export let _initExpress = function() {
     req.log = req.ctx.log;
     res.log = req.log;
     res.instance = getRequestInstance(req);
-    req.getBody = _.memoize(exports._reqGetBody.bind(req));
-    let oldSend = res.send;
+
+    req.getBody = _.memoize(_.bind(exports._reqGetBody, req));
+    req.getSelfUrl = function() {
+      return exports.getSelfUrl({req});
+    };
+    req.getPageUrl = function(args) {
+      args.req = req;
+      return exports.getPageUrl(args);
+    };
+
     res.addLink = _.bind(exports._resAddLink, res);
+
+    let oldSend = res.send;
     res.send = _.bind(exports._resSend, res, oldSend);
     res.sendError = _.bind(exports._resSendError, res);
     next();
