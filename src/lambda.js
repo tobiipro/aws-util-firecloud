@@ -7,7 +7,7 @@ import bunyanFormat from 'bunyan-format/lib/format-record';
 import os from 'os';
 
 export let awsLoggerRE =
-  / *\[AWS ([^ ]+) ([^ ]+) ([^ ]+)s ([^ ]+) retries] ([^(]+)\(([^)]+)\).*/;
+  /^ *\[AWS ([^ ]+) ([^ ]+) ([^ ]+)s ([^ ]+) retries] ([^(]+)\(((?:.|\s)+)\)[^)]*$/;
 
 export let asyncHandler = function(fn) {
   return function(...args) {
@@ -281,7 +281,13 @@ export let setupLogging = function({e, ctx}) {
         operation,
         params
       ] = exports.awsLoggerRE.exec(message).slice(1);
-      params = eval(`(${params})`); // eslint-disable-line no-eval
+
+      try {
+        // eslint-disable-next-line no-eval
+        params = eval(`(${params})`);
+      } catch (err) {
+        ctx.log.error(err);
+      }
 
       ctx.log.trace({
         aws: {
