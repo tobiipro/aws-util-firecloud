@@ -286,7 +286,11 @@ export let setupLogging = function({e, ctx}) {
         // eslint-disable-next-line no-eval
         params = eval(`(${params})`);
       } catch (err) {
-        ctx.log.error(err);
+        ctx.log.error({
+          err,
+          message,
+          params
+        });
       }
 
       ctx.log.trace({
