@@ -1,9 +1,30 @@
 import _ from 'lodash-firecloud';
 import aws from 'aws-sdk';
 
-import {
-  delay
-} from 'bluebird';
+export let getDatabaseName = function({
+  region,
+  env
+}) {
+  region = _.defaultTo(region, getRegion({env}));
+
+  let name = `${prefix}-${env.PROJECT_DOMAIN_NAME}-${region}`;
+  name = _.toLower(name);
+  name = _.replace(name, /[^a-z0-9-]/g, '_');
+  name = _.replace(name, /_+/g, '_');
+
+  return name;
+};
+
+export let getOutputBucketName = function({
+  region,
+  env
+}) {
+  region = _.defaultTo(region, getRegion({env}));
+
+  let name = `aws-athena-query-results-${env.AWS_ACCOUNT_ID}-${region}`;
+
+  return name;
+};
 
 export let pollQueryCompletedState = async function({
   athena,
@@ -13,7 +34,7 @@ export let pollQueryCompletedState = async function({
   let data = await athena.getQueryExecution({QueryExecutionId}).promise();
   let state = data.QueryExecution.Status.State;
   if (state === 'RUNNING' || state === 'QUEUED' || state === 'SUBMITTED') {
-    await delay(pollingDelay);
+    await _.sleep(pollingDelay);
 
     // eslint-disable-next-line fp/no-arguments
     return await pollQueryCompletedState(...arguments);
@@ -75,7 +96,7 @@ export let executeQuery = async function({
   let queryExecutionData = await athena.startQueryExecution(params).promise();
   let {QueryExecutionId} = queryExecutionData;
 
-  await delay(initPollingDelay);
+  await _.sleep(initPollingDelay);
   let status = await pollQueryCompletedState({
     athena,
     QueryExecutionId,
