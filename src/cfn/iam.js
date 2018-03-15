@@ -3,6 +3,10 @@ import _ from 'lodash-firecloud';
 import aws from 'aws-sdk';
 
 import {
+  getOutputBucketName as getAthenaOutputBucketName
+} from '../athena';
+
+import {
   get as getConfig
 } from '../config';
 
@@ -117,6 +121,46 @@ export let allowFullAccessToKinesisStream = function({
     ],
     Resource: [
       `arn:aws:kinesis:${env.AWS_REGION}:${AWS_ACCOUNT.ID}:stream/${StreamName}`
+    ]
+  };
+};
+
+export let allowQueryAccessToAthena = function({
+  _env
+} = {}) {
+  return {
+    Sid: `Allow query access to Athena`,
+    Effect: 'Allow',
+    Action: [
+      'athena:GetQueryExecution',
+      'athena:GetQueryResults',
+      'athena:StartQueryExecution'
+    ],
+    Resource: [
+      '*'
+    ]
+  };
+};
+
+export let allowAccessToAthenaOutputBucket = function({
+  region,
+  BucketName,
+  env
+}) {
+  BucketName =
+    _.defaultTo(BucketName, getAthenaOutputBucketName({env, region}));
+
+  return {
+    Sid: `Allow access to ${BucketName} (Athena output) bucket`,
+    Effect: 'Allow',
+    Action: [
+      's3:GetObject',
+      's3:PutObject',
+      's3:GetBucketLocation'
+    ],
+    Resource: [
+      `arn:aws:s3:::${BucketName}`,
+      `arn:aws:s3:::${BucketName}/*`
     ]
   };
 };

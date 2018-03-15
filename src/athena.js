@@ -1,13 +1,17 @@
 import _ from 'lodash-firecloud';
 import aws from 'aws-sdk';
 
+import {
+  get as getRegion
+} from './region';
+
 export let getDatabaseName = function({
   region,
   env
 }) {
   region = _.defaultTo(region, getRegion({env}));
 
-  let name = `${prefix}-${env.PROJECT_DOMAIN_NAME}-${region}`;
+  let name = `${env.ENV_NAME}-${env.PROJECT_DOMAIN_NAME}-${region}`;
   name = _.toLower(name);
   name = _.replace(name, /[^a-z0-9-]/g, '_');
   name = _.replace(name, /_+/g, '_');
