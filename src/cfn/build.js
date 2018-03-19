@@ -76,17 +76,14 @@ export let build = async function({
     _.forEach(_.pickBy(tpl.Resources), function(Resource) {
       switch (Resource.Type) {
       case 'AWS::IAM::ManagedPolicy':
+      case 'AWS::S3::BucketPolicy':
+      case 'AWS::SNS::TopicPolicy':
         _.forEach(Resource.Properties.PolicyDocument.Statement, function(Stmt) {
           Stmt.Sid = _.camelCase(Stmt.Sid);
         });
         break;
       case 'AWS::KMS::Key':
         _.forEach(Resource.Properties.KeyPolicy.Statement, function(Stmt) {
-          Stmt.Sid = _.camelCase(Stmt.Sid);
-        });
-        break;
-      case 'AWS::S3::BucketPolicy':
-        _.forEach(Resource.Properties.PolicyDocument.Statement, function(Stmt) {
           Stmt.Sid = _.camelCase(Stmt.Sid);
         });
         break;
