@@ -27,6 +27,7 @@ describe('firehose', function() {
           .mockImplementationOnce(async function({recordBatches}) {
             expect(recordBatches).toHaveLength(1);
             expect(recordBatches[0].Records).toHaveLength(1);
+            return _.sum(_.map(recordBatches, 'Records.length'));
           });
 
       await firehose.putRecords({
@@ -57,6 +58,7 @@ when batch byteSize < ${firehose.limits.batchByteSize / 1024 / 1024} MB`, async 
             expect(recordBatches).toHaveLength(2);
             expect(recordBatches[0].Records).toHaveLength(firehose.limits.batchRecord);
             expect(recordBatches[1].Records).toHaveLength(1);
+            return _.sum(_.map(recordBatches, 'Records.length'));
           });
 
       await firehose.putRecords({
@@ -87,6 +89,7 @@ when batch count < ${firehose.limits.batchRecord}`, async function() {
             expect(recordBatches).toHaveLength(2);
             expect(recordBatches[0].Records).toHaveLength(4);
             expect(recordBatches[1].Records).toHaveLength(1);
+            return _.sum(_.map(recordBatches, 'Records.length'));
           });
 
       await firehose.putRecords({
@@ -114,6 +117,7 @@ when batch count < ${firehose.limits.batchRecord}`, async function() {
           })
           .mockImplementationOnce(async function({recordBatches}) {
             expect(recordBatches).toHaveLength(0);
+            return _.sum(_.map(recordBatches, 'Records.length'));
           });
 
       let spy2 = jest.fn()
@@ -135,6 +139,38 @@ when batch count < ${firehose.limits.batchRecord}`, async function() {
 
       expect(spy).toHaveBeenCalled();
       expect(spy2).toHaveBeenCalled();
+
+      spy.mockReset();
+      spy.mockRestore();
+    });
+
+
+    it(`should make sure number of records 'in' match number of records 'out'`, async function() {
+      let byteSize = firehose.limits.recordByteSize - byteSizeOverhead + 1;
+      let records = _.times(5, function() {
+        return {
+          content: generate({byteSize})
+        };
+      });
+
+      let spy = jest.spyOn(firehose, '_putRecordBatches')
+          .mockImplementation(async function() {
+            throw new Error();
+          })
+          .mockImplementationOnce(async function() {
+            return records.length - 1; // one missing
+          });
+
+      let failed = false;
+      try {
+        await firehose.putRecords({
+          records
+        });
+      } catch (_err) {
+        failed = true;
+      }
+
+      expect(failed).toBeTruthy();
 
       spy.mockReset();
       spy.mockRestore();

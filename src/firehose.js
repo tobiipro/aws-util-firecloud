@@ -14,15 +14,20 @@ export let limits = {
   recordByteSize: 1000 * 1024
 };
 
-export let _putRecordBatches = async function({firehose, recordBatches}) {
-  if (_.isEmpty(recordBatches)) {
-    return;
+export let _putRecordBatches = async function({
+  firehose,
+  recordBatches
+}) {
+  let processedCount = 0;
+
+  // eslint-disable-next-line fp/no-loops, better/no-fors
+  for (let recordBatch of recordBatches) {
+    delete recordBatch.byteSize;
+    await firehose.putRecordBatch(recordBatch).promise();
+    processedCount = processedCount + recordBatch.Records.length;
   }
 
-  let recordBatch = recordBatches.pop();
-  delete recordBatch.byteSize;
-  await firehose.putRecordBatch(recordBatch).promise();
-  await exports._putRecordBatches(recordBatches);
+  return processedCount;
 };
 
 export let putRecords = async function({
@@ -38,6 +43,8 @@ export let putRecords = async function({
     byteSize: 0
   };
 
+  let toProcessCount = records.length;
+
   _.forEach(records, function(record) {
     let Data = JSON.stringify(record);
     Data = `${Data}\n`;
@@ -46,6 +53,7 @@ export let putRecords = async function({
     if (dataLength > exports.limits.recordByteSize) {
       ctx.log.error(`Skipping record larger than ${exports.limits.recordByteSize / 1024} KB: \
 ${dataLength / 1024} KB.`, {record});
+      toProcessCount = toProcessCount - 1;
       return;
     }
 
@@ -69,7 +77,10 @@ ${dataLength / 1024} KB.`, {record});
   recordBatches.push(recordBatch);
   _.remove(recordBatches, {byteSize: 0});
 
-  await exports._putRecordBatches({firehose, recordBatches});
+  let processedRecords = await exports._putRecordBatches({firehose, recordBatches});
+  if (processedRecords !== toProcessCount) {
+    throw new Error(`Not all records processed. Expected ${toProcessCount}, actually ${processedRecords}`);
+  }
 };
 
 export default exports;
