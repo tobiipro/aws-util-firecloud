@@ -14,7 +14,7 @@ export let getDatabaseName = function({
   let name = `${env.ENV_NAME}-${env.PROJECT_DOMAIN_NAME}-${region}`;
   name = _.toLower(name);
   name = _.replace(name, /[^a-z0-9-]/g, '_');
-  name = _.replace(name, /_+/g, '_');
+  name = _.replace(name, /-+/g, '_');
 
   return name;
 };
