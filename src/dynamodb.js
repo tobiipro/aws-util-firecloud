@@ -1,18 +1,6 @@
 import _ from 'lodash-firecloud';
 import aws from 'aws-sdk';
 
-export let getLambdaTableName = function({
-  pkg,
-  suffix = '',
-  env
-}) {
-  if (suffix) {
-    suffix = `-${suffix}`;
-  }
-
-  return `${env.ENV_NAME}-Lambda-${pkg.name}${suffix}`;
-};
-
 export let getDefaultTotalSegments = async function(TableName) {
   let db = new aws.DynamoDB();
   let {Table} = await db.describeTable({TableName}).promise();

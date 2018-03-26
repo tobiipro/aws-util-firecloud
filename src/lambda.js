@@ -355,4 +355,20 @@ export let bootstrap = function(fn, {pkg}) {
   });
 };
 
+export let getTableName = function({
+  pkg,
+  suffix = '',
+  env
+}) {
+  if (suffix) {
+    suffix = `-${suffix}`;
+  }
+
+  return `${env.ENV_NAME}-Lambda-${pkg.name}${suffix}`;
+};
+
+export let getStreamName = getTableName;
+
+export let getDeliveryStreamName = getTableName;
+
 export default exports;
