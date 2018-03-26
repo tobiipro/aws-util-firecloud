@@ -219,7 +219,7 @@ export let getStorageResources = async function({
   return partialTpl.Resources;
 };
 
-export let getPolicyStatement = async function({_env} = {}) {
+export let getPolicyStatement = function({_env} = {}) {
   let Statement = [];
 
   Statement.push({
@@ -236,7 +236,7 @@ export let getPolicyStatement = async function({_env} = {}) {
   return Statement;
 };
 
-export let getPolicy = async function({env}) {
+export let getPolicy = function({env}) {
   let Policy = {
     Type: 'AWS::IAM::ManagedPolicy',
     Properties: {
@@ -251,7 +251,7 @@ export let getPolicy = async function({env}) {
   return Policy;
 };
 
-export let getRole = async function({env}) {
+export let getRole = function({env}) {
   let Role = {
     Type: 'AWS::IAM::Role',
     Properties: {
