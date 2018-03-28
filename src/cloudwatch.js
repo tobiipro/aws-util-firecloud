@@ -83,7 +83,7 @@ export let metricsToDimensionMetrics = function(metrics) {
 export let datapointToDmDatapoint = function({dmDatapointTpl, datapoint}) {
   let dmDatapoint = _.cloneDeep(dmDatapointTpl);
 
-  datapoint.Timestamp = new Date(datapoint.timestamp).toISOString();
+  datapoint.Timestamp = new Date(datapoint.Timestamp).toISOString();
   datapoint = _.mapKeys(datapoint, function(_value, key) {
     return _.snakeCase(key);
   });
