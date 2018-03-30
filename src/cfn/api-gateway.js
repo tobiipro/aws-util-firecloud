@@ -14,7 +14,7 @@ export let addNestedApiResources = function({
   let suffix = '';
   let resourceName;
   _.forEach(nestedPathParts, function(nestedPathPart) {
-    suffix = `${suffix}${exports.pathPartToResourceName(nestedPathPart)}`;
+    suffix = `${suffix}${pathPartToResourceName(nestedPathPart)}`;
     resourceName = `${resourceNamePrefix}${suffix}Resource`;
 
     Resources[resourceName] = {

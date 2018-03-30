@@ -11,6 +11,6 @@ export let get = function({env}) {
   };
 };
 
-export let current = exports.get({env});
+export let current = get({env});
 
 export default exports;

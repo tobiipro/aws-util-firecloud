@@ -1,12 +1,12 @@
 import _ from 'lodash-firecloud';
 import env from './env';
 
-export const chinaRegions = [
+export let chinaRegions = [
   'cn-north-1',
   'cn-northwest-1'
 ];
 
-export const regions = [
+export let regions = [
   // Asia Pacific
   'ap-northeast-1',
   'ap-northeast-2',
@@ -40,16 +40,16 @@ export let get = function({env}) {
 };
 
 export let getDomain = function({region, env}) {
-  region = _.defaultTo(region, exports.get({env}));
+  region = _.defaultTo(region, get({env}));
   let domain = 'amazonaws.com';
 
-  if (_.has(exports.chinaRegions, region)) {
+  if (_.has(chinaRegions, region)) {
     domain = 'amazonaws.com.cn';
   }
 
   return domain;
 };
 
-export let current = exports.get({env});
+export let current = get({env});
 
 export default current;

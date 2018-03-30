@@ -7,7 +7,7 @@ import {
 } from './region';
 
 // https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_website_region_endpoints
-export let _hyphenRegions = [
+let _hyphenRegions = [
   'us-east-1',
   'us-west-1',
   'us-west-2',
@@ -18,7 +18,7 @@ export let _hyphenRegions = [
   'sa-east-1'
 ];
 
-export let _getBucketName = function({
+let _getBucketName = function({
   prefix,
   region,
   env
@@ -42,17 +42,17 @@ export let getAccountBucketName = function({
 }) {
   // there is one bucket per AWS account
   prefix = `${prefix}-${AWS_ACCOUNT.ID}`;
-  return exports._getBucketName({prefix, env, region});
+  return _getBucketName({prefix, env, region});
 };
 
-export let getEnvBucketName = exports._getBucketName;
+export let getEnvBucketName = _getBucketName;
 
 export let getLambdaBucketName = function({
   pkg,
   env,
   region
 }) {
-  let name = exports.getEnvBucketName({
+  let name = getEnvBucketName({
     prefix: `${pkg.name}-${env.ENV_NAME}`,
     region,
     env
@@ -62,13 +62,13 @@ export let getLambdaBucketName = function({
 };
 
 export let getBucketDomainName = function({
-  bucketName, // FIXME deprecated
-  BucketName = bucketName,
+  BucketName = bucketName, // eslint-disable-line no-use-before-define
   region,
-  env
+  env,
+  bucketName // FIXME deprecated
 }) {
   region = _.defaultTo(region, getRegion({env}));
-  let domain = exports.getWebsiteDomain({region, env});
+  let domain = getWebsiteDomain({region, env});
 
   return `${BucketName}.${domain}`;
 };
@@ -94,7 +94,7 @@ export let getWebsiteDomain = function({
   let domain = getRegionDomain({region, env});
 
   let sep = '.';
-  if (_.includes(exports._hyphenRegions, region)) {
+  if (_.includes(_hyphenRegions, region)) {
     sep = '-';
   }
 

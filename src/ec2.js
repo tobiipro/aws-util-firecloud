@@ -1,6 +1,6 @@
 import _ from 'lodash-firecloud';
 
-export const _awsInstanceTypeToArch = {
+export let awsInstanceTypeToArch = {
   't1.micro': 'PV64',
   't2.nano': 'HVM64',
   't2.micro': 'HVM64',
@@ -57,11 +57,11 @@ export const _awsInstanceTypeToArch = {
 };
 
 export let getInstanceTypeToArch = function({instanceType}) {
-  if (!_.has(_awsInstanceTypeToArch, instanceType)) {
+  if (!_.has(awsInstanceTypeToArch, instanceType)) {
     throw new Error(`Unknown instance type ${instanceType}.`);
   }
 
-  return _awsInstanceTypeToArch[instanceType];
+  return awsInstanceTypeToArch[instanceType];
 };
 
 export default exports;

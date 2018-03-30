@@ -42,7 +42,7 @@ export let reduceToDependsOn = function(acc, statement) {
       });
     }
   } else if (_.isObjectLike(statement)) {
-    acc = acc.concat(_.reduce(statement, exports.reduceToDependsOn, []));
+    acc = acc.concat(_.reduce(statement, reduceToDependsOn, []));
   }
 
   return acc;

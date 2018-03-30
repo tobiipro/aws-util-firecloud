@@ -1,5 +1,9 @@
 import _ from 'lodash-firecloud';
 
+import {
+  get as getRegion
+} from './region';
+
 export let hostedZones = {
   apigateway: {
     'us-east-2': 'ZOJJZC49E0EPZ',
@@ -104,12 +108,12 @@ export let getHostedZoneId = function({
   service
 }) {
   if (service === 'cloudfront') {
-    return exports.hostedZones[service];
+    return hostedZones[service];
   }
 
-  region = _.defaultTo(region, exports.get({env}));
+  region = _.defaultTo(region, getRegion({env}));
 
-  let hostedZoneId = exports.hostedZones[service][region];
+  let hostedZoneId = hostedZones[service][region];
   return hostedZoneId;
 };
 

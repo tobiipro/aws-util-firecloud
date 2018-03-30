@@ -8,7 +8,7 @@ export let limits = {
   recordByteSize: 1000 * 1024
 };
 
-export let _putRecordBatches = async function({
+let _putRecordBatches = async function({
   firehose,
   recordBatches
 }) {
@@ -44,15 +44,15 @@ export let putRecords = async function({
     Data = `${Data}\n`;
     let dataLength = Buffer.byteLength(Data);
 
-    if (dataLength > exports.limits.recordByteSize) {
-      ctx.log.error(`Skipping record larger than ${exports.limits.recordByteSize / 1024} KB: \
+    if (dataLength > limits.recordByteSize) {
+      ctx.log.error(`Skipping record larger than ${limits.recordByteSize / 1024} KB: \
 ${dataLength / 1024} KB.`, {record});
       toProcessCount = toProcessCount - 1;
       return;
     }
 
-    if (recordBatch.byteSize + dataLength > exports.limits.batchByteSize ||
-        recordBatch.Records.length + 1 > exports.limits.batchRecord) {
+    if (recordBatch.byteSize + dataLength > limits.batchByteSize ||
+        recordBatch.Records.length + 1 > limits.batchRecord) {
       recordBatches.push(recordBatch);
       recordBatch = {
         DeliveryStreamName,
@@ -71,7 +71,7 @@ ${dataLength / 1024} KB.`, {record});
   recordBatches.push(recordBatch);
   _.remove(recordBatches, {byteSize: 0});
 
-  let processedRecords = await exports._putRecordBatches({firehose, recordBatches});
+  let processedRecords = await _putRecordBatches({firehose, recordBatches});
   if (processedRecords !== toProcessCount) {
     throw new Error(`Not all records processed. Expected ${toProcessCount}, actually ${processedRecords}`);
   }

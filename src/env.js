@@ -15,7 +15,7 @@ export let envProxy = function({env}) {
   });
 };
 
-export let current = exports.envProxy({env: process.env});
+export let current = envProxy({env: process.env});
 
 // backward compat alias
 export let env = current;

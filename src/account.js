@@ -30,9 +30,9 @@ export let get = function({env}) {
   return accounts;
 };
 
-export let current = exports.get({env});
+export let current = get({env});
 
 // backward compat alias
-export let AWS_ACCOUNT = exports.current;
+export let AWS_ACCOUNT = current;
 
 export default current;

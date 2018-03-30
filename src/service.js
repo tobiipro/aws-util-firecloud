@@ -1,4 +1,4 @@
-export const services = [
+export let services = [
   'acm',
   'apigateway',
   'application-autoscaling',

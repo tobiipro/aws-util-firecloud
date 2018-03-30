@@ -105,7 +105,7 @@ export let add = async function({
   let [
     LAMBDA_CODE_SHA256SUM,
     LAMBDA_CODE_SHA256SUM_CORE
-  ] = await exports.getCodeChecksum({
+  ] = await getCodeChecksum({
     env,
     Code
   });
@@ -132,7 +132,7 @@ export let add = async function({
         ([
           PREV_LAMBDA_CODE_SHA256SUM,
           PREV_LAMBDA_CODE_SHA256SUM_CORE
-        ] = await exports.getCodeChecksum({
+        ] = await getCodeChecksum({
           env,
           Code: prevCode
         }));
@@ -243,7 +243,7 @@ export let getPolicy = function({env}) {
       Description: `${env.ENV_NAME}: API Lambda Policy`,
       PolicyDocument: {
         Version: '2012-10-17',
-        Statement: exports.getPolicyStatement({env})
+        Statement: getPolicyStatement({env})
       }
     }
   };

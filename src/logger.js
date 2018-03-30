@@ -1,4 +1,4 @@
-let awsLoggerRE =
+let _awsLoggerRE =
   / *\[AWS ([^ ]+) ([^ ]+) ([^ ]+)s ([^ ]+) retries] ([^(]+)\(([^)]+)\).*/;
 
 export let logger = function(message) {
@@ -9,7 +9,7 @@ export let logger = function(message) {
     retryCount,
     operation,
     params
-  ] = awsLoggerRE.exec(message).slice(1);
+  ] = _awsLoggerRE.exec(message).slice(1);
   params = eval(`(${params})`); // eslint-disable-line no-eval
 
   // eslint-disable-next-line no-console

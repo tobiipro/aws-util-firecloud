@@ -24,7 +24,7 @@ export let listAllMetrics = async function({
     return _.isFunction(iteratee) ? undefined : Metrics;
   }
 
-  return exports.listAllMetrics({Token: NextToken, Metrics});
+  return listAllMetrics({Token: NextToken, Metrics});
 };
 
 /*

@@ -34,12 +34,12 @@ export let scanWithBackticks = function(args) {
 export let dcScan = async function(args, iteratee) {
   let dc = new aws.DynamoDB.DocumentClient();
 
-  args = exports.scanWithBackticks(args);
+  args = scanWithBackticks(args);
   // NOTE: we disable parallel scanning for now
   // until we reach >2GB dynamodb tables
   // args.TotalSegments =
   //   _.defaultTo(args.TotalSegments,
-  //   await exports.getDefaultTotalSegments(args.TableName));
+  //   await getDefaultTotalSegments(args.TableName));
   args.TotalSegments = 1;
   args.TotalSegments = _.max([1, args.TotalSegments]);
 

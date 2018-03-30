@@ -25,7 +25,7 @@ import {
   parse as urlParse
 } from './url';
 
-export let _resAddLink = function(link) {
+let _resAddLink = function(link) {
   let {target} = link;
   delete link.target;
   let linkStr = [`<${target}>`];
@@ -40,7 +40,7 @@ export let _resAddLink = function(link) {
   this._headers.link.push(linkStr);
 };
 
-export let _resSend = function(oldSend, body, mediaType) {
+let _resSend = function(oldSend, body, mediaType) {
   this.send = oldSend;
 
   if (mediaType) {
@@ -65,7 +65,7 @@ export let _resSend = function(oldSend, body, mediaType) {
   return this.send(body);
 };
 
-export let _resSendError = function(status, extensions = {}) {
+let _resSendError = function(status, extensions = {}) {
   this.status(status);
 
   let contentType = 'application/problem+json';
@@ -83,7 +83,7 @@ export let _resSendError = function(status, extensions = {}) {
   return err;
 };
 
-export let _reqGetBody = function() {
+let _reqGetBody = function() {
   let {body} = this;
   try {
     if (/[/+]json$/.test(this.get('content-type'))) {
@@ -106,31 +106,31 @@ export let _reqGetBody = function() {
   return body;
 };
 
-export let _initExpress = function() {
+let _initExpress = function() {
   return bootstrapMiddleware(async function(req, res, next) {
     req.log = req.ctx.log;
     res.log = req.log;
     res.instance = getRequestInstance(req);
 
-    req.getBody = _.memoize(_.bind(exports._reqGetBody, req));
+    req.getBody = _.memoize(_.bind(_reqGetBody, req));
     req.getSelfUrl = function() {
-      return exports.getSelfUrl({req});
+      return getSelfUrl({req});
     };
     req.getPaginationUrl = function(args) {
       args.req = req;
-      return exports.getPaginationUrl(args);
+      return getPaginationUrl(args);
     };
 
-    res.addLink = _.bind(exports._resAddLink, res);
+    res.addLink = _.bind(_resAddLink, res);
 
     let oldSend = res.send;
-    res.send = _.bind(exports._resSend, res, oldSend);
-    res.sendError = _.bind(exports._resSendError, res);
+    res.send = _.bind(_resSend, res, oldSend);
+    res.sendError = _.bind(_resSendError, res);
     next();
   });
 };
 
-export let _xForward = function() {
+let _xForward = function() {
   return bootstrapMiddleware(async function(req, _res, next) {
     req.headers = _.mapKeys(req.headers, function(_value, key) {
       return _.replace(key, /^X-Forward-/, '');
@@ -145,13 +145,19 @@ export let getSelfUrl = function({req}) {
   return selfUrl;
 };
 
-export let getPaginationUrl = function({req, per_page, ref}) {
-  let pageUrl = exports.getSelfUrl({req});
+export let getPaginationUrl = function({
+  req,
+  perPage = per_page, // eslint-disable-line no-use-before-define
+  ref,
+  // FIXME deprecated
+  per_page // eslint-disable-line camelcase
+}) {
+  let pageUrl = getSelfUrl({req});
 
   // FIXME use url.URL when AWS Node.js is upgraded from 6.10
   _.merge(pageUrl, {
     query: {
-      per_page,
+      per_page: perPage,
       ref
     }
   });
@@ -166,7 +172,6 @@ export let express = function(e, _ctx, _next) {
   app.disable('etag');
   app.enable('trust proxy');
   app.set('json spaces', 2);
-  app.validate = exports.validate;
 
   // FIXME hack!!!
   let host = _.get(e, 'headers.Host', _.get(e, 'headers.host'));
@@ -186,8 +191,8 @@ export let express = function(e, _ctx, _next) {
     maxAge: 24 * 60 * 60 // 24 hours
   }));
   app.use(bearerToken());
-  app.use(exports._initExpress());
-  app.use(exports._xForward());
+  app.use(_initExpress());
+  app.use(_xForward());
 
   app.use(bootstrapMiddleware(async function(_req, res, next) {
     res.set('cache-control', 'max-age=0, no-store');
@@ -204,7 +209,7 @@ export let bootstrap = function(fn, {pkg}) {
     await _.consoleLogTime(
       'aws-util-firecloud.express.bootstrap: Creating express app...',
       async function() {
-        app = exports.express(e, ctx, next);
+        app = express(e, ctx, next);
       }
     );
 
