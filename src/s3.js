@@ -62,10 +62,9 @@ export let getLambdaBucketName = function({
 };
 
 export let getBucketDomainName = function({
-  BucketName = bucketName, // eslint-disable-line no-use-before-define
+  BucketName,
   region,
-  env,
-  bucketName // FIXME deprecated
+  env
 }) {
   region = _.defaultTo(region, getRegion({env}));
   let domain = getWebsiteDomain({region, env});
