@@ -51,7 +51,7 @@ export let xForwardMethodHeaders = function({
   let reqParams = Method.Properties.RequestParameters;
   let integrationReqParams = Method.Properties.Integration.RequestParameters;
 
-  _.forforE(headers, function(header) {
+  _.forEach(headers, function(header) {
     let methodReqHeader = `method.request.header.${header}`;
     let integrationReqHeader = `integration.request.header.X-Forward-${header}`;
 
