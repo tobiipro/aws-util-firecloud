@@ -14,11 +14,18 @@ export let get = function({env}) {
 
     let account = {
       NAME,
-      ID,
-      // using env._ because the vars are optional
-      CI_USER: env._[`${prefix}_CI_USER`],
-      NS: _.split(_.defaultTo(env._[`${prefix}_NS`], ''), ',')
+      ID
     };
+
+    let prefixedEnvVars = _.pickBy(env._, function(_value, key) {
+      return _.startsWith(key, `${prefix}_`);
+    });
+    prefixedEnvVars = _.mapKeys(prefixedEnvVars, function(_value, key) {
+      return _.replace(key, new RegExp(`^${prefix}_`), '');
+    });
+    _.merge(account, prefixedEnvVars);
+
+    account.NS = _.split(_.defaultTo(account.NS, ''), ',');
 
     accounts[ID] = account;
     accounts[prefix] = account;
