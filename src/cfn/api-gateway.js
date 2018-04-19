@@ -10,7 +10,7 @@ export let addNestedApiResources = function({
   let nestedPathParts = (function() {
     let slashTrimmedLocation = _.replace(location, /^\/|\/$/, '');
     return _.split(slashTrimmedLocation, '/');
-  });
+  })();
   let suffix = '';
   let resourceName;
   _.forEach(nestedPathParts, function(nestedPathPart) {
