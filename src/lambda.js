@@ -6,6 +6,10 @@ import bunyan from 'bunyan';
 import bunyanFormat from 'bunyan-format/lib/format-record';
 import os from 'os';
 
+import {
+  getEnvBucketName
+} from './s3';
+
 export let awsLoggerRE =
   /^ *\[AWS ([^ ]+) ([^ ]+) ([^ ]+)s ([^ ]+) retries] ([^(]+)\(((?:.|\n)+)\)[^)]*$/;
 
@@ -353,6 +357,20 @@ export let bootstrap = function(fn, {pkg}) {
       );
     }
   });
+};
+
+export let getBucketName = function({
+  env,
+  pkg,
+  region
+}) {
+  let name = getEnvBucketName({
+    env,
+    prefix: `${pkg.name}-${env.ENV_NAME}`,
+    region
+  });
+
+  return name;
 };
 
 export let getTableName = function({
