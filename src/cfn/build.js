@@ -35,6 +35,10 @@ export let build = async function({
     }
   }
 
+  if (!partial) {
+    incs.unshift('./tpl/core.cfn.js');
+  }
+
   let vars = {};
   if (fs.existsSync(`${dir}/vars.js`)) {
     // eslint-disable-next-line global-require
