@@ -35,7 +35,7 @@ export let build = async function({
     }
   }
 
-  if (!partial) {
+  if (!partial && fs.existsSync('./tpl/core.cfn.js')) {
     incs.unshift('./tpl/core.cfn.js');
   }
 
