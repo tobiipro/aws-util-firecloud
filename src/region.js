@@ -50,6 +50,18 @@ export let getDomain = function({region, env}) {
   return domain;
 };
 
-export let current = get({env});
+export let current;
 
-export default current;
+// lazy init
+// eslint-disable-next-line fp/no-proxy
+export let currentProxy = new Proxy({}, {
+  get: function(_target, property, _receiver) {
+    if (!current) {
+      current = get({env});
+    }
+
+    return current[property];
+  }
+});
+
+export default currentProxy;

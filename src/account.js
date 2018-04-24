@@ -37,9 +37,18 @@ export let get = function({env}) {
   return accounts;
 };
 
-export let current = get({env});
+export let current;
 
-// backward compat alias
-export let AWS_ACCOUNT = current;
+// lazy init
+// eslint-disable-next-line fp/no-proxy
+export let currentProxy = new Proxy({}, {
+  get: function(_target, property, _receiver) {
+    if (!current) {
+      current = get({env});
+    }
 
-export default current;
+    return current[property];
+  }
+});
+
+export default currentProxy;
