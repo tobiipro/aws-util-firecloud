@@ -58,7 +58,7 @@ export let queryResultToObjectsArray = function(queryResult) {
     let rowObject = {};
 
     _.forEach(columns, function(column, columnIndex) {
-      let value = row.Data[columnIndex].VarCharValue;
+      let value = _.get(row, `Data[${columnIndex}].VarCharValue`);
 
       if (!_.isUndefined(value)) {
         switch (_.toLower(column.Type)) {
