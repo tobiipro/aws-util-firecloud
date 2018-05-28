@@ -86,6 +86,31 @@ export let queryResultToObjectsArray = function(queryResult) {
   return rowsObjects;
 };
 
+export let queryResultToText = function(queryResult) {
+  let rows = queryResult.ResultSet.Rows;
+  let lines = _.map(rows, 'Data[0].VarCharValue');
+  return _.join(lines, '\n');
+};
+
+export let queryResultIsText = function(queryResult) {
+  let columnInfo = queryResult.ResultSet.ResultSetMetadata.ColumnInfo;
+  if (columnInfo.length === 1 &&
+    columnInfo[0].Name === 'createtab_stmt' &&
+    columnInfo[0].Label === 'createtab_stmt' &&
+    columnInfo[0].Type === 'string') {
+    return true;
+  }
+
+  if (columnInfo.length === 1 &&
+    columnInfo[0].Name === 'tab_name' &&
+    columnInfo[0].Label === 'tab_name' &&
+    columnInfo[0].Type === 'string') {
+    return true;
+  }
+
+  return false;
+};
+
 export let executeQuery = async function({
   athena = new aws.Athena({apiVersion: '2017-05-18'}),
   params = {
@@ -112,6 +137,11 @@ export let executeQuery = async function({
   }
 
   let queryResult = await athena.getQueryResults({QueryExecutionId}).promise();
+
+  if (queryResultIsText(queryResult)) {
+    return queryResultToText(queryResult);
+  }
+
   let resultObject = queryResultToObjectsArray(queryResult);
   resultObject = _.drop(resultObject, 1); // first row is column names
   return resultObject;
