@@ -92,23 +92,26 @@ export let queryResultToText = function(queryResult) {
   return _.join(lines, '\n');
 };
 
-export let queryResultIsText = function(queryResult) {
+export let queryResultIsShowResult = function(queryResult) {
+  let showColumnSets = [
+    ['createtab_stmt'],
+    ['tab_name'],
+    ['database_name'],
+    ['partition'],
+    ['field'],
+    ['prpt_name', 'prpt_value']
+  ];
+
   let columnInfo = queryResult.ResultSet.ResultSetMetadata.ColumnInfo;
-  if (columnInfo.length === 1 &&
-    columnInfo[0].Name === 'createtab_stmt' &&
-    columnInfo[0].Label === 'createtab_stmt' &&
-    columnInfo[0].Type === 'string') {
-    return true;
-  }
 
-  if (columnInfo.length === 1 &&
-    columnInfo[0].Name === 'tab_name' &&
-    columnInfo[0].Label === 'tab_name' &&
-    columnInfo[0].Type === 'string') {
-    return true;
-  }
-
-  return false;
+  return _.some(showColumnSets, function(columnSet) {
+    return columnInfo.length === columnSet.length &&
+      _.every(columnInfo, function(column) {
+        return column.Name === column.Label &&
+               column.Type === 'string' &&
+               _.includes(columnSet, column.Name);
+      });
+  });
 };
 
 export let executeQuery = async function({
@@ -138,7 +141,7 @@ export let executeQuery = async function({
 
   let queryResult = await athena.getQueryResults({QueryExecutionId}).promise();
 
-  if (queryResultIsText(queryResult)) {
+  if (queryResultIsShowResult(queryResult)) {
     return queryResultToText(queryResult);
   }
 
