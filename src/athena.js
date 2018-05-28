@@ -108,8 +108,8 @@ export let queryResultIsShowResult = function(queryResult) {
     return columnInfo.length === columnSet.length &&
       _.every(columnInfo, function(column) {
         return column.Name === column.Label &&
-               column.Type === 'string' &&
-               _.includes(columnSet, column.Name);
+              column.Type === 'string' &&
+              _.includes(columnSet, column.Name);
       });
   });
 };
