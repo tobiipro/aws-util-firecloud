@@ -53,12 +53,13 @@ export let metricsToDimensionMetrics = function(metrics) {
   _.forEach(metrics, function(metric) {
     _.forEach(metric.Dimensions, function(dimension) {
       let dimensionMetric = _.cloneDeep(metric);
-      _.unset(metric, 'Dimensions');
+      _.unset(dimensionMetric, 'Dimensions');
       dimensionMetric.Dimension = dimension;
       dimensionMetrics.push(dimensionMetric);
     });
   });
 
+  dimensionMetrics = _.uniqBy(dimensionMetrics, _.unary(JSON.stringify));
   return dimensionMetrics;
 };
 
