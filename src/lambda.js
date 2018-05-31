@@ -364,13 +364,11 @@ export let getBucketName = function({
   pkg,
   region
 }) {
-  let name = getEnvBucketName({
+  return getEnvBucketName({
     env,
-    prefix: `${pkg.name}-${env.ENV_NAME}`,
+    prefix: pkg.name,
     region
   });
-
-  return name;
 };
 
 export let getTableName = function({

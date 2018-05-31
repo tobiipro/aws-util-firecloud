@@ -35,30 +35,33 @@ let _getBucketName = function({
   return name;
 };
 
+// one per whole project (like builds- or infra-)
+export let getProjectBucketName = function({
+  prefix,
+  region,
+  env
+}) {
+  return _getBucketName({prefix, env, region});
+};
+
+// one per AWS account (like logs- or config-)
 export let getAccountBucketName = function({
   prefix,
   region,
   env
 }) {
-  // there is one bucket per AWS account
   prefix = `${prefix}-${AWS_ACCOUNT.ID}`;
   return _getBucketName({prefix, env, region});
 };
 
-export let getEnvBucketName = _getBucketName;
-
-export let getLambdaBucketName = function({
-  pkg,
+// one per ENV_NAME (like lambda buckets)
+export let getEnvBucketName = function({
+  prefix,
   env,
   region
 }) {
-  let name = getEnvBucketName({
-    prefix: `${pkg.name}-${env.ENV_NAME}`,
-    region,
-    env
-  });
-
-  return name;
+  prefix = `${prefix}-${env.ENV_NAME}`;
+  return _getBucketName({prefix, env, region});
 };
 
 export let getBucketDomainName = function({
