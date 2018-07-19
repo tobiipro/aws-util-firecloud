@@ -6,10 +6,6 @@ import bunyan from 'bunyan';
 import bunyanFormat from 'bunyan-format/lib/format-record';
 import os from 'os';
 
-import {
-  getEnvBucketName
-} from './s3';
-
 export let awsLoggerRE =
   /^ *\[AWS ([^ ]+) ([^ ]+) ([^ ]+)s ([^ ]+) retries] ([^(]+)\(((?:.|\n)+)\)[^)]*$/;
 
@@ -358,33 +354,5 @@ export let bootstrap = function(fn, {pkg}) {
     }
   });
 };
-
-export let getBucketName = function({
-  env,
-  pkg,
-  region
-}) {
-  return getEnvBucketName({
-    env,
-    prefix: pkg.name,
-    region
-  });
-};
-
-export let getTableName = function({
-  pkg,
-  suffix = '',
-  env
-}) {
-  if (suffix) {
-    suffix = `-${suffix}`;
-  }
-
-  return `${env.ENV_NAME}-Lambda-${pkg.name}${suffix}`;
-};
-
-export let getStreamName = getTableName;
-
-export let getDeliveryStreamName = getTableName;
 
 export default exports;
