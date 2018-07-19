@@ -35,6 +35,7 @@ export let build = async function({
     }
   }
 
+  // FIXME: remove this when it's safe, check with Gazeshare team
   if (!partial && fs.existsSync('./tpl/core.cfn.js')) {
     incs.unshift('./tpl/core.cfn.js');
   }
