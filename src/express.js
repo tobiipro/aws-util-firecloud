@@ -202,25 +202,24 @@ export let express = function(e, _ctx, _next) {
   return app;
 };
 
-// using console.log instead of the logger on purpose
 export let bootstrap = function(fn, {pkg}) {
   return bootstrapLambda(async function(e, ctx, next) {
     let app;
-    await _.consoleLogTime(
+    await ctx.trackTime(
       'aws-util-firecloud.express.bootstrap: Creating express app...',
       async function() {
         app = express(e, ctx, next);
       }
     );
 
-    await _.consoleLogTime(
+    await ctx.trackTime(
       'aws-util-firecloud.express.bootstrap: Setting up custom express...',
       async function() {
         await fn(app, e, ctx, next);
       }
     );
 
-    await _.consoleLogTime(
+    await ctx.trackTime(
       'aws-util-firecloud.express.bootstrap: Creating HTTP server (handling request)...',
       async function() {
         let http = new LambdaHttp(e, ctx, next);

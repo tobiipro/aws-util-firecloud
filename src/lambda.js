@@ -6,73 +6,99 @@ import bunyan from 'bunyan';
 import bunyanFormat from 'bunyan-format/lib/format-record';
 import os from 'os';
 
-export let awsLoggerRE =
-  /^ *\[AWS ([^ ]+) ([^ ]+) ([^ ]+)s ([^ ]+) retries] ([^(]+)\(((?:.|\n)+)\)[^)]*$/;
+let _setupTrackTime = function({ctx}) {
+  ctx.trackTime = async function(label, fn) {
+    let now = new Date();
 
-export let asyncHandler = function(fn) {
-  return function(...args) {
-    let next = args[args.length - 1];
-    fn(...args).catch(next);
-  };
-};
+    let maybeThenable = fn();
+    if (_.isFunction(maybeThenable.then)) {
+      await maybeThenable;
+    }
 
-export let inspect = async function({_e, ctx}) {
-  if (ctx.log.level() > ctx.log.resolveLevel('TRACE')) {
-    return;
-  }
-
-  // Added in: v6.1.0
-  // let cpuUsage = process.cpuUsage(inspect.previousCpuUsage);
-  // inspect.previousCpuUsage = cpuUsage;
-
-  let inspection = {
-    process: _.merge(_.pick(process, [
-      'arch',
-      'argv',
-      'argv0',
-      'config',
-      'env',
-      'execArgv',
-      'pid',
-      'platform',
-      'release',
-      'title',
-      'version',
-      'versions'
-    ]), {
-      // cpuUsage,
-      memoryUsage: process.memoryUsage(),
-      uptime: process.uptime()
-    }),
-    os: _.mapValues(os, function(fn) {
-      if (!_.isFunction(fn)) {
-        return;
-      }
-
-      return fn();
-    })
+    ctx.trackTime.reports.push(`[${now.toISOString()}]: ${label} started and took ${new Date() - now}ms`);
   };
 
-  let {previousMemoryUsage} = inspect;
-  if (previousMemoryUsage) {
-    inspection.process.memoryUsageDiff = {
-      rss: previousMemoryUsage.rss - inspection.process.memoryUsage.rss,
-      heapUsed: previousMemoryUsage.heapUsed - inspection.process.memoryUsage.heapUsed,
-      time: previousMemoryUsage.uptime - inspection.process.uptime
-    };
-    inspect.previousMemoryUsage = {
-      rss: inspect.process.memoryUsage.rss,
-      heapUsed: inspect.process.memoryUsage.heapUsed,
-      uptime: inspect.process.uptime
-    };
-  }
-
-  ctx.log.trace(inspection, 'Inspection');
+  ctx.trackTime.reports = [];
 };
 
-export let mergeEnvCtx = async function({e, ctx, pkg}) {
-  console.log('mergeEnvCtx: Get env from event and context...');
+let _getEnvCtxMemoizeResolver = function({ctx, tags = ['default']}) {
+  let {env} = ctx;
 
+  return [
+    env.AWS_ACCOUNT_ID,
+    env.AWS_LAMBDA_FUNCTION_ALIAS,
+    env.AWS_LAMBDA_FUNCTION_NAME,
+    env.AWS_REGION,
+    env.ENV_NAME
+  ].concat(tags).join();
+};
+
+let _getEnvCtxConfigBucket = async function({ctx, tags}) {
+  let {env} = ctx;
+  // eslint-disable-next-line fp/no-arguments
+  let cacheKey = _getEnvCtxMemoizeResolver(...arguments);
+  let s3 = new aws.S3({
+    region: env.AWS_REGION,
+    signatureVersion: 'v4'
+  });
+
+  let Body;
+  let ETag;
+
+  await ctx.trackTime('_getEnvCtx: Fetching env ctx...', async function() {
+    let result = await s3.getObject({
+      Bucket: env.S3_CONFIG_BUCKET,
+      Key: `${env.ENV_NAME}.json`,
+      IfMatch: (_.defaultTo(_getEnvCtxConfigBucket.oldCache[cacheKey], {})).etag
+    }).promise();
+
+    ({
+      Body,
+      ETag
+    } = result);
+  });
+  Body = JSON.parse(Body.toString());
+
+  let newCtx = {};
+  _.forEach(tags, function(tag) {
+    newCtx = _.merge(newCtx, _.defaultTo(Body[tag], {}));
+  });
+
+  return {
+    ctx: newCtx,
+    etag: ETag,
+    lastFetched: Date.now()
+  };
+};
+_getEnvCtxConfigBucket = _.memoize(_getEnvCtxConfigBucket, _getEnvCtxMemoizeResolver);
+_getEnvCtxConfigBucket.oldCache = new _.memoize.Cache();
+
+let _getEnvCtx = async function({ctx, tags = ['default']}) { // eslint-disable-line no-unused-vars
+  // eslint-disable-next-line fp/no-arguments
+  let cacheKey = _getEnvCtxMemoizeResolver(...arguments);
+  let cachedResult = _getEnvCtxConfigBucket.cache[cacheKey];
+  cachedResult = _.defaultTo(cachedResult, _getEnvCtxConfigBucket.oldCache[cacheKey]);
+  cachedResult = _.defaultTo(cachedResult, {});
+  let aMinuteAgo = Date.now() - 60 * 1000;
+
+  if (!cachedResult.ctx) {
+    // console.log('getEnvCtx: Waiting for new env ctx...');
+    // eslint-disable-next-line fp/no-arguments
+    cachedResult = await _getEnvCtxConfigBucket(...arguments);
+  }
+
+  if (cachedResult.lastFetched < aMinuteAgo) {
+    // console.log('getEnvCtx: Refreshing env ctx for next call...');
+    _getEnvCtxConfigBucket.oldCache.set(cacheKey, _getEnvCtxConfigBucket.cache[cacheKey]);
+    _getEnvCtxConfigBucket.cache.delete(cacheKey);
+    // eslint-disable-next-line fp/no-arguments
+    _getEnvCtxConfigBucket(...arguments);
+  }
+
+  return cachedResult.ctx;
+};
+
+let _mergeEnvCtx = async function({e, ctx, pkg}) {
   let AWS_ACCOUNT_ID =
       _.split(_.get(ctx, 'invokedFunctionArn', ''), ':')[4];
   AWS_ACCOUNT_ID =
@@ -115,9 +141,7 @@ export let mergeEnvCtx = async function({e, ctx, pkg}) {
     env: process.env
   });
 
-  console.log('mergeEnvCtx: Get env ctx from config bucket...');
-
-  let envCtx = await getEnvCtx({
+  let envCtx = await _getEnvCtx({
     ctx,
     tags: [
       'lambdas',
@@ -127,86 +151,11 @@ export let mergeEnvCtx = async function({e, ctx, pkg}) {
   _.defaultsDeep(ctx, envCtx);
 };
 
-export let getEnvCtxResolver = function({ctx, tags = ['default']}) {
-  let {env} = ctx;
 
-  return [
-    env.AWS_ACCOUNT_ID,
-    env.AWS_LAMBDA_FUNCTION_ALIAS,
-    env.AWS_LAMBDA_FUNCTION_NAME,
-    env.AWS_REGION,
-    env.ENV_NAME
-  ].concat(tags).join();
-};
+let _setupLogging = function({e, ctx}) {
+  let awsLoggerRE =
+      /^ *\[AWS ([^ ]+) ([^ ]+) ([^ ]+)s ([^ ]+) retries] ([^(]+)\(((?:.|\n)+)\)[^)]*$/;
 
-export let getEnvCtx = async function({ctx, tags = ['default']}) { // eslint-disable-line no-unused-vars
-  // eslint-disable-next-line fp/no-arguments
-  let cacheKey = getEnvCtxResolver(...arguments);
-  let cachedResult = _getEnvCtx.cache[cacheKey];
-  cachedResult = _.defaultTo(cachedResult, _getEnvCtx.oldCache[cacheKey]);
-  cachedResult = _.defaultTo(cachedResult, {});
-  let aMinuteAgo = Date.now() - 60 * 1000;
-
-  if (!cachedResult.ctx) {
-    console.log('getEnvCtx: Waiting for new env ctx...');
-    // eslint-disable-next-line fp/no-arguments
-    cachedResult = await _getEnvCtx(...arguments);
-  }
-
-  if (cachedResult.lastFetched < aMinuteAgo) {
-    console.log('getEnvCtx: Refreshing env ctx for next call...');
-    _getEnvCtx.oldCache.set(cacheKey, _getEnvCtx.cache[cacheKey]);
-    _getEnvCtx.cache.delete(cacheKey);
-    // eslint-disable-next-line fp/no-arguments
-    _getEnvCtx(...arguments);
-  }
-
-  console.log('getEnvCtx: Return env ctx...');
-  return cachedResult.ctx;
-};
-
-let _getEnvCtx = async function({ctx: {env}, tags}) {
-  // eslint-disable-next-line fp/no-arguments
-  let cacheKey = getEnvCtxResolver(...arguments);
-  let s3 = new aws.S3({
-    region: env.AWS_REGION,
-    signatureVersion: 'v4'
-  });
-
-  let Body;
-  let ETag;
-
-  await _.consoleLogTime('_getEnvCtx: Fetching env ctx...', async function() {
-    let result = await s3.getObject({
-      Bucket: env.S3_CONFIG_BUCKET,
-      Key: `${env.ENV_NAME}.json`,
-      IfMatch: (_.defaultTo(_getEnvCtx.oldCache[cacheKey], {})).etag
-    }).promise();
-
-    ({
-      Body,
-      ETag
-    } = result);
-  });
-  Body = JSON.parse(Body.toString());
-
-  let ctx = {};
-
-  console.log('_getEnvCtx: Merging env ctx...');
-  _.forEach(tags, function(tag) {
-    ctx = _.merge(ctx, _.defaultTo(Body[tag], {}));
-  });
-
-  return {
-    ctx,
-    etag: ETag,
-    lastFetched: Date.now()
-  };
-};
-_getEnvCtx = _.memoize(_getEnvCtx, getEnvCtxResolver);
-_getEnvCtx.oldCache = new _.memoize.Cache();
-
-export let setupLogging = function({e, ctx}) {
   let streams = [{
     stream: process.stdout
   }];
@@ -308,36 +257,98 @@ export let setupLogging = function({e, ctx}) {
   };
 };
 
+let _inspect = async function({_e, ctx}) {
+  if (ctx.log.level() > ctx.log.resolveLevel('TRACE')) {
+    return;
+  }
+
+  // Added in: v6.1.0
+  // let cpuUsage = process.cpuUsage(inspect.previousCpuUsage);
+  // inspect.previousCpuUsage = cpuUsage;
+
+  let inspection = {
+    process: _.merge(_.pick(process, [
+      'arch',
+      'argv',
+      'argv0',
+      'config',
+      'env',
+      'execArgv',
+      'pid',
+      'platform',
+      'release',
+      'title',
+      'version',
+      'versions'
+    ]), {
+      // cpuUsage,
+      memoryUsage: process.memoryUsage(),
+      uptime: process.uptime()
+    }),
+    os: _.mapValues(os, function(fn) {
+      if (!_.isFunction(fn)) {
+        return;
+      }
+
+      return fn();
+    })
+  };
+
+  let {previousMemoryUsage} = _inspect;
+  if (previousMemoryUsage) {
+    inspection.process.memoryUsageDiff = {
+      rss: previousMemoryUsage.rss - inspection.process.memoryUsage.rss,
+      heapUsed: previousMemoryUsage.heapUsed - inspection.process.memoryUsage.heapUsed,
+      time: previousMemoryUsage.uptime - inspection.process.uptime
+    };
+    _inspect.previousMemoryUsage = {
+      rss: _inspect.process.memoryUsage.rss,
+      heapUsed: _inspect.process.memoryUsage.heapUsed,
+      uptime: _inspect.process.uptime
+    };
+  }
+
+  ctx.log.trace(inspection, 'Inspection');
+};
+
 export let getRequestInstance = function(req) {
   let {ctx} = req;
   return `${ctx.invokedFunctionArn}#request:${ctx.awsRequestId}`;
 };
 
-// using console.log instead of the logger on purpose
+export let asyncHandler = function(fn) {
+  return function(...args) {
+    let next = args[args.length - 1];
+    fn(...args).catch(next);
+  };
+};
+
 export let bootstrap = function(fn, {pkg}) {
   return asyncHandler(async function(e, ctx, next) {
-    await _.consoleLogTime(
+    _setupTrackTime({ctx});
+
+    await ctx.trackTime(
       'aws-util-firecloud.lambda.bootstrap: Merging env ctx...',
       async function() {
-        await mergeEnvCtx({e, ctx, pkg});
+        await _mergeEnvCtx({e, ctx, pkg});
       }
     );
 
-    await _.consoleLogTime(
+    await ctx.trackTime(
       'aws-util-firecloud.lambda.bootstrap: Setting up logger...',
       async function() {
-        setupLogging({e, ctx});
+        _setupLogging({e, ctx});
       }
     );
 
-    await _.consoleLogTime(
+    await ctx.trackTime(
       'aws-util-firecloud.lambda.bootstrap: Inspecting...',
       async function() {
-        await inspect({e, ctx});
+        await _inspect({e, ctx});
       }
     );
 
-    await _.consoleLogTime(
+    await ctx.trackTime(
       'aws-util-firecloud.lambda.bootstrap: Running fn...',
       async function() {
         await fn(e, ctx, next);
@@ -345,13 +356,18 @@ export let bootstrap = function(fn, {pkg}) {
     );
 
     if (global && global.gc) {
-      await _.consoleLogTime(
+      await ctx.trackTime(
         'aws-util-firecloud.lambda.bootstrap: Garbage collection on demand...',
         async function() {
           global.gc();
         }
       );
     }
+
+    ctx.log.debug(`Execution time report:`);
+    _.forEach(ctx.trackTime.reports, function(report) {
+      ctx.log.debug(report);
+    });
   });
 };
 
