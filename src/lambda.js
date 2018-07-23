@@ -47,7 +47,7 @@ let _getEnvCtxConfigBucket = async function({ctx, tags}) {
   let Body;
   let ETag;
 
-  await ctx.trackTime('_getEnvCtx: Fetching env ctx...', async function() {
+  await ctx.trackTime('aws-util-firecloud.lambda._getEnvCtxConfigBucket: Fetching env ctx...', async function() {
     let result = await s3.getObject({
       Bucket: env.S3_CONFIG_BUCKET,
       Key: `${env.ENV_NAME}.json`,
