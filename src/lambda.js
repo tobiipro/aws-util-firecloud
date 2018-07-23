@@ -8,14 +8,16 @@ import os from 'os';
 
 let _setupTrackTime = function({ctx}) {
   ctx.trackTime = async function(label, fn) {
-    let now = new Date();
+    let start = new Date();
+    ctx.trackTime.reports.push(`[${start.toISOString()}]: ${label} started...`);
 
     let maybeThenable = fn();
     if (_.isFunction(maybeThenable.then)) {
       await maybeThenable;
     }
 
-    ctx.trackTime.reports.push(`[${now.toISOString()}]: ${label} started and took ${new Date() - now}ms`);
+    let finish = new Date();
+    ctx.trackTime.reports.push(`[${finish.toISOString()}]: ${label} took ${finish - start}ms`);
   };
 
   ctx.trackTime.reports = [];
