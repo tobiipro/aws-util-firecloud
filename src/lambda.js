@@ -348,6 +348,7 @@ export let bootstrap = function(fn, {pkg}) {
       }
     );
 
+    ctx.log.info('lambda.bootstrap: Running fn...');
     await ctx.trackTime(
       'aws-util-firecloud.lambda.bootstrap: Running fn...',
       async function() {

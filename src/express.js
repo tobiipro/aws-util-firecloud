@@ -219,6 +219,7 @@ export let bootstrap = function(fn, {pkg}) {
       }
     );
 
+    ctx.log.info('express.bootstrap: Creating HTTP server (handling request)');
     await ctx.trackTime(
       'aws-util-firecloud.express.bootstrap: Creating HTTP server (handling request)...',
       async function() {
