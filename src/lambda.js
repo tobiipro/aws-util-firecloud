@@ -12,12 +12,13 @@ let _setupTrackTime = function({ctx}) {
     ctx.trackTime.reports.push(`[${start.toISOString()}]: ${label} started...`);
 
     let maybeThenable = fn();
-    if (_.isFunction(maybeThenable.then)) {
-      await maybeThenable;
+    if (maybeThenable && _.isFunction(maybeThenable.then)) {
+      maybeThenable = await maybeThenable;
     }
 
     let finish = new Date();
     ctx.trackTime.reports.push(`[${finish.toISOString()}]: ${label} took ${finish - start}ms`);
+    return maybeThenable;
   };
 
   ctx.trackTime.reports = [];
@@ -94,7 +95,7 @@ let _getEnvCtx = async function({ctx, tags = ['default']}) { // eslint-disable-l
     _getEnvCtxConfigBucket.oldCache.set(cacheKey, _getEnvCtxConfigBucket.cache[cacheKey]);
     _getEnvCtxConfigBucket.cache.delete(cacheKey);
     // eslint-disable-next-line fp/no-arguments
-    _getEnvCtxConfigBucket(...arguments);
+    _getEnvCtxConfigBucket(...arguments); // no await is ok?
   }
 
   return cachedResult.ctx;
