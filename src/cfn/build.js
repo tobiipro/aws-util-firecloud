@@ -46,6 +46,7 @@ export let build = async function({
   env,
   incs = [],
   partial = false,
+  resNs, // used by partial cfns, like lambda cfns
   vars
 }) {
   let tpl = {};
@@ -58,6 +59,7 @@ export let build = async function({
     let main = require(inc).default;
     let partialTpls = await main({
       env,
+      resNs,
       vars
     });
 
