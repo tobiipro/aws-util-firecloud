@@ -1,6 +1,7 @@
 import _ from 'lodash-firecloud';
 import aws from 'aws-sdk';
 import build from './build';
+import path from 'path';
 
 import {
   get as getConfig
@@ -51,10 +52,10 @@ export let add = async function({
     Variables: config.environment
   };
 
-  let partialTpl = await build({
+  // eslint-disable-next-line global-require
+  let partialTpl = await require(path.join(cfnDir, 'index.js')).default({
     env,
     dir: cfnDir,
-    partial: true,
     resNs
   });
 
