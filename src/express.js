@@ -147,10 +147,8 @@ export let getSelfUrl = function({req}) {
 
 export let getPaginationUrl = function({
   req,
-  perPage = per_page, // eslint-disable-line no-use-before-define
-  ref,
-  // FIXME deprecated
-  per_page // eslint-disable-line camelcase
+  perPage,
+  ref
 }) {
   let pageUrl = getSelfUrl({req});
 
