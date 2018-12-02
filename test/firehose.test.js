@@ -7,13 +7,16 @@ let generate = function({byteSize = 5} = {}) {
   }), '');
 };
 
+let byteSizeOverhead = Buffer.byteLength(JSON.stringify({
+  content: ''
+}));
 // + 1 for the new line character
-let byteSizeOverhead = Buffer.byteLength(JSON.stringify({content: ''})) + 1;
+byteSizeOverhead = byteSizeOverhead + 1;
 
 describe('firehose', function() {
   describe('putRecords', function() {
     it('should call _putRecordBatches', async function() {
-      let byteSize = 25 - byteSizeOverhead;
+      let byteSize = 100;
       let records = _.times(1, function() {
         return {
           content: generate({byteSize})
@@ -43,7 +46,7 @@ describe('firehose', function() {
 
     it(`should split record batches in chunks of ${firehose.limits.batchRecord} records, \
 when batch byteSize < ${firehose.limits.batchByteSize / 1024 / 1024} MB`, async function() {
-      let byteSize = 25 - byteSizeOverhead;
+      let byteSize = 100;
       let records = _.times(firehose.limits.batchRecord + 1, function() {
         return {
           content: generate({byteSize})
@@ -75,7 +78,8 @@ when batch byteSize < ${firehose.limits.batchByteSize / 1024 / 1024} MB`, async 
     it(`should split record batches in chunks of < ${firehose.limits.batchByteSize / 1024 / 1024} MB records, \
 when batch count < ${firehose.limits.batchRecord}`, async function() {
       let byteSize = firehose.limits.recordByteSize - byteSizeOverhead;
-      let records = _.times(5, function() {
+      let maxRecordsInBatch = _.floor(firehose.limits.batchByteSize / firehose.limits.recordByteSize);
+      let records = _.times(maxRecordsInBatch + 1, function() {
         return {
           content: generate({byteSize})
         };
@@ -87,7 +91,7 @@ when batch count < ${firehose.limits.batchRecord}`, async function() {
           })
           .mockImplementationOnce(async function({recordBatches}) {
             expect(recordBatches).toHaveLength(2);
-            expect(recordBatches[0].Records).toHaveLength(4);
+            expect(recordBatches[0].Records).toHaveLength(maxRecordsInBatch);
             expect(recordBatches[1].Records).toHaveLength(1);
             return _.sum(_.map(recordBatches, 'Records.length'));
           });
