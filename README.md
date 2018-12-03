@@ -19,5 +19,5 @@ More on https://github.com/donnemartin/awesome-aws .
 [Apache 2.0](LICENSE)
 
 
-  [1]: https://travis-ci.org/tobiipro/aws-util-firecloud
-  [2]: https://travis-ci.org/tobiipro/aws-util-firecloud.svg?branch=master
+  [1]: https://travis-ci.com/tobiipro/aws-util-firecloud
+  [2]: https://travis-ci.com/tobiipro/aws-util-firecloud.svg?branch=master
