@@ -43,20 +43,20 @@ export let putRecords = async function({
 
   _.forEach(records, function(record) {
     let Data = JSON.stringify(record);
-    let dataLength = Buffer.byteLength(JSON.stringify({
+    let dataByteSize = Buffer.byteLength(JSON.stringify({
       Data: record,
       ExplicitHashKey,
       PartitionKey
     }));
 
-    if (dataLength > limits.recordByteSize) {
+    if (dataByteSize > limits.recordByteSize) {
       ctx.log.error(`Skipping record larger than ${limits.recordByteSize / 1024} KB: \
-${dataLength / 1024} KB.`, {record});
+${dataByteSize / 1024} KB.`, {record});
       toProcessCount = toProcessCount - 1;
       return;
     }
 
-    if (recordBatch.byteSize + dataLength > limits.batchByteSize ||
+    if (recordBatch.byteSize + dataByteSize > limits.batchByteSize ||
         recordBatch.Records.length + 1 > limits.batchRecord) {
       recordBatches.push(recordBatch);
       recordBatch = {
@@ -66,7 +66,7 @@ ${dataLength / 1024} KB.`, {record});
       };
     }
 
-    recordBatch.byteSize = recordBatch.byteSize + dataLength;
+    recordBatch.byteSize = recordBatch.byteSize + dataByteSize;
 
     recordBatch.Records.push({
       Data,
@@ -77,9 +77,9 @@ ${dataLength / 1024} KB.`, {record});
   recordBatches.push(recordBatch);
   _.remove(recordBatches, {byteSize: 0});
 
-  let processedRecords = await _putRecordBatches({kinesis, recordBatches});
-  if (processedRecords !== toProcessCount) {
-    throw new Error(`Not all records processed. Expected ${toProcessCount}, actually ${processedRecords}`);
+  let processedCount = await _putRecordBatches({kinesis, recordBatches});
+  if (processedCount !== toProcessCount) {
+    throw new Error(`Not all records processed. Expected ${toProcessCount}, actually ${processedCount}`);
   }
 };
 
