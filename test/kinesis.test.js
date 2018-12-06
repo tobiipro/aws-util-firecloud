@@ -1,5 +1,5 @@
 import _ from 'lodash-firecloud';
-import firehose from '../lib/firehose';
+import kinesis from '../lib/kinesis';
 
 let generate = function({byteSize = 5} = {}) {
   return _.join(_.times(byteSize, function() {
@@ -7,13 +7,16 @@ let generate = function({byteSize = 5} = {}) {
   }), '');
 };
 
-let byteSizeOverhead = Buffer.byteLength(JSON.stringify({
-  content: ''
-}));
-// + 1 for the new line character
-byteSizeOverhead = byteSizeOverhead + 1;
+let PartitionKey = 'undefined';
 
-describe('firehose', function() {
+let byteSizeOverhead = Buffer.byteLength(JSON.stringify({
+  Data: {
+    content: ''
+  },
+  PartitionKey
+}));
+
+describe('kinesis', function() {
   describe('putRecords', function() {
     it('should call _putRecordBatches', async function() {
       let byteSize = 100;
@@ -23,7 +26,7 @@ describe('firehose', function() {
         };
       });
 
-      let spy = jest.spyOn(firehose, '_putRecordBatches')
+      let spy = jest.spyOn(kinesis, '_putRecordBatches')
           .mockImplementation(async function() {
             throw new Error();
           })
@@ -33,7 +36,8 @@ describe('firehose', function() {
             return _.sum(_.map(recordBatches, 'Records.length'));
           });
 
-      await firehose.putRecords({
+      await kinesis.putRecords({
+        PartitionKey,
         records
       });
 
@@ -44,27 +48,28 @@ describe('firehose', function() {
     });
 
 
-    it(`should split record batches in chunks of ${firehose.limits.batchRecord} records, \
-when batch byteSize < ${firehose.limits.batchByteSize / 1024 / 1024} MB`, async function() {
+    it(`should split record batches in chunks of ${kinesis.limits.batchRecord} records, \
+when batch byteSize < ${kinesis.limits.batchByteSize / 1024 / 1024} MB`, async function() {
       let byteSize = 100;
-      let records = _.times(firehose.limits.batchRecord + 1, function() {
+      let records = _.times(kinesis.limits.batchRecord + 1, function() {
         return {
           content: generate({byteSize})
         };
       });
 
-      let spy = jest.spyOn(firehose, '_putRecordBatches')
+      let spy = jest.spyOn(kinesis, '_putRecordBatches')
           .mockImplementation(async function() {
             throw new Error();
           })
           .mockImplementationOnce(async function({recordBatches}) {
             expect(recordBatches).toHaveLength(2);
-            expect(recordBatches[0].Records).toHaveLength(firehose.limits.batchRecord);
+            expect(recordBatches[0].Records).toHaveLength(kinesis.limits.batchRecord);
             expect(recordBatches[1].Records).toHaveLength(1);
             return _.sum(_.map(recordBatches, 'Records.length'));
           });
 
-      await firehose.putRecords({
+      await kinesis.putRecords({
+        PartitionKey,
         records
       });
 
@@ -75,17 +80,17 @@ when batch byteSize < ${firehose.limits.batchByteSize / 1024 / 1024} MB`, async 
     });
 
 
-    it(`should split record batches in chunks of < ${firehose.limits.batchByteSize / 1024 / 1024} MB records, \
-when batch count < ${firehose.limits.batchRecord}`, async function() {
-      let byteSize = firehose.limits.recordByteSize - byteSizeOverhead;
-      let maxRecordsInBatch = _.floor(firehose.limits.batchByteSize / firehose.limits.recordByteSize);
+    it(`should split record batches in chunks of < ${kinesis.limits.batchByteSize / 1024 / 1024} MB records, \
+when batch count < ${kinesis.limits.batchRecord}`, async function() {
+      let byteSize = kinesis.limits.recordByteSize - byteSizeOverhead;
+      let maxRecordsInBatch = _.floor(kinesis.limits.batchByteSize / kinesis.limits.recordByteSize);
       let records = _.times(maxRecordsInBatch + 1, function() {
         return {
           content: generate({byteSize})
         };
       });
 
-      let spy = jest.spyOn(firehose, '_putRecordBatches')
+      let spy = jest.spyOn(kinesis, '_putRecordBatches')
           .mockImplementation(async function() {
             throw new Error();
           })
@@ -96,7 +101,8 @@ when batch count < ${firehose.limits.batchRecord}`, async function() {
             return _.sum(_.map(recordBatches, 'Records.length'));
           });
 
-      await firehose.putRecords({
+      await kinesis.putRecords({
+        PartitionKey,
         records
       });
 
@@ -107,15 +113,15 @@ when batch count < ${firehose.limits.batchRecord}`, async function() {
     });
 
 
-    it(`cannot handle records larger than ${firehose.limits.recordByteSize / 1024} KB`, async function() {
-      let byteSize = firehose.limits.recordByteSize - byteSizeOverhead + 1;
+    it(`cannot handle records larger than ${kinesis.limits.recordByteSize / 1024} KB`, async function() {
+      let byteSize = kinesis.limits.recordByteSize - byteSizeOverhead + 1;
       let records = _.times(1, function() {
         return {
           content: generate({byteSize})
         };
       });
 
-      let spy = jest.spyOn(firehose, '_putRecordBatches')
+      let spy = jest.spyOn(kinesis, '_putRecordBatches')
           .mockImplementation(async function() {
             throw new Error();
           })
@@ -132,7 +138,8 @@ when batch count < ${firehose.limits.batchRecord}`, async function() {
             expect(args[0]).toMatch(/Skipping record larger than/);
           });
 
-      await firehose.putRecords({
+      await kinesis.putRecords({
+        PartitionKey,
         records,
         ctx: {
           log: {
@@ -150,14 +157,14 @@ when batch count < ${firehose.limits.batchRecord}`, async function() {
 
 
     it(`should make sure number of records 'in' match number of records 'out'`, async function() {
-      let byteSize = firehose.limits.recordByteSize - byteSizeOverhead + 1;
+      let byteSize = kinesis.limits.recordByteSize - byteSizeOverhead + 1;
       let records = _.times(5, function() {
         return {
           content: generate({byteSize})
         };
       });
 
-      let spy = jest.spyOn(firehose, '_putRecordBatches')
+      let spy = jest.spyOn(kinesis, '_putRecordBatches')
           .mockImplementation(async function() {
             throw new Error();
           })
@@ -167,7 +174,8 @@ when batch count < ${firehose.limits.batchRecord}`, async function() {
 
       let failed = false;
       try {
-        await firehose.putRecords({
+        await kinesis.putRecords({
+          PartitionKey,
           records
         });
       } catch (_err) {
