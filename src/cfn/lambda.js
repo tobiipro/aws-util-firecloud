@@ -48,10 +48,6 @@ export let add = async function({
   let FunctionName =
       _.replace(config.nameTemplate, '{{.Function.Name}}', config.name);
 
-  let Environment = {
-    Variables: config.environment
-  };
-
   // eslint-disable-next-line global-require
   let partialTpl = await require(path.join(cfnDir, 'index.js')).default({
     env,
@@ -65,6 +61,14 @@ export let add = async function({
   } else {
     Lambda = {};
   }
+
+  _.merge(Lambda, {
+    Properties: {
+      Environment: {
+        Variables: config.environment || {}
+      }
+    }
+  });
 
   // filter out storage resources
   partialTpl.Resources = _.pickBy(partialTpl.Resources, function(Resource, _ResourceName) {
@@ -157,13 +161,19 @@ export let add = async function({
     }
   }
 
-  _.merge(Environment.Variables, {
-    APEX_FUNCTION_NAME: config.name, // apex specific
-    LAMBDA_FUNCTION_NAME: FunctionName, // apex specific
-    LAMBDA_CODE_SHA256SUM,
-    LAMBDA_CODE_SHA256SUM_CORE,
-    LAMBDA_CODE_S3BUCKET,
-    LAMBDA_CODE_S3KEY
+  _.merge(Lambda, {
+    Properties: {
+      Environment: {
+        Variables: {
+          APEX_FUNCTION_NAME: config.name, // apex specific
+          LAMBDA_FUNCTION_NAME: FunctionName, // apex specific
+          LAMBDA_CODE_SHA256SUM,
+          LAMBDA_CODE_SHA256SUM_CORE,
+          LAMBDA_CODE_S3BUCKET,
+          LAMBDA_CODE_S3KEY
+        }
+      }
+    }
   });
 
   Lambda = _.merge({
@@ -174,7 +184,6 @@ export let add = async function({
     Properties: {
       Code,
       Description: config.description,
-      Environment,
       FunctionName,
       Handler: config.handler,
       MemorySize: config.memory,
