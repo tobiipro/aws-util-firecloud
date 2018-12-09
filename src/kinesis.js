@@ -32,6 +32,7 @@ export let putRecords = async function({
   kinesis = new aws.Kinesis(),
   records
 }) {
+  let largeRecords = [];
   let recordBatches = [];
   let recordBatch = {
     StreamName,
@@ -50,6 +51,7 @@ export let putRecords = async function({
     }));
 
     if (dataByteSize > limits.recordByteSize) {
+      largeRecords.push(record);
       ctx.log.error(`Skipping record larger than ${limits.recordByteSize / 1024} KB: \
 ${dataByteSize / 1024} KB.`, {record});
       toProcessCount = toProcessCount - 1;
@@ -79,8 +81,12 @@ ${dataByteSize / 1024} KB.`, {record});
 
   let processedCount = await _putRecordBatches({kinesis, recordBatches});
   if (processedCount !== toProcessCount) {
-    throw new Error(`Not all records processed. Expected ${toProcessCount}, actually ${processedCount}`);
+    throw new Error(`Not all records processed. Expected ${toProcessCount}, actually ${processedCount}.`);
   }
+
+  return {
+    largeRecords
+  };
 };
 
 export default exports;

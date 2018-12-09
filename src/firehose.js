@@ -30,6 +30,7 @@ export let putRecords = async function({
   firehose = new aws.Firehose(),
   records
 }) {
+  let largeRecords = [];
   let recordBatches = [];
   let recordBatch = {
     DeliveryStreamName,
@@ -45,6 +46,7 @@ export let putRecords = async function({
     let dataByteSize = Buffer.byteLength(Data);
 
     if (dataByteSize > limits.recordByteSize) {
+      largeRecords.push(record);
       ctx.log.error(`Skipping record larger than ${limits.recordByteSize / 1024} KB: \
 ${dataByteSize / 1024} KB.`, {record});
       toProcessCount = toProcessCount - 1;
@@ -73,8 +75,12 @@ ${dataByteSize / 1024} KB.`, {record});
 
   let processedCount = await _putRecordBatches({firehose, recordBatches});
   if (processedCount !== toProcessCount) {
-    throw new Error(`Not all records processed. Expected ${toProcessCount}, actually ${processedCount}`);
+    throw new Error(`Not all records processed. Expected ${toProcessCount}, actually ${processedCount}.`);
   }
+
+  return {
+    largeRecords
+  };
 };
 
 export default exports;
