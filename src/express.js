@@ -49,7 +49,7 @@ let _resSend = function(oldSend, body, mediaType) {
 
   if (!_.isUndefined(this.validate) &&
       _.startsWith(this.get('content-type'), this.validate.schema.mediaType)
-    ) {
+  ) {
     let valid = this.validate(body);
     if (!valid) {
       this.log.error({

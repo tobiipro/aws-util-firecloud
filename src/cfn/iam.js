@@ -84,7 +84,7 @@ export let compactStatement = function({Statement}) {
     let wActions = _.filter(stmt.Action, /\*$/);
     _.forEach(wActions, function(wAction) {
       let prefix = _.replace(wAction, /\*$/, '');
-      _.remove(stmt.Action, function(action) {
+      stmt.Action = _.reject(stmt.Action, function(action) {
         return (action !== wAction && _.startsWith(action, prefix));
       });
     });

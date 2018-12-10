@@ -71,7 +71,7 @@ ${dataByteSize / 1024} KB.`, {record});
   });
 
   recordBatches.push(recordBatch);
-  _.remove(recordBatches, {byteSize: 0});
+  recordBatches = _.reject(recordBatches, {byteSize: 0});
 
   let processedCount = await _putRecordBatches({firehose, recordBatches});
   if (processedCount !== toProcessCount) {

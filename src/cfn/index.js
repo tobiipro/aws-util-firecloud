@@ -21,7 +21,7 @@ export let reduceToDependsOn = function(acc, statement) {
     } else if (_.isString(statement['Fn::Sub'])) {
       // {'Fn::Sub': `${Ref}`}
       let subRefs = statement['Fn::Sub'].match(/\$\{[^}]+\}/g);
-      _.remove(subRefs, function(subRef) {
+      subRefs = _.reject(subRefs, function(subRef) {
         return /^AWS::.+/.test(subRef);
       });
       _.forEach(subRefs, function(subRef) {
@@ -31,7 +31,7 @@ export let reduceToDependsOn = function(acc, statement) {
     } else if (_.isArray(statement['Fn::Sub'])) {
       // {'Fn::Sub': [`${Ref}${Var}`, {Var: Value}]}
       let subRefs = statement['Fn::Sub'][0].match(/\$\{[^}]+\}/g);
-      _.remove(subRefs, function(subRef) {
+      subRefs = _.reject(subRefs, function(subRef) {
         return /^AWS::.+/.test(subRef);
       });
       let subVars = _.keys(statement['Fn::Sub'][1]);

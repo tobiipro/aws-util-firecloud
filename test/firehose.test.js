@@ -24,14 +24,14 @@ describe('firehose', function() {
       });
 
       let spy = jest.spyOn(firehose, '_putRecordBatches')
-          .mockImplementation(async function() {
-            throw new Error();
-          })
-          .mockImplementationOnce(async function({recordBatches}) {
-            expect(recordBatches).toHaveLength(1);
-            expect(recordBatches[0].Records).toHaveLength(1);
-            return _.sum(_.map(recordBatches, 'Records.length'));
-          });
+        .mockImplementation(async function() {
+          throw new Error();
+        })
+        .mockImplementationOnce(async function({recordBatches}) {
+          expect(recordBatches).toHaveLength(1);
+          expect(recordBatches[0].Records).toHaveLength(1);
+          return _.sum(_.map(recordBatches, 'Records.length'));
+        });
 
       await firehose.putRecords({
         records
@@ -54,15 +54,15 @@ when batch byteSize < ${firehose.limits.batchByteSize / 1024 / 1024} MB`, async 
       });
 
       let spy = jest.spyOn(firehose, '_putRecordBatches')
-          .mockImplementation(async function() {
-            throw new Error();
-          })
-          .mockImplementationOnce(async function({recordBatches}) {
-            expect(recordBatches).toHaveLength(2);
-            expect(recordBatches[0].Records).toHaveLength(firehose.limits.batchRecord);
-            expect(recordBatches[1].Records).toHaveLength(1);
-            return _.sum(_.map(recordBatches, 'Records.length'));
-          });
+        .mockImplementation(async function() {
+          throw new Error();
+        })
+        .mockImplementationOnce(async function({recordBatches}) {
+          expect(recordBatches).toHaveLength(2);
+          expect(recordBatches[0].Records).toHaveLength(firehose.limits.batchRecord);
+          expect(recordBatches[1].Records).toHaveLength(1);
+          return _.sum(_.map(recordBatches, 'Records.length'));
+        });
 
       await firehose.putRecords({
         records
@@ -86,15 +86,15 @@ when batch count < ${firehose.limits.batchRecord}`, async function() {
       });
 
       let spy = jest.spyOn(firehose, '_putRecordBatches')
-          .mockImplementation(async function() {
-            throw new Error();
-          })
-          .mockImplementationOnce(async function({recordBatches}) {
-            expect(recordBatches).toHaveLength(2);
-            expect(recordBatches[0].Records).toHaveLength(maxRecordsInBatch);
-            expect(recordBatches[1].Records).toHaveLength(1);
-            return _.sum(_.map(recordBatches, 'Records.length'));
-          });
+        .mockImplementation(async function() {
+          throw new Error();
+        })
+        .mockImplementationOnce(async function({recordBatches}) {
+          expect(recordBatches).toHaveLength(2);
+          expect(recordBatches[0].Records).toHaveLength(maxRecordsInBatch);
+          expect(recordBatches[1].Records).toHaveLength(1);
+          return _.sum(_.map(recordBatches, 'Records.length'));
+        });
 
       await firehose.putRecords({
         records
@@ -116,21 +116,21 @@ when batch count < ${firehose.limits.batchRecord}`, async function() {
       });
 
       let spy = jest.spyOn(firehose, '_putRecordBatches')
-          .mockImplementation(async function() {
-            throw new Error();
-          })
-          .mockImplementationOnce(async function({recordBatches}) {
-            expect(recordBatches).toHaveLength(0);
-            return _.sum(_.map(recordBatches, 'Records.length'));
-          });
+        .mockImplementation(async function() {
+          throw new Error();
+        })
+        .mockImplementationOnce(async function({recordBatches}) {
+          expect(recordBatches).toHaveLength(0);
+          return _.sum(_.map(recordBatches, 'Records.length'));
+        });
 
       let spy2 = jest.fn()
-          .mockImplementation(function() {
-            throw new Error();
-          })
-          .mockImplementationOnce(function(...args) {
-            expect(args[0]).toMatch(/Skipping record larger than/);
-          });
+        .mockImplementation(function() {
+          throw new Error();
+        })
+        .mockImplementationOnce(function(...args) {
+          expect(args[0]).toMatch(/Skipping record larger than/);
+        });
 
       await firehose.putRecords({
         records,
@@ -158,12 +158,12 @@ when batch count < ${firehose.limits.batchRecord}`, async function() {
       });
 
       let spy = jest.spyOn(firehose, '_putRecordBatches')
-          .mockImplementation(async function() {
-            throw new Error();
-          })
-          .mockImplementationOnce(async function() {
-            return records.length - 1; // one missing
-          });
+        .mockImplementation(async function() {
+          throw new Error();
+        })
+        .mockImplementationOnce(async function() {
+          return records.length - 1; // one missing
+        });
 
       let failed = false;
       try {
@@ -174,7 +174,7 @@ when batch count < ${firehose.limits.batchRecord}`, async function() {
         failed = true;
       }
 
-      expect(failed).toBeTruthy();
+      expect(failed).toBe(true);
 
       spy.mockReset();
       spy.mockRestore();
