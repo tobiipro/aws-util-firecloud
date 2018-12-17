@@ -17,7 +17,7 @@
     "cors": "^2.8.4",
     "express": "^4.16.2",
     "express-bearer-token": "^2.1.1",
-    "http-lambda": "git://github.com/tobiipro/http-lambda.git#semver:~0.1.4",
+    "http-lambda": "git://github.com/tobiipro/http-lambda.git#semver:~0.2.0",
     "lodash-firecloud": "git://github.com/tobiipro/lodash-firecloud.git#semver:~0.2.1",
     "response-time": "^2.3.2"
   },
