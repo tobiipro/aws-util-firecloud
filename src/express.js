@@ -36,8 +36,9 @@ let _resAddLink = function(link) {
   });
 
   linkStr = linkStr.join('; ');
-  this._headers.link = _.defaultTo(this._headers.link, []);
-  this._headers.link.push(linkStr);
+  let linkHeader = _.defaultTo(this.getHeader('link'), []);
+  linkHeader.push(linkStr);
+  this.setHeader('link', linkHeader);
 };
 
 let _resSend = function(oldSend, body, mediaType) {
