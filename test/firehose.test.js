@@ -1,5 +1,5 @@
 import _ from 'lodash-firecloud';
-import firehose from '../lib/firehose';
+import firehose from '../src/firehose';
 
 let generate = function({byteSize = 5} = {}) {
   return _.join(_.times(byteSize, function() {

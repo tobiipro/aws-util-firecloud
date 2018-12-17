@@ -1,5 +1,5 @@
 import _ from 'lodash-firecloud';
-import kinesis from '../lib/kinesis';
+import kinesis from '../src/kinesis';
 
 let generate = function({byteSize = 5} = {}) {
   return _.join(_.times(byteSize, function() {
