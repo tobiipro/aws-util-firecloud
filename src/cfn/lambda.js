@@ -11,16 +11,32 @@ import {
   get as getPrincipal
 } from '../principal';
 
-export let getCodeChecksum = async function({
+let _getCodeChecksums = async function({
   Code,
   algorithm = 'sha256',
   env
 }) {
   let s3 = new aws.S3(getConfig({env}));
-  let {Body} = await s3.getObject({
-    Bucket: Code.S3Bucket,
-    Key: `${Code.S3Key}.${algorithm}sum`
-  }).promise();
+
+  let getObjectResp;
+  try {
+    getObjectResp = await s3.getObject({
+      Bucket: Code.S3Bucket,
+      Key: `${Code.S3Key}.${algorithm}sum`
+    }).promise();
+  } catch (err) {
+    if (err.code === 'NotFound') {
+      throw new Error(`Not found Lambda code at key '${Code.S3Key}' in bucket '${Code.S3Bucket}'`);
+    }
+
+    if (err.code === 'Forbidden') {
+      throw new Error(`No access to Lambda code at key '${Code.S3Key}' in bucket '${Code.S3Bucket}'`);
+    }
+
+    throw err;
+  }
+
+  let {Body} = getObjectResp;
   Body = Body.toString();
 
   let checksums = {};
@@ -110,7 +126,7 @@ export let add = async function({
   let [
     LAMBDA_CODE_SHA256SUM,
     LAMBDA_CODE_SHA256SUM_CORE
-  ] = await getCodeChecksum({
+  ] = await _getCodeChecksums({
     env,
     Code
   });
@@ -137,7 +153,7 @@ export let add = async function({
         ([
           PREV_LAMBDA_CODE_SHA256SUM,
           PREV_LAMBDA_CODE_SHA256SUM_CORE
-        ] = await getCodeChecksum({
+        ] = await _getCodeChecksums({
           env,
           Code: prevCode
         }));
