@@ -11,7 +11,7 @@ import {
   get as getPrincipal
 } from '../principal';
 
-let _getCodeChecksums = async function({
+export let getCodeChecksums = async function({
   Code,
   algorithm = 'sha256',
   env
@@ -126,7 +126,7 @@ export let add = async function({
   let [
     LAMBDA_CODE_SHA256SUM,
     LAMBDA_CODE_SHA256SUM_CORE
-  ] = await _getCodeChecksums({
+  ] = await getCodeChecksums({
     env,
     Code
   });
@@ -153,7 +153,7 @@ export let add = async function({
         ([
           PREV_LAMBDA_CODE_SHA256SUM,
           PREV_LAMBDA_CODE_SHA256SUM_CORE
-        ] = await _getCodeChecksums({
+        ] = await getCodeChecksums({
           env,
           Code: prevCode
         }));
