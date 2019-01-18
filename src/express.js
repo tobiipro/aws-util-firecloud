@@ -80,14 +80,14 @@ export let express = function(e, _ctx, _next) {
 export let bootstrap = function(fn, {pkg}) {
   return bootstrapLambda(async function(e, ctx, next) {
     let app;
-    await ctx.trackTime(
+    await ctx.log.trackTime(
       'aws-util-firecloud.express.bootstrap: Creating express app...',
       async function() {
         app = express(e, ctx, next);
       }
     );
 
-    await ctx.trackTime(
+    await ctx.log.trackTime(
       'aws-util-firecloud.express.bootstrap: Setting up custom express...',
       async function() {
         fn = bootstrapResponseError(fn, app.res);
@@ -96,7 +96,7 @@ export let bootstrap = function(fn, {pkg}) {
     );
 
     ctx.log.info('aws-util-firecloud.express.bootstrap: Creating HTTP server (handling request)...');
-    await ctx.trackTime(
+    await ctx.log.trackTime(
       'aws-util-firecloud.express.bootstrap: Creating HTTP server (handling request)...',
       async function() {
         let http = new LambdaHttp(e, ctx, next);
