@@ -368,7 +368,7 @@ export let bootstrap = function(fn, {pkg}) {
       );
     }
 
-    ctx.log.debug(`Execution time report:`);
+    ctx.log.debug('Execution time report:');
     _.forEach(ctx.trackTime.reports, function(report) {
       ctx.log.debug(report);
     });

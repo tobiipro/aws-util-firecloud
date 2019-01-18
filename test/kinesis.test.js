@@ -156,7 +156,7 @@ when batch count < ${kinesis.limits.batchRecord}`, async function() {
     });
 
 
-    it(`should make sure number of records 'in' match number of records 'out'`, async function() {
+    it("should make sure number of records 'in' match number of records 'out'", async function() {
       let byteSize = kinesis.limits.recordByteSize - byteSizeOverhead + 1;
       let records = _.times(5, function() {
         return {

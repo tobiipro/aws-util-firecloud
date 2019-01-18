@@ -129,7 +129,7 @@ export let allowQueryAccessToAthena = function({
   _env
 } = {}) {
   return {
-    Sid: `Allow query access to Athena`,
+    Sid: 'Allow query access to Athena',
     Effect: 'Allow',
     Action: [
       'athena:GetQueryExecution',
