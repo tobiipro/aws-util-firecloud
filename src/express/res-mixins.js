@@ -29,7 +29,7 @@ export let send = function(body, mediaType) {
   ) {
     let valid = this.validate(body);
     if (!valid) {
-      this.log.error({
+      this.log.warn({
         errors: this.validate.errors,
         body,
         schema: this.validate.schema,
