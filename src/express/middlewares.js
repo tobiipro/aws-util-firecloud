@@ -2,7 +2,7 @@ import _ from 'lodash-firecloud';
 import reqMixins from './req-mixins';
 import resMixins from './res-mixins';
 
-export let init = function(req, res, next) {
+export let applyMixins = function(req, res, next) {
   _.forEach(reqMixins, function(fn, name) {
     req[name] = _.bind(fn, req);
   });

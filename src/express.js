@@ -66,7 +66,7 @@ export let express = function(e, _ctx, _next) {
     maxAge: 24 * 60 * 60 // 24 hours
   }));
   app.use(bearerToken());
-  app.use(middlewares.init());
+  app.use(middlewares.applyMixins());
   app.use(middlewares.xForward());
 
   app.use(async function(_req, res, next) {
