@@ -2,20 +2,6 @@ import _ from 'lodash-firecloud';
 import reqMixins from './req-mixins';
 import resMixins from './res-mixins';
 
-import {
-  asyncHandler
-} from '../lambda';
-
-import {
-  bootstrap as bootstrapResponseError
-} from './res-error';
-
-export let bootstrap = function(fn) {
-  return asyncHandler(async function(req, res, next) {
-    bootstrapResponseError(await _.alwaysPromise(fn(req, res, next)), res);
-  });
-};
-
 export let init = function(req, res, next) {
   _.forEach(reqMixins, function(fn, name) {
     req[name] = _.bind(fn, req);

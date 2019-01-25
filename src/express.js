@@ -12,6 +12,7 @@ import {
 } from 'http-lambda';
 
 import {
+  asyncHandler,
   bootstrap as bootstrapLambda
 } from './lambda';
 
@@ -38,8 +39,22 @@ export let express = function(e, _ctx, _next) {
   }
 
   app.oldUse = app.use;
-  app.use = function(fn) {
-    app.oldUse(middlewares.bootstrap(fn));
+  app.use = function(...args) {
+    args = _.map(args, function(arg) {
+      if (!_.isFunction(arg)) {
+        return arg;
+      }
+
+      let fn = arg;
+      return asyncHandler(async function(req, res, next) {
+        bootstrapResponseError(async function() {
+          let result = fn(req, res, next);
+          return await _.alwaysPromise(result);
+        }, res);
+      });
+    });
+
+    app.oldUse(...args);
   };
 
   app.use(responseTime());
