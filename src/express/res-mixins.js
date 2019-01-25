@@ -1,6 +1,10 @@
 /* eslint-disable no-invalid-this */
 import _ from 'lodash-firecloud';
 
+import {
+  getRequestInstance
+} from '../lambda';
+
 export let addLink = function(link) {
   let {target} = link;
   delete link.target;
@@ -51,7 +55,7 @@ export let sendError = function(responseError) {
 
   this.status(status);
 
-  body.instance = this.instance;
+  body.instance = getRequestInstance(this.req);
   this.send(body, contentType);
 
   return responseError;

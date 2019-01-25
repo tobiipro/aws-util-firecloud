@@ -3,8 +3,7 @@ import reqMixins from './req-mixins';
 import resMixins from './res-mixins';
 
 import {
-  asyncHandler,
-  getRequestInstance
+  asyncHandler
 } from '../lambda';
 
 import {
@@ -18,8 +17,6 @@ export let bootstrap = function(fn) {
 };
 
 export let init = function(req, res, next) {
-  res.instance = getRequestInstance(req);
-
   _.forEach(reqMixins, function(fn, name) {
     req[name] = _.bind(fn, req);
   });
