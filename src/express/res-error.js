@@ -35,7 +35,7 @@ export let bootstrap = function(fn, res) {
         return res.sendError(err);
       }
 
-      if (res.ctx.log.level() >= res.ctx.log.levelToLevelCode('TRACE')) {
+      if (res.ctx.log._canTrace) {
         ctx.log.info('Responding with trace...');
         let internalErr = new ResponseError(500, {
           renderer: pkg.name,

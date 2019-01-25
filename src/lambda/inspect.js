@@ -2,7 +2,7 @@ import _ from 'lodash-firecloud';
 import os from 'os';
 
 export let inspect = async function({ctx}) {
-  if (ctx.log.level() < ctx.log.levelToLevelCode('TRACE')) {
+  if (!ctx.log._canTrace) {
     return;
   }
 

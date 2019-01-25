@@ -26,7 +26,7 @@ let _setupAwsLogger = function({ctx}) {
   aws.config.logger = {
     isTTY: false,
     log: function(message) {
-      if (ctx.log.level() < ctx.log.levelToLevelCode('TRACE')) {
+      if (!ctx.log._canTrace) {
         return;
       }
 
@@ -66,7 +66,7 @@ let _setupAwsLogger = function({ctx}) {
 };
 
 let _setupLongStacktraces = function({ctx}) {
-  if (ctx.log.level() >= ctx.log.levelToLevelCode('TRACE')) {
+  if (ctx.log._canTrace) {
     Error.stackTraceLimit = Infinity;
 
     if (_.isFunction(Promise.config)) {
@@ -101,6 +101,9 @@ export let setup = function({ctx}) {
   logger.level = function() {
     return level;
   };
+
+  // internal convenince
+  logger._canTrace = ctx.log.levelToLevelCode(level) >= ctx.log.levelToLevelCode('TRACE');
 
   ctx.log = logger;
   _setupAwsLogger({ctx});
