@@ -102,8 +102,8 @@ export let setup = function({ctx}) {
     return level;
   };
 
-  // internal convenince
-  logger._canTrace = ctx.log.levelToLevelCode(level) >= ctx.log.levelToLevelCode('TRACE');
+  // internal convenience
+  logger._canTrace = !ctx.log.levelIsBeyondGroup('TRACE', level);
 
   ctx.log = logger;
   _setupAwsLogger({ctx});
