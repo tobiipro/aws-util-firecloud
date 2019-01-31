@@ -217,10 +217,9 @@ export let getStorageResources = async function({
   env,
   resNs
 }) {
-  let partialTpl = await build({
+  let partialTpl = await require(path.join(cfnDir, 'index.js')).default({
     env,
     dir: cfnDir,
-    partial: true,
     resNs
   });
 
