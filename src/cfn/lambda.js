@@ -1,6 +1,5 @@
 import _ from 'lodash-firecloud';
 import aws from 'aws-sdk';
-import build from './build';
 import path from 'path';
 
 import {
@@ -217,6 +216,7 @@ export let getStorageResources = async function({
   env,
   resNs
 }) {
+  // eslint-disable-next-line global-require
   let partialTpl = await require(path.join(cfnDir, 'index.js')).default({
     env,
     dir: cfnDir,
