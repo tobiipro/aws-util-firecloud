@@ -24,15 +24,9 @@ export let getCodeChecksums = async function({
       Key: `${Code.S3Key}.${algorithm}sum`
     }).promise();
   } catch (err) {
-    if (err.code === 'NotFound') {
-      throw new Error(`Not found Lambda code at key '${Code.S3Key}' in bucket '${Code.S3Bucket}'`);
-    }
-
-    if (err.code === 'Forbidden') {
-      throw new Error(`No access to Lambda code at key '${Code.S3Key}' in bucket '${Code.S3Bucket}'`);
-    }
-
-    throw err;
+    // eslint-disable-next-line no-console
+    console.error(err);
+    return [];
   }
 
   let {Body} = getObjectResp;
@@ -132,47 +126,37 @@ export let add = async function({
 
   if (LAMBDA_CODE_SHA256SUM_CORE) {
     // check if lambda code is the same as the current version
-    try {
-      let lambda = new aws.Lambda(getConfig({env}));
-      let {
-        Environment: prevEnvironment
-      } = await lambda.getFunctionConfiguration({
-        FunctionName
-      }).promise();
+    let lambda = new aws.Lambda(getConfig({env}));
+    let {
+      Environment: prevEnvironment
+    } = await lambda.getFunctionConfiguration({
+      FunctionName
+    }).promise();
 
-      let prevCode = {
-        S3Bucket: prevEnvironment.Variables.LAMBDA_CODE_S3BUCKET,
-        S3Key: prevEnvironment.Variables.LAMBDA_CODE_S3KEY
-      };
+    let prevCode = {
+      S3Bucket: prevEnvironment.Variables.LAMBDA_CODE_S3BUCKET,
+      S3Key: prevEnvironment.Variables.LAMBDA_CODE_S3KEY
+    };
 
-      let PREV_LAMBDA_CODE_SHA256SUM;
-      let PREV_LAMBDA_CODE_SHA256SUM_CORE;
+    let PREV_LAMBDA_CODE_SHA256SUM;
+    let PREV_LAMBDA_CODE_SHA256SUM_CORE;
 
-      try {
-        ([
-          PREV_LAMBDA_CODE_SHA256SUM,
-          PREV_LAMBDA_CODE_SHA256SUM_CORE
-        ] = await getCodeChecksums({
-          env,
-          Code: prevCode
-        }));
-      } catch (err) {
-        if (err.code !== 'NoSuckKey') {
-          throw err;
-        }
-      }
+    ([
+      PREV_LAMBDA_CODE_SHA256SUM,
+      PREV_LAMBDA_CODE_SHA256SUM_CORE
+    ] = await getCodeChecksums({
+      env,
+      Code: prevCode
+    }));
 
-      if (LAMBDA_CODE_SHA256SUM_CORE === PREV_LAMBDA_CODE_SHA256SUM_CORE) {
-        // no real code change, so don't change lambda
-        Code = prevCode;
-        LAMBDA_CODE_SHA256SUM = PREV_LAMBDA_CODE_SHA256SUM;
-        ({
-          LAMBDA_CODE_S3BUCKET,
-          LAMBDA_CODE_S3KEY
-        } = prevEnvironment.Variables);
-      }
-    } catch (_err) {
-      // console.error(_err);
+    if (LAMBDA_CODE_SHA256SUM_CORE === PREV_LAMBDA_CODE_SHA256SUM_CORE) {
+      // no real code change, so don't change lambda
+      Code = prevCode;
+      LAMBDA_CODE_SHA256SUM = PREV_LAMBDA_CODE_SHA256SUM;
+      ({
+        LAMBDA_CODE_S3BUCKET,
+        LAMBDA_CODE_S3KEY
+      } = prevEnvironment.Variables);
     }
   }
 
