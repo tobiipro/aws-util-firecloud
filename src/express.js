@@ -3,7 +3,7 @@ import _ from 'lodash-firecloud';
 import _express from 'express';
 import bearerToken from 'express-bearer-token';
 import cors from 'cors';
-import http from 'http';
+import middlewares from './express/middlewares';
 import responseTime from 'response-time';
 import urlLib from 'url';
 
@@ -12,157 +12,14 @@ import {
 } from 'http-lambda';
 
 import {
-  bootstrap as bootstrapLambda,
-  getRequestInstance
+  asyncHandler,
+  bootstrap as bootstrapLambda
 } from './lambda';
 
 import {
-  bootstrap as bootstrapMiddleware
-} from './express-middleware';
+  bootstrap as bootstrapResponseError
+} from './express/res-error';
 
-import {
-  format as urlFormat,
-  parse as urlParse
-} from './url';
-
-let _resAddLink = function(link) {
-  let {target} = link;
-  delete link.target;
-  let linkStr = [`<${target}>`];
-
-  // eslint-disable-next-line lodash/prefer-map
-  _.forEach(link, function(value, key) {
-    linkStr.push(`${key}="${value}"`);
-  });
-
-  linkStr = linkStr.join('; ');
-  let linkHeader = _.defaultTo(this.getHeader('link'), []);
-  linkHeader.push(linkStr);
-  this.setHeader('link', linkHeader);
-};
-
-let _resSend = function(oldSend, body, mediaType) {
-  this.send = oldSend;
-
-  if (mediaType) {
-    this.set('content-type', mediaType);
-  }
-
-  if (!_.isUndefined(this.validate) &&
-      _.startsWith(this.get('content-type'), this.validate.schema.mediaType)
-  ) {
-    let valid = this.validate(body);
-    if (!valid) {
-      this.log.error({
-        errors: this.validate.errors,
-        body,
-        schema: this.validate.schema,
-        req: this.req,
-        res: this
-      }, 'Response validation failed!');
-    }
-  }
-
-  return this.send(body);
-};
-
-let _resSendError = function(status, extensions = {}) {
-  this.status(status);
-
-  let contentType = 'application/problem+json';
-  let body = _.merge({
-    type: 'about:blank',
-    title: http.STATUS_CODES[status],
-    status,
-    instance: this.instance
-  }, extensions);
-  this.send(body, contentType);
-
-  let err = new Error();
-  err.contentType = 'application/problem+json';
-  err.body = body;
-  return err;
-};
-
-let _reqGetBody = function() {
-  let {body} = this;
-  try {
-    if (/[/+]json$/.test(this.get('content-type'))) {
-      body = JSON.parse(this.body);
-    }
-  } catch (syntaxErrors) {
-    return this.res.sendError(400, {errors: syntaxErrors});
-  }
-
-  if (!_.isUndefined(this.validate)) {
-    let valid = this.validate(body);
-    if (!valid) {
-      return this.res.sendError(422, {
-        errors: this.validate.errors,
-        schema: this.validate.schema
-      });
-    }
-  }
-
-  return body;
-};
-
-let _initExpress = function() {
-  return bootstrapMiddleware(async function(req, res, next) {
-    req.log = req.ctx.log;
-    res.log = req.log;
-    res.instance = getRequestInstance(req);
-
-    req.getBody = _.memoize(_.bind(_reqGetBody, req));
-    req.getSelfUrl = function() {
-      return getSelfUrl({req});
-    };
-    req.getPaginationUrl = function(args) {
-      args.req = req;
-      return getPaginationUrl(args);
-    };
-
-    res.addLink = _.bind(_resAddLink, res);
-
-    let oldSend = res.send;
-    res.send = _.bind(_resSend, res, oldSend);
-    res.sendError = _.bind(_resSendError, res);
-    next();
-  });
-};
-
-let _xForward = function() {
-  return bootstrapMiddleware(async function(req, _res, next) {
-    req.headers = _.mapKeys(req.headers, function(_value, key) {
-      return _.replace(key, /^X-Forward-/, '');
-    });
-    next();
-  });
-};
-
-export let getSelfUrl = function({req}) {
-  let {env} = req.ctx;
-  let selfUrl = urlParse(`${env.API_SECONDARY_BASE_URL}${req.originalUrl}`);
-  return selfUrl;
-};
-
-export let getPaginationUrl = function({
-  req,
-  perPage,
-  ref
-}) {
-  let pageUrl = getSelfUrl({req});
-
-  // FIXME use url.URL when AWS Node.js is upgraded from 6.10
-  _.merge(pageUrl, {
-    query: {
-      per_page: perPage,
-      ref
-    }
-  });
-  pageUrl = urlParse(urlFormat(pageUrl));
-  return pageUrl;
-};
 
 export let express = function(e, _ctx, _next) {
   let app = _express();
@@ -181,6 +38,25 @@ export let express = function(e, _ctx, _next) {
     app.use(`/${basePath}`, app._router);
   }
 
+  app.oldUse = app.use;
+  app.use = function(...args) {
+    args = _.map(args, function(arg) {
+      if (!_.isFunction(arg)) {
+        return arg;
+      }
+
+      let fn = arg;
+      return asyncHandler(async function(req, res, next) {
+        bootstrapResponseError(async function() {
+          let result = fn(req, res, next);
+          return await _.alwaysPromise(result);
+        }, res);
+      });
+    });
+
+    app.oldUse(...args);
+  };
+
   app.use(responseTime());
   app.use(cors({
     exposedHeaders: [
@@ -190,13 +66,13 @@ export let express = function(e, _ctx, _next) {
     maxAge: 24 * 60 * 60 // 24 hours
   }));
   app.use(bearerToken());
-  app.use(_initExpress());
-  app.use(_xForward());
+  app.use(middlewares.applyMixins());
+  app.use(middlewares.xForward());
 
-  app.use(bootstrapMiddleware(async function(_req, res, next) {
+  app.use(async function(_req, res, next) {
     res.set('cache-control', 'max-age=0, no-store');
     next();
-  }));
+  });
 
   return app;
 };
@@ -204,22 +80,23 @@ export let express = function(e, _ctx, _next) {
 export let bootstrap = function(fn, {pkg}) {
   return bootstrapLambda(async function(e, ctx, next) {
     let app;
-    await ctx.trackTime(
+    await ctx.log.trackTime(
       'aws-util-firecloud.express.bootstrap: Creating express app...',
       async function() {
         app = express(e, ctx, next);
       }
     );
 
-    await ctx.trackTime(
+    await ctx.log.trackTime(
       'aws-util-firecloud.express.bootstrap: Setting up custom express...',
       async function() {
-        await fn(app, e, ctx, next);
+        fn = bootstrapResponseError(fn, app.res);
+        fn(app, e, ctx, next);
       }
     );
 
-    ctx.log.info('express.bootstrap: Creating HTTP server (handling request)');
-    await ctx.trackTime(
+    ctx.log.info('aws-util-firecloud.express.bootstrap: Creating HTTP server (handling request)...');
+    await ctx.log.trackTime(
       'aws-util-firecloud.express.bootstrap: Creating HTTP server (handling request)...',
       async function() {
         let http = new LambdaHttp(e, ctx, next);
