@@ -52,6 +52,82 @@ export let getCodeChecksums = async function({
   ];
 };
 
+export let getCodeChecksumVariables = async function({
+  Code,
+  FunctionName,
+  env
+}) {
+  let LAMBDA_CODE_S3BUCKET = Code.S3Bucket;
+  let LAMBDA_CODE_S3KEY = Code.S3Key;
+
+  let [
+    LAMBDA_CODE_SHA256SUM,
+    LAMBDA_CODE_SHA256SUM_CORE
+  ] = await getCodeChecksums({
+    env,
+    Code
+  });
+
+  let codeChecksumVariables = {
+    LAMBDA_CODE_SHA256SUM,
+    LAMBDA_CODE_SHA256SUM_CORE,
+    LAMBDA_CODE_S3BUCKET,
+    LAMBDA_CODE_S3KEY
+  };
+
+  if (!LAMBDA_CODE_SHA256SUM_CORE) {
+    return codeChecksumVariables;
+  }
+
+  let prevEnvironment;
+
+  // check if lambda code is the same as the current version
+  try {
+    let lambda = new aws.Lambda(getConfig({env}));
+    ({
+      Environment: prevEnvironment
+    } = await lambda.getFunctionConfiguration({
+      FunctionName
+    }).promise());
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.warn(err, {
+      FunctionName
+    });
+    return codeChecksumVariables;
+  }
+
+  let prevCode = {
+    S3Bucket: prevEnvironment.Variables.LAMBDA_CODE_S3BUCKET,
+    S3Key: prevEnvironment.Variables.LAMBDA_CODE_S3KEY
+  };
+
+  let [
+    PREV_LAMBDA_CODE_SHA256SUM,
+    PREV_LAMBDA_CODE_SHA256SUM_CORE
+  ] = await getCodeChecksums({
+    env,
+    Code: prevCode
+  });
+
+  if (LAMBDA_CODE_SHA256SUM_CORE === PREV_LAMBDA_CODE_SHA256SUM_CORE) {
+    // no real code change, so don't change lambda
+    Code = prevCode;
+    LAMBDA_CODE_SHA256SUM = PREV_LAMBDA_CODE_SHA256SUM;
+    ({
+      LAMBDA_CODE_S3BUCKET,
+      LAMBDA_CODE_S3KEY
+    } = prevEnvironment.Variables);
+
+    _.merge(codeChecksumVariables, {
+      LAMBDA_CODE_S3BUCKET,
+      LAMBDA_CODE_S3KEY
+    });
+  }
+
+  return codeChecksumVariables;
+};
+
 export let add = async function({
   Code,
   Resources,
@@ -119,67 +195,17 @@ export let add = async function({
     Role = {'Fn::GetAtt': [`${resNs}LambdaR`, 'Arn']};
   }
 
-  let LAMBDA_CODE_S3BUCKET = Code.S3Bucket;
-  let LAMBDA_CODE_S3KEY = Code.S3Key;
+  let Variables = {
+    APEX_FUNCTION_NAME: config.name, // apex specific
+    LAMBDA_FUNCTION_NAME: FunctionName // apex specific
+  };
 
-  let [
-    LAMBDA_CODE_SHA256SUM,
-    LAMBDA_CODE_SHA256SUM_CORE
-  ] = await getCodeChecksums({
-    env,
-    Code
+  let codeChecksumVariables = getCodeChecksumVariables({
+    Code,
+    FunctionName,
+    env
   });
-
-  if (LAMBDA_CODE_SHA256SUM_CORE) {
-    // check if lambda code is the same as the current version
-    let lambda = new aws.Lambda(getConfig({env}));
-    let {
-      Environment: prevEnvironment
-    } = await lambda.getFunctionConfiguration({
-      FunctionName
-    }).promise();
-
-    let prevCode = {
-      S3Bucket: prevEnvironment.Variables.LAMBDA_CODE_S3BUCKET,
-      S3Key: prevEnvironment.Variables.LAMBDA_CODE_S3KEY
-    };
-
-    let PREV_LAMBDA_CODE_SHA256SUM;
-    let PREV_LAMBDA_CODE_SHA256SUM_CORE;
-
-    ([
-      PREV_LAMBDA_CODE_SHA256SUM,
-      PREV_LAMBDA_CODE_SHA256SUM_CORE
-    ] = await getCodeChecksums({
-      env,
-      Code: prevCode
-    }));
-
-    if (LAMBDA_CODE_SHA256SUM_CORE === PREV_LAMBDA_CODE_SHA256SUM_CORE) {
-      // no real code change, so don't change lambda
-      Code = prevCode;
-      LAMBDA_CODE_SHA256SUM = PREV_LAMBDA_CODE_SHA256SUM;
-      ({
-        LAMBDA_CODE_S3BUCKET,
-        LAMBDA_CODE_S3KEY
-      } = prevEnvironment.Variables);
-    }
-  }
-
-  _.merge(Lambda, {
-    Properties: {
-      Environment: {
-        Variables: {
-          APEX_FUNCTION_NAME: config.name, // apex specific
-          LAMBDA_FUNCTION_NAME: FunctionName, // apex specific
-          LAMBDA_CODE_SHA256SUM,
-          LAMBDA_CODE_SHA256SUM_CORE,
-          LAMBDA_CODE_S3BUCKET,
-          LAMBDA_CODE_S3KEY
-        }
-      }
-    }
-  });
+  _.merge(Variables, codeChecksumVariables);
 
   Lambda = _.merge({
     DependsOn: _.concat([
@@ -194,7 +220,10 @@ export let add = async function({
       MemorySize: config.memory,
       Timeout: config.timeout,
       Role, // config.role,
-      Runtime: config.runtime
+      Runtime: config.runtime,
+      Environment: {
+        Variables
+      }
     }
   }, Lambda);
 
