@@ -17,15 +17,21 @@ export let getCodeChecksums = async function({
 }) {
   let s3 = new aws.S3(getConfig({env}));
 
+  let Bucket = Code.S3Bucket;
+  let Key = `${Code.S3Key}.${algorithm}sum`;
+
   let getObjectResp;
   try {
     getObjectResp = await s3.getObject({
-      Bucket: Code.S3Bucket,
-      Key: `${Code.S3Key}.${algorithm}sum`
+      Bucket,
+      Key
     }).promise();
   } catch (err) {
     // eslint-disable-next-line no-console
-    console.error(err);
+    console.warn(err, {
+      Bucket,
+      Key
+    });
     return [];
   }
 
