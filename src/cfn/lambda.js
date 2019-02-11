@@ -97,6 +97,11 @@ export let getCodeChecksumVariables = async function({
     return codeChecksumVariables;
   }
 
+  if (!prevEnvironment.Variables.LAMBDA_CODE_S3BUCKET ||
+      !prevEnvironment.Variables.LAMBDA_CODE_S3KEY) {
+    return codeChecksumVariables;
+  }
+
   let prevCode = {
     S3Bucket: prevEnvironment.Variables.LAMBDA_CODE_S3BUCKET,
     S3Key: prevEnvironment.Variables.LAMBDA_CODE_S3KEY
