@@ -200,7 +200,7 @@ export let add = async function({
     LAMBDA_FUNCTION_NAME: FunctionName // apex specific
   };
 
-  let codeChecksumVariables = getCodeChecksumVariables({
+  let codeChecksumVariables = await getCodeChecksumVariables({
     Code,
     FunctionName,
     env
