@@ -8,7 +8,9 @@ import {
 } from '../url';
 
 export let getSelfUrl = function() {
-  let {env} = this.ctx;
+  let {
+    env
+  } = this.ctx;
   let selfUrl = urlParse(`${env.API_SECONDARY_BASE_URL}${this.originalUrl}`);
   return selfUrl;
 };
@@ -31,7 +33,9 @@ export let getPaginationUrl = function({
 };
 
 export let getBody = function() {
-  let {body} = this;
+  let {
+    body
+  } = this;
   try {
     if (/[/+]json$/.test(this.get('content-type'))) {
       body = JSON.parse(this.body);

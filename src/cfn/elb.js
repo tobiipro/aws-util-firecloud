@@ -2,12 +2,12 @@ import _ from 'lodash-firecloud';
 import aws from 'aws-sdk';
 
 import {
-  get as getConfig
-} from '../config';
-
-import {
   isIntrinsicFun
 } from '.';
+
+import {
+  get as getConfig
+} from '../config';
 
 export let getLatestNodejsELB = async function({env}) {
   let ec2 = new aws.EC2(getConfig({env}));

@@ -6,9 +6,13 @@ import {
 } from '../lambda';
 
 export let addLink = function(link) {
-  let {target} = link;
+  let {
+    target
+  } = link;
   delete link.target;
-  let linkStr = [`<${target}>`];
+  let linkStr = [
+    `<${target}>`
+  ];
 
   // eslint-disable-next-line lodash/prefer-map
   _.forEach(link, function(value, key) {

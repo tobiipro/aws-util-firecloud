@@ -35,12 +35,17 @@ export let getCodeChecksums = async function({
     return [];
   }
 
-  let {Body} = getObjectResp;
+  let {
+    Body
+  } = getObjectResp;
   Body = Body.toString();
 
   let checksums = {};
   _.forEach(_.split(_.trim(Body), '\n'), function(line) {
-    let [checksum, filename] = _.split(line, '  ');
+    let [
+      checksum,
+      filename
+    ] = _.split(line, '  ');
     checksums[filename] = checksum;
   });
 
@@ -194,10 +199,20 @@ export let add = async function({
     }
   });
 
-  let Role = {'Fn::GetAtt': ['LambdaR', 'Arn']};
+  let Role = {
+    'Fn::GetAtt': [
+      'LambdaR',
+      'Arn'
+    ]
+  };
 
   if (Resources[`${resNs}LambdaR`]) {
-    Role = {'Fn::GetAtt': [`${resNs}LambdaR`, 'Arn']};
+    Role = {
+      'Fn::GetAtt': [
+        `${resNs}LambdaR`,
+        'Arn'
+      ]
+    };
   }
 
   let Variables = {

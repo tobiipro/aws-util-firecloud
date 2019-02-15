@@ -53,7 +53,9 @@ export let putRecords = async function({
     if (dataByteSize > limits.recordByteSize) {
       largeRecords.push(record);
       ctx.log.error(`Skipping record larger than ${limits.recordByteSize / 1024} KB: \
-${dataByteSize / 1024} KB.`, {record});
+${dataByteSize / 1024} KB.`, {
+        record
+      });
       toProcessCount = toProcessCount - 1;
       return;
     }
@@ -77,7 +79,9 @@ ${dataByteSize / 1024} KB.`, {record});
   });
 
   recordBatches.push(recordBatch);
-  recordBatches = _.reject(recordBatches, {byteSize: 0});
+  recordBatches = _.reject(recordBatches, {
+    byteSize: 0
+  });
 
   let processedCount = await _putRecordBatches({kinesis, recordBatches});
   if (processedCount !== toProcessCount) {

@@ -3,7 +3,9 @@ import aws from 'aws-sdk';
 
 export let getDefaultTotalSegments = async function(TableName) {
   let db = new aws.DynamoDB();
-  let {Table} = await db.describeTable({TableName}).promise();
+  let {
+    Table
+  } = await db.describeTable({TableName}).promise();
 
   let TwoGigabytesInBytes = 2 * 1024 * 1024 * 1024;
   return Math.floor(Table.TableSizeBytes / TwoGigabytesInBytes) + 1;
@@ -41,7 +43,10 @@ export let dcScan = async function(args, iteratee) {
   //   _.defaultTo(args.TotalSegments,
   //   await getDefaultTotalSegments(args.TableName));
   args.TotalSegments = 1;
-  args.TotalSegments = _.max([1, args.TotalSegments]);
+  args.TotalSegments = _.max([
+    1,
+    args.TotalSegments
+  ]);
 
   if (args.Limit) {
     args.Limit = _.ceil(args.Limit / args.TotalSegments);

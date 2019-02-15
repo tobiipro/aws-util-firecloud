@@ -11,7 +11,9 @@ import {
 } from './lambda/logger';
 
 export let getRequestInstance = function(req) {
-  let {ctx} = req;
+  let {
+    ctx
+  } = req;
   return `${ctx.invokedFunctionArn}#request:${ctx.awsRequestId}`;
 };
 
@@ -22,7 +24,9 @@ export let asyncHandler = function(fn) {
   };
 };
 
-export let bootstrap = function(fn, {pkg}) {
+export let bootstrap = function(fn, {
+  pkg
+}) {
   return asyncHandler(async function(e, ctx, next) {
     // temporary logger
     setupLogger({ctx});
@@ -38,7 +42,10 @@ export let bootstrap = function(fn, {pkg}) {
       'aws-util-firecloud.lambda.bootstrap: Setting up logger...',
       async function() {
         setupLogger({ctx});
-        ctx.log.trace(`Logger started. ${ctx.log.level()}`, {e, ctx});
+        ctx.log.trace(`Logger started. ${ctx.log.level()}`, {
+          e,
+          ctx
+        });
       }
     );
 

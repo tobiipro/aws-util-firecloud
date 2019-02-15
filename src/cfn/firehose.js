@@ -25,7 +25,9 @@ export let addFirehoseToS3 = function({
     resName = `${resName}FirehoseToS3`;
   }
 
-  let {LogGroupName} = Resources[logGroupResName].Properties;
+  let {
+    LogGroupName
+  } = Resources[logGroupResName].Properties;
   LogStreamName = _.defaultTo(LogStreamName, Prefix);
 
   let logStream = {
@@ -97,9 +99,9 @@ export let addFirehoseToS3 = function({
           }
         }]
       },
-      ManagedPolicyArns: [
-        {Ref: `${resNs}${resName}P`}
-      ]
+      ManagedPolicyArns: [{
+        Ref: `${resNs}${resName}P`
+      }]
     }
   };
 
@@ -121,7 +123,12 @@ export let addFirehoseToS3 = function({
         CompressionFormat,
         EncryptionConfiguration: undefined,
         Prefix: `${Prefix}/`, // 'YYYY/MM/DD/HH' prefix is implicit
-        RoleARN: {'Fn::GetAtt': [`${resNs}${resName}R`, 'Arn']}
+        RoleARN: {
+          'Fn::GetAtt': [
+            `${resNs}${resName}R`,
+            'Arn'
+          ]
+        }
       }
     }
   };

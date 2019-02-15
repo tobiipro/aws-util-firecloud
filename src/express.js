@@ -8,8 +8,8 @@ import responseTime from 'response-time';
 import urlLib from 'url';
 
 import {
-  LambdaHttp
-} from 'http-lambda';
+  bootstrap as bootstrapResponseError
+} from './express/res-error';
 
 import {
   asyncHandler,
@@ -17,8 +17,8 @@ import {
 } from './lambda';
 
 import {
-  bootstrap as bootstrapResponseError
-} from './express/res-error';
+  LambdaHttp
+} from 'http-lambda';
 
 
 export let express = function(e, _ctx, _next) {
@@ -77,7 +77,9 @@ export let express = function(e, _ctx, _next) {
   return app;
 };
 
-export let bootstrap = function(fn, {pkg}) {
+export let bootstrap = function(fn, {
+  pkg
+}) {
   return bootstrapLambda(async function(e, ctx, next) {
     let app;
     await ctx.log.trackTime(
@@ -103,7 +105,9 @@ export let bootstrap = function(fn, {pkg}) {
         http.createServer(app);
       }
     );
-  }, {pkg});
+  }, {
+    pkg
+  });
 };
 
 export default exports;

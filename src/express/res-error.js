@@ -21,7 +21,9 @@ export let bootstrap = function(fn, res) {
     try {
       await fn(...args);
     } catch (err) {
-      let {ctx} = res;
+      let {
+        ctx
+      } = res;
 
       res.log.error({err});
 

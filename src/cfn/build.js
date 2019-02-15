@@ -64,7 +64,9 @@ export let build = async function({
     });
 
     // allow the main function to return multiple partial templates
-    partialTpls = _.isArray(partialTpls) ? partialTpls : [partialTpls];
+    partialTpls = _.isArray(partialTpls) ? partialTpls : [
+      partialTpls
+    ];
 
     _.merge(tpl, ...partialTpls);
   }));

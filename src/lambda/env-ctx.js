@@ -1,8 +1,15 @@
 import _ from 'lodash-firecloud';
 import aws from 'aws-sdk';
 
-let _memoizeResolver = function({ctx, tags = ['default']}) {
-  let {env} = ctx;
+let _memoizeResolver = function({
+  ctx,
+  tags = [
+    'default'
+  ]
+}) {
+  let {
+    env
+  } = ctx;
 
   return [
     env.AWS_ACCOUNT_ID,
@@ -14,7 +21,9 @@ let _memoizeResolver = function({ctx, tags = ['default']}) {
 };
 
 let _get = async function({ctx, tags}) {
-  let {env} = ctx;
+  let {
+    env
+  } = ctx;
   // eslint-disable-next-line fp/no-arguments
   let cacheKey = _memoizeResolver(...arguments);
   let s3 = new aws.S3({

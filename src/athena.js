@@ -50,7 +50,10 @@ export let pollQueryCompletedState = async function({
 export let queryResultToObjectsArray = function(queryResult) {
   let columnInfo = queryResult.ResultSet.ResultSetMetadata.ColumnInfo;
   let columns = _.map(columnInfo, function(column) {
-    return _.pick(column, ['Name', 'Type']);
+    return _.pick(column, [
+      'Name',
+      'Type'
+    ]);
   });
 
   let rows = queryResult.ResultSet.Rows;
@@ -94,12 +97,25 @@ export let queryResultToText = function(queryResult) {
 
 export let queryResultIsShowResult = function(queryResult) {
   let showColumnSets = [
-    ['createtab_stmt'],
-    ['tab_name'],
-    ['database_name'],
-    ['partition'],
-    ['field'],
-    ['prpt_name', 'prpt_value']
+    [
+      'createtab_stmt'
+    ],
+    [
+      'tab_name'
+    ],
+    [
+      'database_name'
+    ],
+    [
+      'partition'
+    ],
+    [
+      'field'
+    ],
+    [
+      'prpt_name',
+      'prpt_value'
+    ]
   ];
 
   let columnInfo = queryResult.ResultSet.ResultSetMetadata.ColumnInfo;
@@ -126,7 +142,9 @@ export let executeQuery = async function({
   initPollingDelay = pollingDelay
 }) {
   let queryExecutionData = await athena.startQueryExecution(params).promise();
-  let {QueryExecutionId} = queryExecutionData;
+  let {
+    QueryExecutionId
+  } = queryExecutionData;
 
   await _.sleep(initPollingDelay);
   let status = await pollQueryCompletedState({

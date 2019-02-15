@@ -25,7 +25,9 @@ export let addNestedApiResources = function({
         RestApiId
       }
     };
-    ParentId = {Ref: resourceName};
+    ParentId = {
+      Ref: resourceName
+    };
   });
 
   return resourceName;

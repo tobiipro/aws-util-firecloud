@@ -38,7 +38,9 @@ export let inspect = async function({ctx}) {
     })
   };
 
-  let {previousMemoryUsage} = inspect;
+  let {
+    previousMemoryUsage
+  } = inspect;
   if (previousMemoryUsage) {
     inspection.process.memoryUsageDiff = {
       rss: previousMemoryUsage.rss - inspection.process.memoryUsage.rss,

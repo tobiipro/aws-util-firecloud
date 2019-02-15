@@ -20,10 +20,14 @@ export let addStatementFromArns = async function({
   let iam = new aws.IAM(getConfig({env}));
 
   let arnStatement = await Promise.all(_.map(arns, async function(PolicyArn) {
-    let {Policy} = await iam.getPolicy({
+    let {
+      Policy
+    } = await iam.getPolicy({
       PolicyArn
     }).promise();
-    let {PolicyVersion} = await iam.getPolicyVersion({
+    let {
+      PolicyVersion
+    } = await iam.getPolicyVersion({
       PolicyArn,
       VersionId: Policy.DefaultVersionId
     }).promise();
@@ -52,7 +56,9 @@ export let addStatementFromArns = async function({
 export let compactStatement = function({Statement}) {
   let map = {};
   _.forEach(Statement, function(stmt) {
-    stmt.Resource = _.isArray(stmt.Resource) ? stmt.Resource : [stmt.Resource];
+    stmt.Resource = _.isArray(stmt.Resource) ? stmt.Resource : [
+      stmt.Resource
+    ];
     let key = JSON.stringify([
       stmt.Effect,
       stmt.Principal,
@@ -70,7 +76,9 @@ export let compactStatement = function({Statement}) {
       Condition
     } = stmts[0];
     let Action = _.sortBy(_.uniq(_.flatten(_.map(stmts, function(stmt) {
-      return _.isArray(stmt.Action) ? stmt.Action : [stmt.Action];
+      return _.isArray(stmt.Action) ? stmt.Action : [
+        stmt.Action
+      ];
     }))));
     return {
       Effect,
