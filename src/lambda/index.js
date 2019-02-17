@@ -1,14 +1,14 @@
 import _ from 'lodash-firecloud';
 
-import inspect from './lambda/inspect';
+import inspect from './inspect';
 
 import {
   merge as mergeEnvCtx
-} from './lambda/env-ctx';
+} from './env-ctx';
 
 import {
   setup as setupLogger
-} from './lambda/logger';
+} from './logger';
 
 export let getRequestInstance = function(req) {
   let {

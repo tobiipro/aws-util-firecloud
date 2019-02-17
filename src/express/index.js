@@ -3,18 +3,18 @@ import _ from 'lodash-firecloud';
 import _express from 'express';
 import bearerToken from 'express-bearer-token';
 import cors from 'cors';
-import middlewares from './express/middlewares';
+import middlewares from './middlewares';
 import responseTime from 'response-time';
 import urlLib from 'url';
 
 import {
-  bootstrap as bootstrapResponseError
-} from './express/res-error';
-
-import {
   asyncHandler,
   bootstrap as bootstrapLambda
-} from './lambda';
+} from '../lambda';
+
+import {
+  bootstrap as bootstrapResponseError
+} from './res-error';
 
 import {
   LambdaHttp
