@@ -17,17 +17,10 @@ export let getRequestInstance = function(req) {
   return `${ctx.invokedFunctionArn}#request:${ctx.awsRequestId}`;
 };
 
-export let asyncHandler = function(fn) {
-  return function(...args) {
-    let next = args[args.length - 1];
-    fn(...args).catch(next);
-  };
-};
-
 export let bootstrap = function(fn, {
   pkg
 }) {
-  return asyncHandler(async function(e, ctx, next) {
+  return _.callbackify(async function(e, ctx) {
     // temporary logger
     setupLogger({ctx});
 
@@ -59,7 +52,7 @@ export let bootstrap = function(fn, {
     await ctx.log.trackTime(
       'aws-util-firecloud.lambda.bootstrap: Running fn...',
       async function() {
-        await fn(e, ctx, next);
+        await fn(e, ctx);
       }
     );
 

@@ -9,7 +9,6 @@ import responseTime from 'response-time';
 import urlLib from 'url';
 
 import {
-  asyncHandler,
   bootstrap as bootstrapLambda
 } from '../lambda';
 
@@ -27,12 +26,16 @@ let _bootstrapLayer = function() {
     let fn = this.handle;
 
     if (fn.length === 4 && !fn._awsUtilFirecloud) {
-      fn = asyncHandler(async function(err, req, res, next) {
+      // need to keep function arity
+      let callbackFn = _.callbackify(async function(err, req, res) {
         bootstrapResponseError(async function() {
-          let result = fn(err, req, res, next);
+          let result = fn(err, req, res);
           return await _.alwaysPromise(result);
         }, res);
       });
+      fn = function(err, req, res, next) {
+        return callbackFn(err, req, res, next);
+      };
       fn._awsUtilFirecloud = true;
       this.handle = fn;
     }
@@ -45,12 +48,16 @@ let _bootstrapLayer = function() {
     let fn = this.handle;
 
     if (fn.length <= 3 && !fn._awsUtilFirecloud) {
-      fn = asyncHandler(async function(req, res, next) {
+      // need to keep function arity
+      let callbackFn = _.callbackify(async function(req, res) {
         bootstrapResponseError(async function() {
-          let result = fn(req, res, next);
+          let result = fn(req, res);
           return await _.alwaysPromise(result);
         }, res);
       });
+      fn = function(req, res, next) {
+        return callbackFn(req, res, next);
+      };
       fn._awsUtilFirecloud = true;
       this.handle = fn;
     }
