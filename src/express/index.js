@@ -1,4 +1,5 @@
 /* eslint-disable no-invalid-this */
+import Layer from 'express/lib/router/layer';
 import _ from 'lodash-firecloud';
 import _express from 'express';
 import bearerToken from 'express-bearer-token';
@@ -20,8 +21,46 @@ import {
   LambdaHttp
 } from 'http-lambda';
 
+let _bootstrapLayer = function() {
+  let originalLayerHandleError = Layer.prototype.handle_error;
+  Layer.prototype.handle_error = function(...args) {
+    let fn = this.handle;
+
+    if (fn.length === 4 && !fn._awsUtilFirecloud) {
+      fn = asyncHandler(async function(err, req, res, next) {
+        bootstrapResponseError(async function() {
+          let result = fn(err, req, res, next);
+          return await _.alwaysPromise(result);
+        }, res);
+      });
+      fn._awsUtilFirecloud = true;
+      this.handle = fn;
+    }
+
+    return originalLayerHandleError.call(this, ...args);
+  };
+
+  let originalLayerHandleRequest = Layer.prototype.handle_request;
+  Layer.prototype.handle_request = function(...args) {
+    let fn = this.handle;
+
+    if (fn.length <= 3 && !fn._awsUtilFirecloud) {
+      fn = asyncHandler(async function(req, res, next) {
+        bootstrapResponseError(async function() {
+          let result = fn(req, res, next);
+          return await _.alwaysPromise(result);
+        }, res);
+      });
+      fn._awsUtilFirecloud = true;
+      this.handle = fn;
+    }
+
+    return originalLayerHandleRequest.call(this, ...args);
+  };
+};
 
 export let express = function(e, _ctx, _next) {
+  _bootstrapLayer();
   let app = _express();
 
   app.disable('x-powered-by');
@@ -37,25 +76,6 @@ export let express = function(e, _ctx, _next) {
     app.lazyrouter();
     app.use(`/${basePath}`, app._router);
   }
-
-  app.oldUse = app.use;
-  app.use = function(...args) {
-    args = _.map(args, function(arg) {
-      if (!_.isFunction(arg)) {
-        return arg;
-      }
-
-      let fn = arg;
-      return asyncHandler(async function(req, res, next) {
-        bootstrapResponseError(async function() {
-          let result = fn(req, res, next);
-          return await _.alwaysPromise(result);
-        }, res);
-      });
-    });
-
-    app.oldUse(...args);
-  };
 
   app.use(responseTime());
   app.use(cors({
