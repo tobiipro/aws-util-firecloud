@@ -6,55 +6,67 @@ export let inspect = async function({ctx}) {
     return;
   }
 
-  // Added in: v6.1.0
-  // let cpuUsage = process.cpuUsage(inspect.previousCpuUsage);
-  // inspect.previousCpuUsage = cpuUsage;
+  let processSnapshot = _.pick(process, [
+    'arch',
+    'argv',
+    'argv0',
+    'config',
+    'env',
+    'execArgv',
+    'pid',
+    'platform',
+    'release',
+    'title',
+    'version',
+    'versions'
+  ]);
+  _.merge(processSnapshot, {
+    cpuUsage: process.cpuUsage(),
+    memoryUsage: process.memoryUsage(),
+    uptime: process.uptime()
+  });
+
+  let osSnapshot = _.mapValues(os, function(fn) {
+    if (!_.isFunction(fn)) {
+      return;
+    }
+
+    return fn();
+  });
 
   let inspection = {
-    process: _.merge(_.pick(process, [
-      'arch',
-      'argv',
-      'argv0',
-      'config',
-      'env',
-      'execArgv',
-      'pid',
-      'platform',
-      'release',
-      'title',
-      'version',
-      'versions'
-    ]), {
-      // cpuUsage,
-      memoryUsage: process.memoryUsage(),
-      uptime: process.uptime()
-    }),
-    os: _.mapValues(os, function(fn) {
-      if (!_.isFunction(fn)) {
-        return;
-      }
-
-      return fn();
-    })
+    process: processSnapshot,
+    os: osSnapshot
   };
 
   let {
+    previousCpuUsage,
     previousMemoryUsage
   } = inspect;
+
   if (previousMemoryUsage) {
     inspection.process.memoryUsageDiff = {
       rss: previousMemoryUsage.rss - inspection.process.memoryUsage.rss,
-      heapUsed: previousMemoryUsage.heapUsed - inspection.process.memoryUsage.heapUsed,
-      time: previousMemoryUsage.uptime - inspection.process.uptime
-    };
-    inspect.previousMemoryUsage = {
-      rss: inspect.process.memoryUsage.rss,
-      heapUsed: inspect.process.memoryUsage.heapUsed,
-      uptime: inspect.process.uptime
+      heapUsed: previousMemoryUsage.heapUsed - inspection.process.memoryUsage.heapUsed
     };
   }
+  inspect.previousMemoryUsage = {
+    rss: inspection.process.memoryUsage.rss,
+    heapUsed: inspection.process.memoryUsage.heapUsed
+  };
 
-  ctx.log.trace(inspection, 'Inspection');
+  if (previousCpuUsage) {
+    inspection.process.cpuUsageDiff = {
+      user: previousCpuUsage.user - inspection.process.cpuUsage.user,
+      system: previousCpuUsage.system - inspection.process.cpuUsage.system
+    };
+  }
+  inspect.previousCpuUsage = {
+    user: inspection.process.cpuUsage.user,
+    system: inspection.process.cpuUsage.system
+  };
+
+  ctx.log.trace('Inspection', inspection);
 };
 
 export default inspect;
