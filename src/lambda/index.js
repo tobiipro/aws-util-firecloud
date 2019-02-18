@@ -64,11 +64,6 @@ export let bootstrap = function(fn, {
         }
       );
     }
-
-    ctx.log.debug('Execution time report:');
-    _.forEach(ctx.log.trackTime.reports, function(report) {
-      ctx.log.debug(report);
-    });
   });
 };
 
