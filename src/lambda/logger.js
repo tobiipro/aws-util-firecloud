@@ -107,7 +107,7 @@ export let setup = function({ctx}) {
 
   ctx.log = logger;
   _setupAwsLogger({ctx});
-  _setupLongStacktraces();
+  _setupLongStacktraces({ctx});
 };
 
 export default exports;
