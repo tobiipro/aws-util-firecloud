@@ -83,7 +83,7 @@ let _setupLongStacktraces = function({ctx}) {
 };
 
 export let setup = function({ctx}) {
-  let level = _.get(ctx, 'env.LOG_LEVEL', 'INFO');
+  let level = _.get(ctx, 'env.LOG_LEVEL', 'info');
 
   let logger = new MinLog({
     serializers: [
@@ -103,7 +103,7 @@ export let setup = function({ctx}) {
   };
 
   // internal convenience
-  logger._canTrace = !logger.levelIsBeyondGroup('TRACE', level);
+  logger._canTrace = !logger.levelIsBeyondGroup('trace', level);
 
   ctx.log = logger;
   _setupAwsLogger({ctx});
