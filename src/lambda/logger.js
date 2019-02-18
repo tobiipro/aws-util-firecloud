@@ -103,7 +103,7 @@ export let setup = function({ctx}) {
   };
 
   // internal convenience
-  logger._canTrace = !ctx.log.levelIsBeyondGroup('TRACE', level);
+  logger._canTrace = !logger.levelIsBeyondGroup('TRACE', level);
 
   ctx.log = logger;
   _setupAwsLogger({ctx});
