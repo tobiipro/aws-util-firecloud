@@ -96,7 +96,7 @@ export let express = function(e, _ctx, _next) {
   app.use(middlewares.applyMixins());
   app.use(middlewares.xForward());
 
-  app.use(async function(_req, res, next) {
+  app.use(function(_req, res, next) {
     res.set('cache-control', 'max-age=0, no-store');
     next();
   });
