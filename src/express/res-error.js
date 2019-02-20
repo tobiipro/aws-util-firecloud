@@ -19,7 +19,7 @@ ResponseError.prototype = new Error();
 export let bootstrap = function(fn, res) {
   return async function(...args) {
     try {
-      await fn(...args);
+      return await fn(...args);
     } catch (err) {
       let {
         ctx
@@ -29,12 +29,11 @@ export let bootstrap = function(fn, res) {
 
       if (res.headersSent) {
         ctx.log.error("Headers already sent. Can't send error.");
-        throw err;
       }
 
       if (err instanceof ResponseError) {
         ctx.log.error(`Responding with ${err.code} ${err.message}...`);
-        return res.sendError(err);
+        res.sendError(err);
       }
 
       if (res.ctx.log._canTrace) {
@@ -43,7 +42,7 @@ export let bootstrap = function(fn, res) {
           renderer: pkg.name,
           trace: err.stack ? _.split(err.stack, '\n') : err
         });
-        return res.sendError(internalErr);
+        res.sendError(internalErr);
       }
 
       throw err;
