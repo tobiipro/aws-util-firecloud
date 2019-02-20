@@ -25,18 +25,16 @@ let _bootstrapLayer = function() {
   Layer.prototype.handle_error = function(...args) {
     let fn = this.handle;
 
-    if (fn.length === 4 && !fn._awsUtilFirecloud) {
+    if (fn.length === 4 && !this._callbackifiedHandle) {
       // need to keep function arity
       let callbackFn = _.callbackify(async function(err, req, res) {
-        return bootstrapResponseError(async function() {
-          return await fn(err, req, res);
-        }, res);
+        let safeFn = bootstrapResponseError(fn, res);
+        return await safeFn(err, req, res);
       });
-      fn = function(err, req, res, next) {
+      this.handle = function(err, req, res, next) {
         return callbackFn(err, req, res, next);
       };
-      fn._awsUtilFirecloud = true;
-      this.handle = fn;
+      this._callbackifiedHandle = true;
     }
 
     return originalLayerHandleError.call(this, ...args);
@@ -46,18 +44,16 @@ let _bootstrapLayer = function() {
   Layer.prototype.handle_request = function(...args) {
     let fn = this.handle;
 
-    if (fn.length <= 3 && !fn._awsUtilFirecloud) {
+    if (fn.length <= 3 && !this._callbackifiedHandle) {
       // need to keep function arity
       let callbackFn = _.callbackify(async function(req, res) {
-        return bootstrapResponseError(async function() {
-          return await fn(req, res);
-        }, res);
+        let safeFn = bootstrapResponseError(fn, res);
+        return await safeFn(req, res);
       });
-      fn = function(req, res, next) {
+      this.handle = function(req, res, next) {
         return callbackFn(req, res, next);
       };
-      fn._awsUtilFirecloud = true;
-      this.handle = fn;
+      this._callbackifiedHandle = true;
     }
 
     return originalLayerHandleRequest.call(this, ...args);
