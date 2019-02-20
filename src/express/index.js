@@ -66,7 +66,7 @@ let _bootstrapLayer = function() {
   };
 };
 
-export let express = function(e, _ctx, _next) {
+export let express = function(e) {
   _bootstrapLayer();
   let app = _express();
 
@@ -107,12 +107,12 @@ export let express = function(e, _ctx, _next) {
 export let bootstrap = function(fn, {
   pkg
 }) {
-  return bootstrapLambda(async function(e, ctx, next) {
+  return bootstrapLambda(async function(e, ctx) {
     let app;
     await ctx.log.trackTime(
       'aws-util-firecloud.express.bootstrap: Creating express app...',
       async function() {
-        app = express(e, ctx, next);
+        app = express(e);
       }
     );
 
@@ -120,18 +120,24 @@ export let bootstrap = function(fn, {
       'aws-util-firecloud.express.bootstrap: Setting up custom express...',
       async function() {
         fn = bootstrapResponseError(fn, app.res);
-        fn(app, e, ctx, next);
+        await fn(app, e, ctx);
       }
     );
 
+    let result;
     ctx.log.info('aws-util-firecloud.express.bootstrap: Creating HTTP server (handling request)...');
     await ctx.log.trackTime(
       'aws-util-firecloud.express.bootstrap: Creating HTTP server (handling request)...',
-      async function() {
-        let http = new LambdaHttp(e, ctx, next);
+      _.promisify(function(done) {
+        let http = new LambdaHttp(e, ctx, function(...args) {
+          result = args[1];
+          done(...args);
+        });
         http.createServer(app);
-      }
+      })
     );
+
+    return result;
   }, {
     pkg
   });
