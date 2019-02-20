@@ -28,9 +28,8 @@ let _bootstrapLayer = function() {
     if (fn.length === 4 && !fn._awsUtilFirecloud) {
       // need to keep function arity
       let callbackFn = _.callbackify(async function(err, req, res) {
-        bootstrapResponseError(async function() {
-          let result = fn(err, req, res);
-          return await _.alwaysPromise(result);
+        return bootstrapResponseError(async function() {
+          return await fn(err, req, res);
         }, res);
       });
       fn = function(err, req, res, next) {
@@ -50,9 +49,8 @@ let _bootstrapLayer = function() {
     if (fn.length <= 3 && !fn._awsUtilFirecloud) {
       // need to keep function arity
       let callbackFn = _.callbackify(async function(req, res) {
-        bootstrapResponseError(async function() {
-          let result = fn(req, res);
-          return await _.alwaysPromise(result);
+        return bootstrapResponseError(async function() {
+          return await fn(req, res);
         }, res);
       });
       fn = function(req, res, next) {
