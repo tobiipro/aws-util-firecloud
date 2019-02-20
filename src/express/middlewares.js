@@ -2,14 +2,17 @@ import _ from 'lodash-firecloud';
 import reqMixins from './req-mixins';
 import resMixins from './res-mixins';
 
+let _reqMixins = _.omit(reqMixins, 'default');
+let _resMixins = _.omit(resMixins, 'default');
+
 export let applyMixins = function() {
   return function(req, res, next) {
-    _.forEach(reqMixins, function(fn, name) {
+    _.forEach(_reqMixins, function(fn, name) {
       req[name] = _.bind(fn, req);
     });
 
     res.oldSend = res.send; // required by the res.send mixin
-    _.forEach(resMixins, function(fn, name) {
+    _.forEach(_resMixins, function(fn, name) {
       res[name] = _.bind(fn, res);
     });
 
