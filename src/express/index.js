@@ -28,7 +28,7 @@ let _bootstrapLayer = function() {
     if (fn.length === 4 && !this._callbackifiedHandle) {
       // need to keep function arity
       let callbackFn = _.callbackify(async function(err, req, res) {
-        let safeFn = bootstrapResponseError(_.promisify(fn), res);
+        let safeFn = bootstrapResponseError(fn, res);
         return await safeFn(err, req, res);
       });
       this.handle = function(err, req, res, next) {
@@ -47,7 +47,7 @@ let _bootstrapLayer = function() {
     if (fn.length <= 3 && !this._callbackifiedHandle) {
       // need to keep function arity
       let callbackFn = _.callbackify(async function(req, res) {
-        let safeFn = bootstrapResponseError(_.promisify(fn), res);
+        let safeFn = bootstrapResponseError(fn, res);
         return await safeFn(req, res);
       });
       this.handle = function(req, res, next) {

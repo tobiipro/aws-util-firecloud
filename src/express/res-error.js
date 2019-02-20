@@ -19,7 +19,7 @@ ResponseError.prototype = new Error();
 export let bootstrap = function(fn, res) {
   return async function(...args) {
     try {
-      return await fn(...args);
+      return await _.alwaysPromise(fn(...args));
     } catch (err) {
       let {
         ctx

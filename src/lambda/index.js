@@ -54,7 +54,7 @@ let _bootstrap = async function({fn, e, ctx, pkg}) {
   await ctx.log.trackTime(
     'aws-util-firecloud.lambda.bootstrap: Running fn...',
     async function() {
-      result = await fn(e, ctx);
+      result = await _.alwaysPromise(fn(e, ctx));
     }
   );
 
