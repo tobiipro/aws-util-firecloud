@@ -27,6 +27,10 @@ export let bootstrap = function(fn, res) {
 
       ctx.log.error({err});
 
+      if (!_.isFunction(res.sendError)) {
+        throw err;
+      }
+
       if (res.headersSent) {
         ctx.log.error("Headers already sent. Can't send error.");
       }
