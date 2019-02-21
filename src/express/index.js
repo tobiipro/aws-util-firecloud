@@ -48,9 +48,9 @@ let _bootstrapLayer = function() {
   };
 };
 
-export let express = function(e) {
+let _bootstrap = async function(fn, e, ctx) {
   _bootstrapLayer();
-  let app = _express();
+  let app = _express(e);
 
   app.disable('x-powered-by');
   app.disable('etag');
@@ -83,6 +83,9 @@ export let express = function(e) {
     next();
   });
 
+  await fn(app, e, ctx);
+
+  // error handlers need to be registered last
   app.use(middlewares.resError());
 
   return app;
@@ -96,14 +99,7 @@ export let bootstrap = function(fn, {
     await ctx.log.trackTime(
       'aws-util-firecloud.express.bootstrap: Creating express app...',
       async function() {
-        app = express(e);
-      }
-    );
-
-    await ctx.log.trackTime(
-      'aws-util-firecloud.express.bootstrap: Setting up custom express...',
-      async function() {
-        await fn(app, e, ctx);
+        app = await _bootstrap(fn, e, ctx);
       }
     );
 
