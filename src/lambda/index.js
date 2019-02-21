@@ -21,7 +21,7 @@ let _cleanup = async function({ctx}) {
   }
 };
 
-let _bootstrap = async function({fn, e, ctx, pkg}) {
+let _bootstrap = async function(fn, e, ctx, pkg) {
   // temporary logger
   setupLogger({ctx});
 
@@ -74,9 +74,28 @@ export let getRequestInstance = function(req) {
 export let bootstrap = function(fn, {
   pkg
 }) {
-  return _.callbackify(async function(e, ctx) {
-    return await _bootstrap({fn, e, ctx, pkg});
-  });
+  return function(e, ctx, next) {
+    let nextOnce = function(err, result) {
+      if (nextOnce.called) {
+        ctx.log.warn('Skip sending a new lambda response. One was already sent', {
+          previous: nextOnce.called,
+          current: {
+            err,
+            result
+          }
+        });
+        return;
+      }
+
+      nextOnce.called = {
+        err,
+        result
+      };
+
+      next(err, result);
+    };
+    _.callbackify(_bootstrap)(fn, e, ctx, pkg, nextOnce);
+  };
 };
 
 export default exports;

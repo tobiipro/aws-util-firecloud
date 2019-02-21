@@ -15,10 +15,4 @@ export let ResponseError = function(status, extensions = {}) {
 };
 ResponseError.prototype = new Error();
 
-export let bootstrap = function(fn, _res) {
-  return async function(...args) {
-    return await _.alwaysPromise(fn(...args));
-  };
-};
-
 export default ResponseError;

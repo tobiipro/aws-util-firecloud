@@ -17,46 +17,34 @@ import {
 } from 'http-lambda';
 
 let _bootstrapLayer = function() {
-  let originalLayerHandleError = Layer.prototype.handle_error;
-  Layer.prototype.handle_error = function(...args) {
+  Layer.prototype.handle_error = function(error, req, res, next) {
     let fn = this.handle;
 
-    if (fn.length === 4 && !this._callbackifiedHandle) {
-      let callbackFn = _.callbackify(async function(err, req, res, next) {
-        let safeFn = bootstrapResponseError(fn, res);
-        return await safeFn(err, req, res, next);
-      }, {
-        keepCallback: true
-      });
-      // need to keep function arity
-      this.handle = function(err, req, res, next) {
-        return callbackFn(err, req, res, next);
-      };
-      this._callbackifiedHandle = true;
+    if (fn.length !== 4) {
+      // not a standard error handler
+      return next(error);
     }
 
-    return originalLayerHandleError.call(this, ...args);
+    try {
+      _.alwaysPromise(fn(error, req, res, next)).catch(next);
+    } catch (err) {
+      return next(err);
+    }
   };
 
-  let originalLayerHandleRequest = Layer.prototype.handle_request;
-  Layer.prototype.handle_request = function(...args) {
-    let fn = this.handle; // (req, res, next)
+  Layer.prototype.handle_request = function(req, res, next) {
+    let fn = this.handle;
 
-    if (fn.length <= 3 && !this._callbackifiedHandle) {
-      let callbackFn = _.callbackify(async function(req, res, next) {
-        let safeFn = bootstrapResponseError(fn, res);
-        return await safeFn(req, res, next);
-      }, {
-        keepCallback: true
-      });
-      // need to keep function arity
-      this.handle = function(req, res, next) {
-        return callbackFn(req, res, next);
-      };
-      this._callbackifiedHandle = true;
+    if (fn.length > 3) {
+      // not a standard request handler
+      return next();
     }
 
-    return originalLayerHandleRequest.call(this, ...args);
+    try {
+      _.alwaysPromise(fn(req, res, next)).catch(next);
+    } catch (err) {
+      return next(err);
+    }
   };
 };
 
@@ -115,7 +103,6 @@ export let bootstrap = function(fn, {
     await ctx.log.trackTime(
       'aws-util-firecloud.express.bootstrap: Setting up custom express...',
       async function() {
-        fn = bootstrapResponseError(fn, app.res);
         await fn(app, e, ctx);
       }
     );
@@ -126,7 +113,9 @@ export let bootstrap = function(fn, {
       'aws-util-firecloud.express.bootstrap: Creating HTTP server (handling request)...',
       _.promisify(function(done) {
         let http = new LambdaHttp(e, ctx, function(err, resData) {
-          result = resData;
+          if (_.isUndefined(err)) {
+            result = resData;
+          }
           done(err);
         });
         http.createServer(app);
