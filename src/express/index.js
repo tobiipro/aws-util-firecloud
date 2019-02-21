@@ -26,11 +26,13 @@ let _bootstrapLayer = function() {
     let fn = this.handle;
 
     if (fn.length === 4 && !this._callbackifiedHandle) {
-      // need to keep function arity
-      let callbackFn = _.callbackify(async function(err, req, res) {
+      let callbackFn = _.callbackify(async function(err, req, res, next) {
         let safeFn = bootstrapResponseError(fn, res);
-        return await safeFn(err, req, res);
+        return await safeFn(err, req, res, next);
+      }, {
+        keepCallback: true
       });
+      // need to keep function arity
       this.handle = function(err, req, res, next) {
         return callbackFn(err, req, res, next);
       };
@@ -42,14 +44,16 @@ let _bootstrapLayer = function() {
 
   let originalLayerHandleRequest = Layer.prototype.handle_request;
   Layer.prototype.handle_request = function(...args) {
-    let fn = this.handle;
+    let fn = this.handle; // (req, res, next)
 
     if (fn.length <= 3 && !this._callbackifiedHandle) {
-      // need to keep function arity
-      let callbackFn = _.callbackify(async function(req, res) {
+      let callbackFn = _.callbackify(async function(req, res, next) {
         let safeFn = bootstrapResponseError(fn, res);
-        return await safeFn(req, res);
+        return await safeFn(req, res, next);
+      }, {
+        keepCallback: true
       });
+      // need to keep function arity
       this.handle = function(req, res, next) {
         return callbackFn(req, res, next);
       };
@@ -123,9 +127,9 @@ export let bootstrap = function(fn, {
     await ctx.log.trackTime(
       'aws-util-firecloud.express.bootstrap: Creating HTTP server (handling request)...',
       _.promisify(function(done) {
-        let http = new LambdaHttp(e, ctx, function(...args) {
-          result = args[1];
-          done(...args);
+        let http = new LambdaHttp(e, ctx, function(err, resData) {
+          result = resData;
+          done(err);
         });
         http.createServer(app);
       })
