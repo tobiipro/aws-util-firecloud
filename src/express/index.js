@@ -13,10 +13,6 @@ import {
 } from '../lambda';
 
 import {
-  bootstrap as bootstrapResponseError
-} from './res-error';
-
-import {
   LambdaHttp
 } from 'http-lambda';
 
@@ -98,6 +94,8 @@ export let express = function(e) {
     res.set('cache-control', 'max-age=0, no-store');
     next();
   });
+
+  app.use(middlewares.resError());
 
   return app;
 };

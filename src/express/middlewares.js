@@ -1,4 +1,6 @@
+import ResponseError from './res-error';
 import _ from 'lodash-firecloud';
+import pkg from '../../package.json';
 import reqMixins from './req-mixins';
 import resMixins from './res-mixins';
 
@@ -27,6 +29,37 @@ export let xForward = function() {
     });
 
     next();
+  };
+};
+
+export let resError = function() {
+  return function(err, _req, res, _next) {
+    let {
+      ctx
+    } = res;
+
+    ctx.log.error({err});
+
+    if (res.headersSent) {
+      ctx.log.error("Headers already sent. Can't send error.");
+      throw err;
+    }
+
+    if (!_.isFunction(res.sendError)) {
+      throw err;
+    }
+
+    if (err instanceof ResponseError) {
+      ctx.log.error(`Responding with ${err.code} ${err.message}...`);
+      res.sendError(err);
+    } else if (res.ctx.log._canTrace) {
+      ctx.log.info('Responding with trace...');
+      let internalErr = new ResponseError(500, {
+        renderer: pkg.name,
+        trace: err.stack ? _.split(err.stack, '\n') : err
+      });
+      res.sendError(internalErr);
+    }
   };
 };
 
