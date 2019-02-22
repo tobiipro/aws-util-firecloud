@@ -93,6 +93,7 @@ export let setup = function({ctx}) {
     ],
     listeners: [
       logToConsole({
+        contextId: ctx.awsRequestId,
         level
       })
     ]
