@@ -17,7 +17,7 @@ import {
 } from 'http-lambda';
 
 let _bootstrapLayer = function() {
-  Layer.prototype.handle_error = function(error, req, res, next) {
+  Layer.prototype.handle_error = async function(error, req, res, next) {
     let fn = this.handle;
 
     if (fn.length !== 4) {
@@ -25,14 +25,10 @@ let _bootstrapLayer = function() {
       return next(error);
     }
 
-    try {
-      _.alwaysPromise(fn(error, req, res, next)).catch(next);
-    } catch (err) {
-      return next(err);
-    }
+    await _.alwaysPromise(fn(error, req, res, next)).catch(next);
   };
 
-  Layer.prototype.handle_request = function(req, res, next) {
+  Layer.prototype.handle_request = async function(req, res, next) {
     let fn = this.handle;
 
     if (fn.length > 3) {
@@ -40,11 +36,7 @@ let _bootstrapLayer = function() {
       return next();
     }
 
-    try {
-      _.alwaysPromise(fn(req, res, next)).catch(next);
-    } catch (err) {
-      return next(err);
-    }
+    await _.alwaysPromise(fn(req, res, next)).catch(next);
   };
 };
 
