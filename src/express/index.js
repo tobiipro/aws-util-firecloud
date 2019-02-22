@@ -78,7 +78,7 @@ let _bootstrap = async function(fn, e, ctx) {
   await fn(app, e, ctx);
 
   // error handlers need to be registered last
-  app.use(middlewares.resError());
+  app.use(middlewares.handleResponseError());
 
   return app;
 };

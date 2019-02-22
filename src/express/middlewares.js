@@ -4,6 +4,10 @@ import pkg from '../../package.json';
 import reqMixins from './req-mixins';
 import resMixins from './res-mixins';
 
+import {
+  getRequestInstance
+} from '../lambda';
+
 let _reqMixins = _.omit(reqMixins, 'default');
 let _resMixins = _.omit(resMixins, 'default');
 
@@ -32,7 +36,20 @@ export let xForward = function() {
   };
 };
 
-export let resError = function() {
+let _sendResponseError = function(res, err) {
+  let {
+    code: status,
+    contentType,
+    body
+  } = err;
+
+  res.status(status);
+
+  body.instance = getRequestInstance(res.req);
+  res.send(body, contentType);
+};
+
+export let handleResponseError = function() {
   return function(err, _req, res, _next) {
     let {
       ctx
@@ -45,20 +62,16 @@ export let resError = function() {
       throw err;
     }
 
-    if (!_.isFunction(res.sendError)) {
-      throw err;
-    }
-
     if (err instanceof ResponseError) {
       ctx.log.error(`Responding with ${err.code} ${err.message}...`);
-      res.sendError(err);
+      _sendResponseError(res, err);
     } else if (res.ctx.log._canTrace) {
       ctx.log.info('Responding with trace...');
       let internalErr = new ResponseError(500, {
         renderer: pkg.name,
         trace: err.stack ? _.split(err.stack, '\n') : err
       });
-      res.sendError(internalErr);
+      _sendResponseError(res, internalErr);
     }
   };
 };
