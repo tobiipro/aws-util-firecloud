@@ -1,6 +1,18 @@
 import _ from 'lodash-firecloud';
 import os from 'os';
 
+let _tryInvoke = function(fn) {
+  if (!_.isFunction(fn)) {
+    return;
+  }
+
+  try {
+    return fn();
+  } catch (_err) {
+    // ignore
+  }
+};
+
 export let inspect = async function({ctx}) {
   if (!ctx.log._canTrace) {
     return;
@@ -20,19 +32,13 @@ export let inspect = async function({ctx}) {
     'version',
     'versions'
   ]);
-  _.merge(processSnapshot, {
-    cpuUsage: process.cpuUsage(),
-    memoryUsage: process.memoryUsage(),
-    uptime: process.uptime()
-  });
+  _.merge(processSnapshot, _.mapValues(_.pick(process, [
+    'cpuUsage',
+    'memoryUsage',
+    'uptime'
+  ]), _tryInvoke));
 
-  let osSnapshot = _.mapValues(os, function(fn) {
-    if (!_.isFunction(fn)) {
-      return;
-    }
-
-    return fn();
-  });
+  let osSnapshot = _.mapValues(os, _tryInvoke);
 
   let inspection = {
     process: processSnapshot,
