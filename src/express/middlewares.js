@@ -43,10 +43,11 @@ let _sendResponseError = function(res, err) {
     body
   } = err;
 
-  res.status(status);
-
   body.instance = getRequestInstance(res.req);
-  res.send(body, contentType);
+
+  res.status(status);
+  res.type(contentType);
+  res.send(body);
 };
 
 export let handleResponseError = function() {
