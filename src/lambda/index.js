@@ -77,14 +77,15 @@ export let bootstrap = function(fn, {
   return async function(e, ctx, next) {
     let nextOnce = function(err, result) {
       if (nextOnce.called) {
-        ctx.log.warn('Skip sending a new lambda response. One was already sent', {
-          previous: nextOnce.called,
-          current: {
+        let err = new Error('Lambda response was already sent!');
+        ctx.log.error(err, {
+          previousArgs: nextOnce.called,
+          currentArgs: {
             err,
             result
           }
         });
-        return;
+        throw err;
       }
 
       nextOnce.called = {
