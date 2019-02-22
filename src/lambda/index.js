@@ -55,10 +55,6 @@ let _bootstrap = async function(fn, e, ctx, pkg) {
     'aws-util-firecloud.lambda.bootstrap: Running fn...',
     async function() {
       result = await _.alwaysPromise(fn(e, ctx));
-
-      ctx.log.trace('Lambda result', {
-        result
-      });
     }
   );
 
@@ -97,10 +93,18 @@ export let bootstrap = function(fn, {
         result
       };
 
+
+      ctx.log.trace('Lambda result', nextOnce.called);
+
       next(err, result);
     };
 
-    await _bootstrap(fn, e, ctx, pkg, nextOnce);
+    try {
+      let result = await _bootstrap(fn, e, ctx, pkg);
+      nextOnce(undefined, result);
+    } catch (err) {
+      nextOnce(err);
+    }
   };
 };
 
