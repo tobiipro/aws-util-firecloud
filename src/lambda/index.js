@@ -74,7 +74,7 @@ export let getRequestInstance = function(req) {
 export let bootstrap = function(fn, {
   pkg
 }) {
-  return function(e, ctx, next) {
+  return async function(e, ctx, next) {
     let nextOnce = function(err, result) {
       if (nextOnce.called) {
         ctx.log.warn('Skip sending a new lambda response. One was already sent', {
@@ -94,7 +94,8 @@ export let bootstrap = function(fn, {
 
       next(err, result);
     };
-    _.callbackify(_bootstrap)(fn, e, ctx, pkg, nextOnce);
+
+    await _bootstrap(fn, e, ctx, pkg, nextOnce);
   };
 };
 
