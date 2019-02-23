@@ -18,6 +18,7 @@ export let applyMixins = function() {
     });
 
     res.oldSend = res.send; // required by the res.send mixin
+    res.oldType = res.type; // required by the res.type mixin
     _.forEach(_resMixins, function(fn, name) {
       res[name] = _.bind(fn, res);
     });

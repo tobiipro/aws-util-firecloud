@@ -21,12 +21,8 @@ export let addLink = function(link) {
   this.setHeader('link', linkHeader);
 };
 
-export let send = function(body, mediaType) {
+export let send = function(body) {
   this.send = this.oldSend;
-
-  if (mediaType) {
-    this.set('content-type', mediaType);
-  }
 
   if (!_.isUndefined(this.validate) &&
       _.startsWith(this.get('content-type'), this.validate.schema.mediaType)
@@ -44,6 +40,14 @@ export let send = function(body, mediaType) {
   }
 
   return this.send(body);
+};
+
+export let type = function(type) {
+  if (_.isUndefined(type)) {
+    return;
+  }
+
+  this.oldType(type);
 };
 
 export default exports;
