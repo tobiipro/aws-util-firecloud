@@ -36,7 +36,7 @@ let _bootstrap = async function(fn, e, ctx, pkg) {
     'aws-util-firecloud.lambda.bootstrap: Setting up logger...',
     async function() {
       setupLogger({ctx});
-      ctx.log.trace(`Logger started. ${ctx.log.level()}`, {
+      ctx.log.trace(`Logger started with level=${ctx.log.level()}`, {
         e,
         ctx
       });
