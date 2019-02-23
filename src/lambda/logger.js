@@ -3,17 +3,16 @@ import aws from 'aws-sdk';
 
 import {
   MinLog,
-  logToConsole,
+  logToConsoleAwsLambda,
   serializeErr,
   serializeTime
 } from 'minlog';
 
-let _makeLambdaSerializer = function({ctx}) {
+let _makeCtxSerializer = function({ctx}) {
   return async function({entry}) {
-    entry.lambda = {
-      awsRequestId: ctx.awsRequestId,
-      functionName: ctx.functionName
-    };
+    entry.ctx = _.pick(ctx, [
+      'awsRequestId'
+    ]);
 
     return entry;
   };
@@ -89,11 +88,10 @@ export let setup = function({ctx}) {
     serializers: [
       serializeTime,
       serializeErr,
-      _makeLambdaSerializer({ctx})
+      _makeCtxSerializer({ctx})
     ],
     listeners: [
-      logToConsole({
-        contextId: ctx.awsRequestId,
+      logToConsoleAwsLambda({
         level
       })
     ]
