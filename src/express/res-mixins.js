@@ -24,12 +24,16 @@ export let addLink = function(link) {
 export let send = function(body) {
   this.send = this.oldSend;
 
+  let {
+    ctx
+  } = this;
+
   if (!_.isUndefined(this.validate) &&
       _.startsWith(this.get('content-type'), this.validate.schema.mediaType)
   ) {
     let valid = this.validate(body);
     if (!valid) {
-      this.log.warn({
+      ctx.log.warn({
         errors: this.validate.errors,
         body,
         schema: this.validate.schema,
