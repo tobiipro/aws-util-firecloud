@@ -38,7 +38,11 @@ export let inspect = async function({ctx}) {
     'uptime'
   ]), _tryInvoke));
 
-  let osSnapshot = _.mapValues(os, _tryInvoke);
+  let osSnapshot = _.mapValues(_.omit(os, [
+    // silence DeprecatedWarnings
+    'getNetworkInterfaces',
+    'tmpDir'
+  ]), _tryInvoke);
 
   let inspection = {
     process: processSnapshot,
