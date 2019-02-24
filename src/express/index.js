@@ -89,16 +89,16 @@ export let bootstrap = function(fn, {
   return bootstrapLambda(async function(e, ctx) {
     let app;
     await ctx.log.trackTime(
-      'aws-util-firecloud.express.bootstrap: Creating express app...',
+      'Creating express app...',
       async function() {
         app = await _bootstrap(fn, e, ctx);
       }
     );
 
     let result;
-    ctx.log.info('aws-util-firecloud.express.bootstrap: Creating HTTP server (handling request)...');
+    ctx.log.info('Creating HTTP server (handling request)...');
     await ctx.log.trackTime(
-      'aws-util-firecloud.express.bootstrap: Creating HTTP server (handling request)...',
+      'Creating HTTP server (handling request)...',
       _.promisify(function(done) {
         let http = new LambdaHttp(e, ctx, function(err, resData) {
           if (_.isUndefined(err)) {

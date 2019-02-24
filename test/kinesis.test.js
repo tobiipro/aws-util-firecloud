@@ -135,7 +135,7 @@ when batch count < ${kinesis.limits.batchRecord}`, async function() {
           throw new Error();
         })
         .mockImplementationOnce(function(...args) {
-          expect(args[0]).toMatch(/Skipping record larger than/);
+          expect(args[1]).toMatch(/Skipping record larger than/);
         });
 
       await kinesis.putRecords({

@@ -13,7 +13,7 @@ import {
 let _cleanup = async function({ctx}) {
   if (global && global.gc) {
     await ctx.log.trackTime(
-      'aws-util-firecloud.lambda.bootstrap: Garbage collection on demand...',
+      'Garbage collection on demand...',
       async function() {
         global.gc();
       }
@@ -26,14 +26,14 @@ let _bootstrap = async function(fn, e, ctx, pkg) {
   setupLogger({ctx});
 
   await ctx.log.trackTime(
-    'aws-util-firecloud.lambda.bootstrap: Merging env ctx...',
+    'Merging env ctx...',
     async function() {
       await mergeEnvCtx({e, ctx, pkg});
     }
   );
 
   await ctx.log.trackTime(
-    'aws-util-firecloud.lambda.bootstrap: Setting up logger...',
+    'Setting up logger...',
     async function() {
       setupLogger({ctx});
       ctx.log.trace(`Logger started with level=${ctx.log.level()}`, {
@@ -44,7 +44,7 @@ let _bootstrap = async function(fn, e, ctx, pkg) {
   );
 
   await ctx.log.trackTime(
-    'aws-util-firecloud.lambda.bootstrap: Inspecting...',
+    'Inspecting...',
     async function() {
       await inspect({e, ctx});
     }
@@ -52,7 +52,7 @@ let _bootstrap = async function(fn, e, ctx, pkg) {
 
   let result;
   await ctx.log.trackTime(
-    'aws-util-firecloud.lambda.bootstrap: Running fn...',
+    'Running fn...',
     async function() {
       result = await _.alwaysPromise(fn(e, ctx));
     }
