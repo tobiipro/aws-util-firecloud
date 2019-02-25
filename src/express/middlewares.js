@@ -52,7 +52,7 @@ let _sendResponseError = function(res, err) {
 };
 
 export let handleResponseError = function() {
-  return function(err, _req, res, _next) {
+  return function(err, _req, res, next) {
     let {
       ctx
     } = res;
@@ -61,7 +61,7 @@ export let handleResponseError = function() {
 
     if (res.headersSent) {
       ctx.log.error("Headers already sent. Can't send error.");
-      throw err;
+      return next(err);
     }
 
     if (err instanceof ResponseError) {
