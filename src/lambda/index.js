@@ -74,12 +74,12 @@ export let getRequestInstance = function(req) {
 export let bootstrap = function(fn, {
   pkg
 }) {
-  return async function(e, ctx, next) {
+  return async function(e, ctx, awsNext) {
     try {
       let result = await _bootstrap(fn, e, ctx, pkg);
-      return next(undefined, result);
+      return awsNext(undefined, result);
     } catch (err) {
-      return next(err);
+      return awsNext(err);
     }
   };
 };
