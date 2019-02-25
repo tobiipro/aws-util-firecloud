@@ -67,14 +67,32 @@ export let handleResponseError = function() {
     if (err instanceof ResponseError) {
       ctx.log.error(`Responding with ${err.code} ${err.message}...`);
       _sendResponseError(res, err);
-    } else if (res.ctx.log._canTrace) {
+      return;
+    }
+
+    if (res.ctx.log._canTrace) {
+      // preferrably we would like to respond with a stacktrace
+      // and reset state (kill lambda), but it is impossible to do so:
+      // AWS will freeze the lambda execution right after responding,
+      // and kill the lambda on the subsequent request
+
       ctx.log.info('Responding with trace...');
       let internalErr = new ResponseError(500, {
         renderer: pkg.name,
         trace: err.stack ? _.split(err.stack, '\n') : err
       });
       _sendResponseError(res, internalErr);
+      return;
     }
+
+    // let API Gateway respond with 502 Bad Gateway,
+    // and reset state (kill lambda)
+
+    // NOTE: we cannot throw, because the error will be caught
+    // by express' Layer.prototype.handle_error code
+
+    // eslint-disable-next-line no-process-exit
+    process.exit(1);
   };
 };
 
