@@ -75,35 +75,11 @@ export let bootstrap = function(fn, {
   pkg
 }) {
   return async function(e, ctx, next) {
-    let nextOnce = function(err, result) {
-      if (nextOnce.called) {
-        let err = new Error('Lambda response was already sent!');
-        ctx.log.error(err, {
-          previousArgs: nextOnce.called,
-          currentArgs: {
-            err,
-            result
-          }
-        });
-        throw err;
-      }
-
-      nextOnce.called = {
-        err,
-        result
-      };
-
-
-      ctx.log.trace('Lambda result', nextOnce.called);
-
-      next(err, result);
-    };
-
     try {
       let result = await _bootstrap(fn, e, ctx, pkg);
-      nextOnce(undefined, result);
+      return next(undefined, result);
     } catch (err) {
-      nextOnce(err);
+      return next(err);
     }
   };
 };
