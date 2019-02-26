@@ -52,7 +52,9 @@ let _sendResponseError = function(res, err) {
 };
 
 export let handleResponseError = function() {
-  return function(err, _req, res, next) {
+  // function arity is important to distinguish to express
+  // that this is an error handler
+  return function(err, _req, res, _next) {
     let {
       ctx
     } = res;
@@ -61,7 +63,9 @@ export let handleResponseError = function() {
 
     if (res.headersSent) {
       ctx.log.error("Headers already sent. Can't send error.");
-      return next(err);
+      // bypass express' final-handler
+      // return next(err);
+      return res._next(err);
     }
 
     if (err instanceof ResponseError) {
@@ -85,14 +89,14 @@ export let handleResponseError = function() {
       return;
     }
 
-    // let API Gateway respond with 502 Bad Gateway,
-    // and reset state (kill lambda)
+    // let the lambda bootstrap handle this error e.g. process.exit(1)
+    // and thus reset state (kill lambda)
+    // and let API Gateway respond with 502 Bad Gateway.
 
     // NOTE: we cannot throw, because the error will be caught
     // by express' Layer.prototype.handle_error code
 
-    // eslint-disable-next-line no-process-exit
-    process.exit(1);
+    res._next(err);
   };
 };
 

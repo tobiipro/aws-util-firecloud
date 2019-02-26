@@ -79,7 +79,13 @@ export let bootstrap = function(fn, {
       let result = await _bootstrap(fn, e, ctx, pkg);
       return awsNext(undefined, result);
     } catch (err) {
-      return awsNext(err);
+      // proxying the err to awsNext would not reset state (kill lambda)
+      // return awsNext(err);
+
+      // eslint-disable-next-line no-console
+      console.error(err);
+      // eslint-disable-next-line no-process-exit
+      process.exit(1);
     }
   };
 };
