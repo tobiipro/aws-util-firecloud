@@ -39,7 +39,6 @@ describe('firehose', function() {
 
       expect(spy).toHaveBeenCalled();
 
-      spy.mockReset();
       spy.mockRestore();
     });
 
@@ -70,7 +69,6 @@ when batch byteSize < ${firehose.limits.batchByteSize / 1024 / 1024} MB`, async 
 
       expect(spy).toHaveBeenCalled();
 
-      spy.mockReset();
       spy.mockRestore();
     });
 
@@ -102,7 +100,6 @@ when batch count < ${firehose.limits.batchRecord}`, async function() {
 
       expect(spy).toHaveBeenCalled();
 
-      spy.mockReset();
       spy.mockRestore();
     });
 
@@ -144,7 +141,6 @@ when batch count < ${firehose.limits.batchRecord}`, async function() {
       expect(spy).toHaveBeenCalled();
       expect(spy2).toHaveBeenCalled();
 
-      spy.mockReset();
       spy.mockRestore();
     });
 
@@ -176,7 +172,6 @@ when batch count < ${firehose.limits.batchRecord}`, async function() {
 
       expect(failed).toBe(true);
 
-      spy.mockReset();
       spy.mockRestore();
     });
   });
