@@ -1,4 +1,5 @@
 /* eslint-disable no-invalid-this */
+import Layer from 'express/lib/router/layer';
 import _ from 'lodash-firecloud';
 import _express from 'express';
 import bearerToken from 'express-bearer-token';
@@ -8,21 +9,53 @@ import responseTime from 'response-time';
 import urlLib from 'url';
 
 import {
-  asyncHandler,
   bootstrap as bootstrapLambda
 } from '../lambda';
-
-import {
-  bootstrap as bootstrapResponseError
-} from './res-error';
 
 import {
   LambdaHttp
 } from 'http-lambda';
 
+let _bootstrapLayer = function() {
+  // override Layer.prototype as defined in express@4.16.4
+  Layer.prototype.handle_error = async function(error, req, res, next) {
+    let fn = this.handle;
 
-export let express = function(e, _ctx, _next) {
-  let app = _express();
+    if (fn.length !== 4) {
+      // not a standard error handler
+      return next(error);
+    }
+
+    try {
+      // original code
+      // fn(error, req, res, next);
+      await _.alwaysPromise(fn(error, req, res, next));
+    } catch (err) {
+      return next(err);
+    }
+  };
+
+  Layer.prototype.handle_request = async function(req, res, next) {
+    let fn = this.handle;
+
+    if (fn.length > 3) {
+      // not a standard request handler
+      return next();
+    }
+
+    try {
+      // original code
+      // fn(req, res, next);
+      await _.alwaysPromise(fn(req, res, next));
+    } catch (err) {
+      return next(err);
+    }
+  };
+};
+
+let _bootstrap = async function(fn, e, ctx) {
+  _bootstrapLayer();
+  let app = _express(e);
 
   app.disable('x-powered-by');
   app.disable('etag');
@@ -38,25 +71,6 @@ export let express = function(e, _ctx, _next) {
     app.use(`/${basePath}`, app._router);
   }
 
-  app.oldUse = app.use;
-  app.use = function(...args) {
-    args = _.map(args, function(arg) {
-      if (!_.isFunction(arg)) {
-        return arg;
-      }
-
-      let fn = arg;
-      return asyncHandler(async function(req, res, next) {
-        bootstrapResponseError(async function() {
-          let result = fn(req, res, next);
-          return await _.alwaysPromise(result);
-        }, res);
-      });
-    });
-
-    app.oldUse(...args);
-  };
-
   app.use(responseTime());
   app.use(cors({
     exposedHeaders: [
@@ -69,10 +83,15 @@ export let express = function(e, _ctx, _next) {
   app.use(middlewares.applyMixins());
   app.use(middlewares.xForward());
 
-  app.use(async function(_req, res, next) {
+  app.use(function(_req, res, next) {
     res.set('cache-control', 'max-age=0, no-store');
     next();
   });
+
+  await fn(app, e, ctx);
+
+  // error handlers need to be registered last
+  app.use(middlewares.handleResponseError());
 
   return app;
 };
@@ -80,31 +99,31 @@ export let express = function(e, _ctx, _next) {
 export let bootstrap = function(fn, {
   pkg
 }) {
-  return bootstrapLambda(async function(e, ctx, next) {
+  return bootstrapLambda(async function(e, ctx) {
     let app;
     await ctx.log.trackTime(
-      'aws-util-firecloud.express.bootstrap: Creating express app...',
+      'Creating express app...',
       async function() {
-        app = express(e, ctx, next);
+        app = await _bootstrap(fn, e, ctx);
       }
     );
 
+    let result;
+    ctx.log.info('Creating HTTP server (handling request)...');
     await ctx.log.trackTime(
-      'aws-util-firecloud.express.bootstrap: Setting up custom express...',
-      async function() {
-        fn = bootstrapResponseError(fn, app.res);
-        fn(app, e, ctx, next);
-      }
-    );
-
-    ctx.log.info('aws-util-firecloud.express.bootstrap: Creating HTTP server (handling request)...');
-    await ctx.log.trackTime(
-      'aws-util-firecloud.express.bootstrap: Creating HTTP server (handling request)...',
-      async function() {
-        let http = new LambdaHttp(e, ctx, next);
+      'Creating HTTP server (handling request)...',
+      _.promisify(function(done) {
+        let http = new LambdaHttp(e, ctx, function(err, resData) {
+          if (_.isUndefined(err)) {
+            result = resData;
+          }
+          done(err);
+        });
         http.createServer(app);
-      }
+      })
     );
+
+    return result;
   }, {
     pkg
   });

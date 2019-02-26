@@ -1,10 +1,6 @@
 /* eslint-disable no-invalid-this */
 import _ from 'lodash-firecloud';
 
-import {
-  getRequestInstance
-} from '../lambda';
-
 export let addLink = function(link) {
   let {
     target
@@ -25,19 +21,19 @@ export let addLink = function(link) {
   this.setHeader('link', linkHeader);
 };
 
-export let send = function(body, mediaType) {
+export let send = function(body) {
   this.send = this.oldSend;
 
-  if (mediaType) {
-    this.set('content-type', mediaType);
-  }
+  let {
+    ctx
+  } = this;
 
   if (!_.isUndefined(this.validate) &&
       _.startsWith(this.get('content-type'), this.validate.schema.mediaType)
   ) {
     let valid = this.validate(body);
     if (!valid) {
-      this.log.warn({
+      ctx.log.warn({
         errors: this.validate.errors,
         body,
         schema: this.validate.schema,
@@ -50,19 +46,12 @@ export let send = function(body, mediaType) {
   return this.send(body);
 };
 
-export let sendError = function(responseError) {
-  let {
-    code: status,
-    contentType,
-    body
-  } = responseError;
+export let type = function(type) {
+  if (_.isUndefined(type)) {
+    return;
+  }
 
-  this.status(status);
-
-  body.instance = getRequestInstance(this.req);
-  this.send(body, contentType);
-
-  return responseError;
+  this.oldType(type);
 };
 
 export default exports;

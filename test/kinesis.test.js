@@ -43,7 +43,6 @@ describe('kinesis', function() {
 
       expect(spy).toHaveBeenCalled();
 
-      spy.mockReset();
       spy.mockRestore();
     });
 
@@ -75,7 +74,6 @@ when batch byteSize < ${kinesis.limits.batchByteSize / 1024 / 1024} MB`, async f
 
       expect(spy).toHaveBeenCalled();
 
-      spy.mockReset();
       spy.mockRestore();
     });
 
@@ -108,7 +106,6 @@ when batch count < ${kinesis.limits.batchRecord}`, async function() {
 
       expect(spy).toHaveBeenCalled();
 
-      spy.mockReset();
       spy.mockRestore();
     });
 
@@ -135,7 +132,7 @@ when batch count < ${kinesis.limits.batchRecord}`, async function() {
           throw new Error();
         })
         .mockImplementationOnce(function(...args) {
-          expect(args[0]).toMatch(/Skipping record larger than/);
+          expect(args[1]).toMatch(/Skipping record larger than/);
         });
 
       await kinesis.putRecords({
@@ -151,7 +148,6 @@ when batch count < ${kinesis.limits.batchRecord}`, async function() {
       expect(spy).toHaveBeenCalled();
       expect(spy2).toHaveBeenCalled();
 
-      spy.mockReset();
       spy.mockRestore();
     });
 
@@ -184,7 +180,6 @@ when batch count < ${kinesis.limits.batchRecord}`, async function() {
 
       expect(failed).toBe(true);
 
-      spy.mockReset();
       spy.mockRestore();
     });
   });
