@@ -29,7 +29,7 @@ let _bootstrapLayer = function() {
     try {
       // original code
       // fn(error, req, res, next);
-      await _.alwaysPromise(fn(error, req, res, next));
+      await fn(error, req, res, next);
     } catch (err) {
       return next(err);
     }
@@ -46,7 +46,7 @@ let _bootstrapLayer = function() {
     try {
       // original code
       // fn(req, res, next);
-      await _.alwaysPromise(fn(req, res, next));
+      await fn(req, res, next);
     } catch (err) {
       return next(err);
     }
