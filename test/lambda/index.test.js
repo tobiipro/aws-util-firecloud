@@ -49,13 +49,10 @@ describe('lambda', function() {
           expect(receivedErr).toBe(expectedErr);
         });
 
-      let spyExitResolve;
-      let spyExitPromise = new Promise(function(resolve, _reject) {
-        spyExitResolve = resolve;
-      });
+      let spyProcessExitD = _.defer();
       let spyProcessExit = jest.spyOn(process, 'exit')
         .mockImplementationOnce(function(...args) {
-          spyExitResolve(args);
+          spyProcessExitD.resolve(args);
         });
 
       let handler = async function(_e, _ctx) {
@@ -72,8 +69,8 @@ describe('lambda', function() {
       let ctx = {};
       bHandler(e, ctx, _.noop);
 
-      let exitArgs = await spyExitPromise;
-      expect(exitArgs).toStrictEqual([
+      let processExitArgs = await spyProcessExit.promise;
+      expect(processExitArgs).toStrictEqual([
         1
       ]);
 
