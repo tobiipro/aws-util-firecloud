@@ -58,10 +58,13 @@ describe('express', function() {
           expect(receivedErr).toBe(expectedErr);
         });
 
-      let spyProcessExitD = _.defer();
+      let spyExitResolve;
+      let spyExitPromise = new Promise(function(resolve, _reject) {
+        spyExitResolve = resolve;
+      });
       let spyProcessExit = jest.spyOn(process, 'exit')
         .mockImplementationOnce(function(...args) {
-          spyProcessExitD.resolve(args);
+          spyExitResolve(args);
         });
 
       let handler = async function(_e, _ctx) {
@@ -78,8 +81,8 @@ describe('express', function() {
       let ctx = {};
       bHandler(e, ctx, _.noop);
 
-      let processExitArgs = await spyProcessExitD.promise;
-      expect(processExitArgs).toStrictEqual([
+      let exitArgs = await spyExitPromise;
+      expect(exitArgs).toStrictEqual([
         1
       ]);
 
@@ -109,10 +112,13 @@ describe('express', function() {
           expect(receivedErr).toBe(expectedErr);
         });
 
-      let spyProcessExitD = _.defer();
+      let spyExitResolve;
+      let spyExitPromise = new Promise(function(resolve, _reject) {
+        spyExitResolve = resolve;
+      });
       let spyProcessExit = jest.spyOn(process, 'exit')
-          .mockImplementationOnce(function(...args) {
-          spyProcessExitD.resolve(args);
+        .mockImplementationOnce(function(...args) {
+          spyExitResolve(args);
         });
 
       let handler = async function(app, _e, _ctx) {
@@ -131,8 +137,8 @@ describe('express', function() {
       let ctx = {};
       bHandler(e, ctx, _.noop);
 
-      let processExitArgs = await spyProcessExit.promise;
-      expect(processExitArgs).toStrictEqual([
+      let exitArgs = await spyExitPromise;
+      expect(exitArgs).toStrictEqual([
         1
       ]);
 
@@ -162,10 +168,13 @@ describe('express', function() {
           expect(receivedErr).toBe(expectedErr);
         });
 
-      let spyProcessExitD = _.defer();
+      let spyExitResolve;
+      let spyExitPromise = new Promise(function(resolve, _reject) {
+        spyExitResolve = resolve;
+      });
       let spyProcessExit = jest.spyOn(process, 'exit')
         .mockImplementationOnce(function(...args) {
-          spyProcessExitD.resolve(args);
+          spyExitResolve(args);
         });
 
       let handler = async function(app, _e, _ctx) {
@@ -184,8 +193,8 @@ describe('express', function() {
       let ctx = {};
       bHandler(e, ctx, _.noop);
 
-      let processExitArgs = await spyProcessExit.promise;
-      expect(processExitArgs).toStrictEqual([
+      let exitArgs = await spyExitPromise;
+      expect(exitArgs).toStrictEqual([
         1
       ]);
 
