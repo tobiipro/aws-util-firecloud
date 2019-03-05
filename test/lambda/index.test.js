@@ -69,7 +69,7 @@ describe('lambda', function() {
       let ctx = {};
       bHandler(e, ctx, _.noop);
 
-      let processExitArgs = await spyProcessExit.promise;
+      let processExitArgs = await spyProcessExitD.promise;
       expect(processExitArgs).toStrictEqual([
         1
       ]);
