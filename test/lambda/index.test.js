@@ -51,7 +51,9 @@ describe('lambda', function() {
 
       let spyProcessExitD = _.defer();
       let spyProcessExit = jest.spyOn(process, 'exit')
-        .mockImplementationOnce(spyProcessExitD.resolve);
+        .mockImplementationOnce(function(...args) {
+          spyProcessExitD.resolve(args);
+        });
 
       let handler = async function(_e, _ctx) {
         throw expectedErr;

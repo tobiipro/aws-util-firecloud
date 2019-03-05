@@ -60,7 +60,9 @@ describe('express', function() {
 
       let spyProcessExitD = _.defer();
       let spyProcessExit = jest.spyOn(process, 'exit')
-        .mockImplementationOnce(spyProcessExitD.resolve);
+        .mockImplementationOnce(function(...args) {
+          spyProcessExitD.resolve(args);
+        });
 
       let handler = async function(_e, _ctx) {
         throw expectedErr;
@@ -109,7 +111,9 @@ describe('express', function() {
 
       let spyProcessExitD = _.defer();
       let spyProcessExit = jest.spyOn(process, 'exit')
-        .mockImplementationOnce(spyProcessExitD.resolve);
+          .mockImplementationOnce(function(...args) {
+          spyProcessExitD.resolve(args);
+        });
 
       let handler = async function(app, _e, _ctx) {
         app.use(function(_req, _res, _next) {
@@ -160,7 +164,9 @@ describe('express', function() {
 
       let spyProcessExitD = _.defer();
       let spyProcessExit = jest.spyOn(process, 'exit')
-        .mockImplementationOnce(spyProcessExitD.resolve);
+        .mockImplementationOnce(function(...args) {
+          spyProcessExitD.resolve(args);
+        });
 
       let handler = async function(app, _e, _ctx) {
         app.use(async function(_req, _res, _next) {
