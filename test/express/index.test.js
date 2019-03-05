@@ -111,7 +111,7 @@ describe('express', function() {
 
       let spyProcessExitD = _.defer();
       let spyProcessExit = jest.spyOn(process, 'exit')
-          .mockImplementationOnce(function(...args) {
+        .mockImplementationOnce(function(...args) {
           spyProcessExitD.resolve(args);
         });
 
