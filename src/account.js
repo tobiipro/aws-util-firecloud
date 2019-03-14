@@ -2,7 +2,7 @@ import _ from 'lodash-firecloud';
 import env from './env';
 
 export let get = function({env}) {
-  let awsAccountIdVars = _.filter(_.keys(env._), function(varName) {
+  let awsAccountIdVars = _.filter(_.keys(env), function(varName) {
     return /_AWS_ACCOUNT_ID$/.test(varName);
   });
   let accounts = {};
@@ -17,7 +17,7 @@ export let get = function({env}) {
       ID
     };
 
-    let prefixedEnvVars = _.pickBy(env._, function(_value, key) {
+    let prefixedEnvVars = _.pickBy(env, function(_value, key) {
       return _.startsWith(key, `${prefix}_`);
     });
     prefixedEnvVars = _.mapKeys(prefixedEnvVars, function(_value, key) {
