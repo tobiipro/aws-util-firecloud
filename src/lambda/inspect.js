@@ -13,7 +13,11 @@ let _tryInvoke = function(fn) {
   }
 };
 
-export let inspect = async function({ctx}) {
+let _diffInspection = function(inspection, previousInspection, path) {
+  return _.get(inspection, path) - _.get(previousInspection, path);
+};
+
+export let inspect = async function({e, ctx}) {
   if (!ctx.log._canTrace) {
     return;
   }
@@ -44,39 +48,39 @@ export let inspect = async function({ctx}) {
     'tmpDir'
   ]), _tryInvoke);
 
-  let inspection = {
+  let inspection = JSON.parse(JSON.stringify({
+    e,
+    ctx,
     process: processSnapshot,
     os: osSnapshot
-  };
+  }));
 
   let {
-    previousCpuUsage,
-    previousMemoryUsage
+    previousInspection
   } = inspect;
+  inspect.previousInspection = inspection;
 
-  if (previousMemoryUsage) {
-    inspection.process.memoryUsageDiff = {
-      rss: previousMemoryUsage.rss - inspection.process.memoryUsage.rss,
-      heapUsed: previousMemoryUsage.heapUsed - inspection.process.memoryUsage.heapUsed
-    };
+  if (previousInspection) {
+    inspection.cpuUsageDiff = _.reduce([
+      'user',
+      'system'
+    ], function(acc, key) {
+      acc[key] = _diffInspection(inspection, previousInspection, `process.cpuUsage.${key}`);
+      return acc;
+    }, {});
+
+    inspection.memoryUsageDiff = _.reduce([
+      'heapUsed',
+      'rss'
+    ], function(acc, key) {
+      acc[key] = _diffInspection(inspection, previousInspection, `process.memoryUsage.${key}`);
+      return acc;
+    }, {});
   }
-  inspect.previousMemoryUsage = {
-    rss: inspection.process.memoryUsage.rss,
-    heapUsed: inspection.process.memoryUsage.heapUsed
-  };
 
-  if (previousCpuUsage) {
-    inspection.process.cpuUsageDiff = {
-      user: previousCpuUsage.user - inspection.process.cpuUsage.user,
-      system: previousCpuUsage.system - inspection.process.cpuUsage.system
-    };
+  for (let key in inspection) {
+    await ctx.log.trace(`Inspecting '${key}'`, inspection[key]);
   }
-  inspect.previousCpuUsage = {
-    user: inspection.process.cpuUsage.user,
-    system: inspection.process.cpuUsage.system
-  };
-
-  ctx.log.trace('Inspection', inspection);
 };
 
 export default inspect;
