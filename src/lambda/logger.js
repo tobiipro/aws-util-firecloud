@@ -10,9 +10,12 @@ import {
 
 let _makeCtxSerializer = function({ctx}) {
   return async function({entry}) {
-    entry.ctx = _.pick(ctx, [
-      'awsRequestId'
-    ]);
+    // minimal ctx
+    _.merge(entry, {
+      ctx: {
+        awsRequestId: ctx.awsRequestId
+      }
+    });
 
     return entry;
   };
