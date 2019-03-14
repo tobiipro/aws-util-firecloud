@@ -17,7 +17,7 @@ let _diffInspection = function(inspection, previousInspection, path) {
   return _.get(inspection, path) - _.get(previousInspection, path);
 };
 
-export let inspect = async function({e, ctx}) {
+export let inspect = async function({ctx}) {
   if (!ctx.log._canTrace) {
     return;
   }
@@ -49,8 +49,6 @@ export let inspect = async function({e, ctx}) {
   ]), _tryInvoke);
 
   let inspection = JSON.parse(JSON.stringify({
-    e,
-    ctx,
     process: processSnapshot,
     os: osSnapshot
   }));
