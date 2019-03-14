@@ -2,7 +2,7 @@
   "private": true,
   "name": "aws-util-firecloud",
   "description": "Collection of AWS utils.",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "license": "Apache-2.0",
   "files": [
     "/BUILD",
