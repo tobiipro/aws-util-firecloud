@@ -74,6 +74,8 @@ let _bootstrap = async function(fn, e, ctx) {
   app.use(responseTime());
   app.use(cors({
     exposedHeaders: [
+      'date',
+      'etag',
       'location',
       'x-response-time'
     ],
