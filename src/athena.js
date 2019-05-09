@@ -131,7 +131,7 @@ export let queryResultIsShowResult = function(queryResult) {
 };
 
 export let executeQuery = async function({
-  athena = new aws.Athena({apiVersion: '2017-05-18'}),
+  athena = new aws.Athena(),
   params = {
     QueryString: '',
     ResultConfiguration: {
