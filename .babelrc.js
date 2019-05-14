@@ -1,4 +1,4 @@
-let _ = require('lodash-firecloud').default;
+let _ = require('lodash-firecloud');
 let minlogDefaultLevels = require('minlog').defaultLevels;
 
 let minlogFuns = _.concat(_.keys(minlogDefaultLevels), [
