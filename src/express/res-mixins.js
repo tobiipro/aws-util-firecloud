@@ -28,7 +28,7 @@ export let send = function(body) {
     ctx
   } = this;
 
-  if (!_.isUndefined(this.validate) &&
+  if (_.isDefined(this.validate) &&
       _.startsWith(this.get('content-type'), this.validate.schema.mediaType)
   ) {
     let valid = this.validate(body);

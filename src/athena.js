@@ -63,7 +63,7 @@ export let queryResultToObjectsArray = function(queryResult) {
     _.forEach(columns, function(column, columnIndex) {
       let value = _.get(row, `Data[${columnIndex}].VarCharValue`);
 
-      if (!_.isUndefined(value)) {
+      if (_.isDefined(value)) {
         switch (_.toLower(column.Type)) {
         case ('integer'):
         case ('tinyint'):

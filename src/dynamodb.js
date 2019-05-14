@@ -79,7 +79,7 @@ export let dcScan = async function(args, iteratee) {
       limit = _.get(cbResult, 'args.Limit');
       continueScan =
         cbResult.continueScan !== false &&
-        !_.isUndefined(result.LastEvaluatedKey);
+        _.isDefined(result.LastEvaluatedKey);
 
       return continueScan;
     });
@@ -102,7 +102,7 @@ export let dcPut = async function(args) {
   let dc = new aws.DynamoDB.DocumentClient();
 
   args.Item = _.mapValuesDeep(_.pickBy)(args.Item, function(value) {
-    return !_.isUndefined(value) && value !== '';
+    return _.isDefined(value) && value !== '';
   });
 
   return await dc.put(args).promise();

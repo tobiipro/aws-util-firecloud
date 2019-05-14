@@ -46,7 +46,7 @@ export let getBody = function() {
     });
   }
 
-  if (!_.isUndefined(this.validate)) {
+  if (_.isDefined(this.validate)) {
     let valid = this.validate(body);
     if (!valid) {
       throw new ResponseError(422, {
