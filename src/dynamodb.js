@@ -67,7 +67,7 @@ export let dcScan = async function(args, iteratee) {
       results[Segment] = await dc.scan(iteratorArgs).promise();
     }));
 
-    _.forEach(results, function(result) { // eslint-disable-line no-loop-func
+    _.forEach(results, function(result) {
       let cbResult = _.defaultTo(iteratee(result), true);
 
       if (_.isBoolean(cbResult)) {

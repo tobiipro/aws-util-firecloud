@@ -10,7 +10,8 @@ export let logger = function(message) {
     operation,
     params
   ] = _awsLoggerRE.exec(message).slice(1);
-  params = eval(`(${params})`); // eslint-disable-line no-eval
+  // eslint-disable-next-line no-eval
+  params = eval(`(${params})`);
 
   // eslint-disable-next-line no-console
   console.error('Making an AWS SDK call.');
