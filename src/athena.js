@@ -63,25 +63,21 @@ export let queryResultToObjectsArray = function(queryResult) {
     _.forEach(columns, function(column, columnIndex) {
       let value = _.get(row, `Data[${columnIndex}].VarCharValue`);
 
-      try {
-        if (_.isDefined(value)) {
-          switch (_.toLower(column.Type)) {
-          case ('integer'):
-          case ('tinyint'):
-          case ('smallint'):
-          case ('bigint'):
-          case ('double'):
-            value = Number(value);
-            break;
-          case ('boolean'):
-            value = Boolean(value);
-            break;
-          default:
-            break;
-          }
+      if (_.isDefined(value)) {
+        switch (_.toLower(column.Type)) {
+        case ('integer'):
+        case ('tinyint'):
+        case ('smallint'):
+        case ('bigint'):
+        case ('double'):
+          value = Number(value);
+          break;
+        case ('boolean'):
+          value = Boolean(value);
+          break;
+        default:
+          break;
         }
-      } catch (_err) {
-        // didn't manage to convert, keeping string
       }
 
       rowObject[column.Name] = value;
@@ -177,7 +173,10 @@ export let executeQuery = async function({
     nextToken = queryResult.NextToken;
 
     rows = rows.concat(queryResultToObjectsArray(queryResult));
-  } while (nextToken && rows.length <= maxRows);
+    if (rows.length > maxRows) {
+      break;
+    }
+  } while (nextToken);
 
   rows = _.drop(rows, 1); // first row is column names
   rows = _.take(rows, maxRows);
