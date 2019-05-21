@@ -139,8 +139,7 @@ export let executeQuery = async function({
     }
   },
   pollingDelay = 1000,
-  initPollingDelay = pollingDelay,
-  maxRows = 10000
+  initPollingDelay = pollingDelay
 }) {
   let queryExecutionData = await athena.startQueryExecution(params).promise();
   let {
@@ -173,13 +172,9 @@ export let executeQuery = async function({
     nextToken = queryResult.NextToken;
 
     rows = rows.concat(queryResultToObjectsArray(queryResult));
-    if (rows.length > maxRows) {
-      break;
-    }
   } while (nextToken);
 
   rows = _.drop(rows, 1); // first row is column names
-  rows = _.take(rows, maxRows);
   return rows;
 };
 
