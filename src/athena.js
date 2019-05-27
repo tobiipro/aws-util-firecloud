@@ -157,15 +157,25 @@ export let executeQuery = async function({
     throw Error("Athena: query didn't succeed.");
   }
 
-  let queryResult = await athena.getQueryResults({QueryExecutionId}).promise();
+  let queryResult;
+  let nextToken;
+  let rows = [];
+  do {
+    queryResult = await athena.getQueryResults({QueryExecutionId, NextToken: nextToken}).promise();
 
-  if (queryResultIsShowResult(queryResult)) {
-    return queryResultToText(queryResult);
-  }
+    // checking if the query is a result of SHOW query
+    // returing just text in this case, not trying to parse columns and rows
+    if (queryResultIsShowResult(queryResult)) {
+      return queryResultToText(queryResult);
+    }
 
-  let resultObject = queryResultToObjectsArray(queryResult);
-  resultObject = _.drop(resultObject, 1); // first row is column names
-  return resultObject;
+    nextToken = queryResult.NextToken;
+
+    rows = rows.concat(queryResultToObjectsArray(queryResult));
+  } while (nextToken);
+
+  rows = _.drop(rows, 1); // first row is column names
+  return rows;
 };
 
 export default exports;
