@@ -42,12 +42,13 @@ let _setupAwsLogger = function({ctx}) {
       ] = _awsLoggerRE.exec(message).slice(1);
 
       try {
-        // trying to skip `length` from `params` which is essentially an output of `util.format('%o', obj)`
+        // 'params' is essentially an output of util.format('%o', realParams)
+        // remove the hidden property 'length' of arrays, so we can eval params back into realParams
         let paramsWithoutArrayLength = _.replace(params, /,?\s+\[length\]:\s+\d+(\s+\])/g, '$1');
         // eslint-disable-next-line no-eval
         params = eval(`(${paramsWithoutArrayLength})`);
       } catch (err) {
-        ctx.log.error('Couldn\'t trace AWS SDK call params using eval', {
+        ctx.log.error("Couldn't eval 'params' of AWS SDK call.", {
           err,
           message,
           params
