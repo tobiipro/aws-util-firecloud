@@ -3,7 +3,7 @@ import _ from 'lodash-firecloud';
 let _awsLoggerRE =
   / *\[AWS ([^ ]+) ([^ ]+) ([^ ]+)s ([^ ]+) retries] ([^(]+)\(([^)]+)\).*/;
 
-export let logger = function(message) {
+let _logger = function(awsSdkMessage, rawLogger) {
   let [
     serviceIdentifier,
     status,
@@ -11,7 +11,7 @@ export let logger = function(message) {
     retryCount,
     operation,
     params
-  ] = _awsLoggerRE.exec(message).slice(1);
+  ] = _awsLoggerRE.exec(awsSdkMessage).slice(1);
 
   try {
     // 'params' is essentially an output of util.format('%o', realParams)
@@ -20,10 +20,9 @@ export let logger = function(message) {
     // eslint-disable-next-line no-eval
     params = eval(`(${paramsWithoutArrayLength})`);
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.error("Couldn't eval 'params' of AWS SDK call.", {
+    rawLogger.error("Couldn't eval 'params' of AWS SDK call.", {
       err,
-      message,
+      awsSdkMessage,
       params
     });
   }
@@ -31,10 +30,8 @@ export let logger = function(message) {
   // eslint-disable-next-line no-eval
   params = eval(`(${params})`);
 
-  // eslint-disable-next-line no-console
-  console.error('Making an AWS SDK call.');
-  // eslint-disable-next-line no-console
-  console.error({
+  rawLogger.error('Making an AWS SDK call.');
+  rawLogger.error({
     aws: {
       serviceIdentifier,
       status,
@@ -44,6 +41,17 @@ export let logger = function(message) {
       params
     }
   });
+};
+
+export let logger = function(awsSdkMessage, rawLogger = console) {
+  try {
+    _logger(awsSdkMessage, rawLogger);
+  } catch (err) {
+    rawLogger.error('Failed while tracing AWS SDK call.', {
+      err,
+      awsSdkMessage
+    });
+  }
 };
 
 export default logger;

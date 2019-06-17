@@ -1,5 +1,6 @@
 import _ from 'lodash-firecloud';
 import aws from 'aws-sdk';
+import logger from '../logger';
 
 import {
   MinLog,
@@ -27,51 +28,12 @@ let _awsLoggerRE =
 let _setupAwsLogger = function({ctx}) {
   aws.config.logger = {
     isTTY: false,
-    log: function(message) {
+    log: function(awsSdkMessage) {
       if (!ctx.log._canTrace) {
         return;
       }
 
-      try {
-        let [
-          serviceIdentifier,
-          status,
-          delta,
-          retryCount,
-          operation,
-          params
-        ] = _awsLoggerRE.exec(message).slice(1);
-
-        try {
-          // 'params' is essentially an output of util.format('%o', realParams)
-          // remove the hidden property 'length' of arrays, so we can eval params back into realParams
-          let paramsWithoutArrayLength = _.replace(params, /,?\s+\[length\]:\s+\d+(\s+\])/g, '$1');
-          // eslint-disable-next-line no-eval
-          params = eval(`(${paramsWithoutArrayLength})`);
-        } catch (err) {
-          ctx.log.error("Couldn't eval 'params' of AWS SDK call.", {
-            err,
-            message,
-            params
-          });
-        }
-
-        ctx.log.trace('Making an AWS SDK call.', {
-          aws: {
-            serviceIdentifier,
-            status,
-            delta,
-            retryCount,
-            operation,
-            params
-          }
-        });
-      } catch (err) {
-        ctx.log.error('Failed while tracing AWS SDK call', {
-          err,
-          message
-        });
-      }
+      logger(awsSdkMessage, ctx.log);
     }
   };
 };
