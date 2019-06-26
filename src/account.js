@@ -41,13 +41,13 @@ export let current;
 
 // lazy init
 // eslint-disable-next-line fp/no-proxy
-export let currentProxy = new Proxy({}, {
-  get: function(_target, property, _receiver) {
-    if (!current) {
-      current = get({env});
+export let currentProxy = new Proxy(current, {
+  get: function(target, property, _receiver) {
+    if (_.isEmpty(current)) {
+      _.merge(current, get({env}));
     }
 
-    return current[property];
+    return target[property];
   }
 });
 
