@@ -37,7 +37,7 @@ export let get = function({env}) {
   return accounts;
 };
 
-export let current;
+export let current = {};
 
 // lazy init
 // eslint-disable-next-line fp/no-proxy
