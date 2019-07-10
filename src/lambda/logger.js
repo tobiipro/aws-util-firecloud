@@ -68,7 +68,9 @@ export let setup = function({ctx}) {
       logToConsoleAwsLambda({
         level
       })
-    ]
+    ],
+    requireRawEntry: true,
+    requireSrc: true
   });
 
   logger.level = function() {
