@@ -3,15 +3,14 @@ import ResponseError from './res-error';
 import _ from 'lodash-firecloud';
 
 import {
-  format as urlFormat,
-  parse as urlParse
-} from '../url';
+  URL
+} from 'url';
 
 export let getSelfUrl = function() {
   let {
     env
   } = this.ctx;
-  let selfUrl = urlParse(`${env.API_SECONDARY_BASE_URL}${this.originalUrl}`);
+  let selfUrl = new URL(`${env.API_SECONDARY_BASE_URL}${this.originalUrl}`);
   return selfUrl;
 };
 
@@ -19,16 +18,10 @@ export let getPaginationUrl = function({
   perPage,
   ref
 }) {
-  let pageUrl = this.getSelfUrl();
+  let pageUrl = new URL(this.getSelfUrl().toString());
+  pageUrl.searchParams.set('per_page', perPage);
+  pageUrl.searchParams.set('ref', ref);
 
-  // FIXME use url.URL when AWS Node.js is upgraded from 6.10
-  _.merge(pageUrl, {
-    query: {
-      per_page: perPage,
-      ref
-    }
-  });
-  pageUrl = urlParse(urlFormat(pageUrl));
   return pageUrl;
 };
 
