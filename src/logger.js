@@ -20,15 +20,14 @@ let _logger = function(awsSdkMessage, rawLogger) {
     // eslint-disable-next-line no-eval
     params = eval(`(${paramsWithoutArrayLength})`);
   } catch (err) {
-    rawLogger.error("Couldn't eval 'params' of AWS SDK call.", {
+    rawLogger.warn("Couldn't eval 'params' of AWS SDK call.", {
       err,
       awsSdkMessage,
       params
     });
   }
 
-  rawLogger.error('Making an AWS SDK call.');
-  rawLogger.error({
+  rawLogger.info('Making an AWS SDK call.', {
     aws: {
       serviceIdentifier,
       status,
