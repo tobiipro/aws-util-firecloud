@@ -27,9 +27,6 @@ let _logger = function(awsSdkMessage, rawLogger) {
     });
   }
 
-  // eslint-disable-next-line no-eval
-  params = eval(`(${params})`);
-
   rawLogger.error('Making an AWS SDK call.');
   rawLogger.error({
     aws: {
