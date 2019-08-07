@@ -60,7 +60,8 @@ export let getCodeChecksums = async function({
 export let getCodeChecksumVariables = async function({
   Code,
   FunctionName,
-  env
+  env,
+  force = false
 }) {
   let LAMBDA_CODE_S3BUCKET = Code.S3Bucket;
   let LAMBDA_CODE_S3KEY = Code.S3Key;
@@ -81,6 +82,10 @@ export let getCodeChecksumVariables = async function({
   };
 
   if (!LAMBDA_CODE_SHA256SUM_CORE) {
+    return codeChecksumVariables;
+  }
+
+  if (force) {
     return codeChecksumVariables;
   }
 
@@ -144,7 +149,8 @@ export let add = async function({
   cfnDir,
   config,
   env,
-  resNs
+  resNs,
+  force = false
 }) {
   let FunctionName =
       _.replace(config.nameTemplate, '{{.Function.Name}}', config.name);
@@ -223,7 +229,8 @@ export let add = async function({
   let codeChecksumVariables = await getCodeChecksumVariables({
     Code,
     FunctionName,
-    env
+    env,
+    force
   });
   _.merge(Variables, codeChecksumVariables);
 
