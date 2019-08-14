@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../src/bootstrap/aws-sdk-logger.js"],"names":[],"mappings":"aAAA;AACA,2D;;AAEA,gBAAI,MAAJ,CAAW,MAAX,GAAoB;AAClB,EAAA,KAAK,EAAE,KADW;AAElB,EAAA,GAAG,EAAE,eAFa,EAApB","file":"aws-sdk-logger.js","sourcesContent":["import aws from 'aws-sdk';\nimport logger from '../logger';\n\naws.config.logger = {\n  isTTY: false,\n  log: logger\n};\n"]}
