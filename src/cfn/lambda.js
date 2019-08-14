@@ -68,3 +68,16 @@ export let getRole = function({env}) {
 
   return Role;
 };
+
+export let getLogGroup = function({functionName, _env}) {
+  let LogGroup = {
+    DeletionPolicy: 'Delete',
+    Type: 'AWS::Logs::LogGroup',
+    Properties: {
+      LogGroupName: `/aws/lambda/${functionName}`,
+      RetentionInDays: 7
+    }
+  };
+
+  return LogGroup;
+};
