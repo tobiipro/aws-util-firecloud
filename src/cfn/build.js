@@ -43,34 +43,46 @@ let _standardizeSids = function(tpl) {
   });
 };
 
-export let build = async function({
-  env,
-  incs = [],
-  partial = false,
-  resNs, // used by partial cfns, like lambda cfns
-  vars
-}) {
+export let build = async function(args) {
+  let {
+    incs = [],
+    partial = false
+  } = args;
+
+  // e.g. {env, resNs, vars}
+  let incArgs = _.omit(args, [
+    'incs',
+    'partial'
+  ]);
+
   let tpl = {};
 
-  await Promise.all(_.map(incs, async function(inc) {
+  incs = _.map(incs, function(inc) {
+    if (_.isFunction(inc)) {
+      return inc;
+    }
+
     if (!path.isAbsolute(inc)) {
       inc = path.join(process.cwd(), inc);
     }
     // eslint-disable-next-line global-require
-    let main = require(inc).default;
-    let partialTpls = await main({
-      env,
-      resNs,
-      vars
-    });
+    inc = require(inc);
+    inc = inc.__esModule ? inc.default : inc;
+    return inc;
+  });
+
+  for (let inc of incs) {
+    let partialTpls = await inc(incArgs);
 
     // allow the main function to return multiple partial templates
-    partialTpls = _.isArray(partialTpls) ? partialTpls : [
-      partialTpls
-    ];
+    if (!_.isArray(partialTpls)) {
+      partialTpls = [
+        partialTpls
+      ];
+    }
 
     _.merge(tpl, ...partialTpls);
-  }));
+  }
 
   if (!partial) {
     _surfaceDependsOn(tpl);
