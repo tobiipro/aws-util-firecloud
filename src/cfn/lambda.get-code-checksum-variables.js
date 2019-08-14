@@ -30,21 +30,23 @@ export let getCodeChecksumVariables = async function({
     LAMBDA_CODE_S3KEY
   };
 
-  if (!LAMBDA_CODE_SHA256SUM_CORE) {
-    return codeChecksumVariables;
-  }
-
   if (force) {
     return codeChecksumVariables;
   }
 
-  let prevEnvironment;
+  if (!LAMBDA_CODE_SHA256SUM_CORE) {
+    return codeChecksumVariables;
+  }
+
+  let liveVariables;
 
   // check if lambda code is the same as the current version
   try {
     let lambda = new aws.Lambda(getConfig({env}));
     ({
-      Environment: prevEnvironment
+      Environment: {
+        Variables: liveVariables
+      }
     } = await lambda.getFunctionConfiguration({
       FunctionName
     }).promise());
@@ -56,40 +58,24 @@ export let getCodeChecksumVariables = async function({
     return codeChecksumVariables;
   }
 
-  if (!prevEnvironment.Variables.LAMBDA_CODE_S3BUCKET ||
-      !prevEnvironment.Variables.LAMBDA_CODE_S3KEY) {
+  if (_.isUndefined(liveVariables.LAMBDA_CODE_S3BUCKET) ||
+      _.isUndefined(liveVariables.LAMBDA_CODE_S3KEY)) {
+    // cannot compare, so update
     return codeChecksumVariables;
   }
 
-  let prevCode = {
-    S3Bucket: prevEnvironment.Variables.LAMBDA_CODE_S3BUCKET,
-    S3Key: prevEnvironment.Variables.LAMBDA_CODE_S3KEY
-  };
-
-  let [
-    PREV_LAMBDA_CODE_SHA256SUM,
-    PREV_LAMBDA_CODE_SHA256SUM_CORE
-  ] = await getCodeChecksums({
-    env,
-    Code: prevCode
-  });
-
-  if (LAMBDA_CODE_SHA256SUM_CORE === PREV_LAMBDA_CODE_SHA256SUM_CORE) {
-    // no real code change, so don't change lambda
-    Code = prevCode;
-    LAMBDA_CODE_SHA256SUM = PREV_LAMBDA_CODE_SHA256SUM;
-    ({
-      LAMBDA_CODE_S3BUCKET,
-      LAMBDA_CODE_S3KEY
-    } = prevEnvironment.Variables);
-
-    _.merge(codeChecksumVariables, {
-      LAMBDA_CODE_S3BUCKET,
-      LAMBDA_CODE_S3KEY
-    });
+  if (liveVariables.LAMBDA_CODE_SHA256SUM_CORE !== LAMBDA_CODE_SHA256SUM_CORE) {
+    // change detect, so update
+    return codeChecksumVariables;
   }
 
-  return codeChecksumVariables;
+  // no code change detected, so don't update
+  return _.pick(liveVariables, [
+    'LAMBDA_CODE_S3BUCKET',
+    'LAMBDA_CODE_S3KEY',
+    'LAMBDA_CODE_SHA256SUM',
+    'LAMBDA_CODE_SHA256SUM_CORE'
+  ]);
 };
 
 export default getCodeChecksumVariables;
