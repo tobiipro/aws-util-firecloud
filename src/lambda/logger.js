@@ -60,8 +60,8 @@ export let setup = function({ctx}) {
 
   let logger = new MinLog({
     serializers: [
-      serializeTime,
-      serializeErr,
+      serializeTime(),
+      serializeErr(),
       _makeCtxSerializer({ctx})
     ],
     listeners: [
