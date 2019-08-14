@@ -4,6 +4,10 @@
 
 See the [src](src) folder for available utils.
 
+**DEPRECATION NOTICE** of versions v1.0.0..v2.1.1 (inclusive):
+aws-util-firecloud was never intended to be bumped up from v0 to v1, therefore v2.1.1 content
+becomes v0.2.11 and versions >=v1.0.0 should be removed by 2019-12-31.
+
 
 ## Related
 
