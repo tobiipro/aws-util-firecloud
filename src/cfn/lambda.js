@@ -9,11 +9,11 @@ import {
   get as getPrincipal
 } from '../principal';
 
-export let getCodeChecksums = _getCodeChecksums;
+export let add = _add;
 
 export let getCodeChecksumVariables = _getCodeChecksumVariables;
 
-export let add = _add;
+export let getCodeChecksums = _getCodeChecksums;
 
 export let getStorageResources = _getStorageResources;
 
