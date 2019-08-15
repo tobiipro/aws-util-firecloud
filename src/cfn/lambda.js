@@ -3,6 +3,7 @@ import _add from './lambda.add';
 import _getCodeChecksumVariables from './lambda.get-code-checksum-variables';
 import _getCodeChecksums from './lambda.get-code-checksums';
 import _getStorageResources from './lambda.get-storage-resources';
+import _maybeReuseCode from './lambda.maybe-reuse-code';
 
 import {
   get as getPrincipal
@@ -81,3 +82,5 @@ export let getLogGroup = function({functionName, _env}) {
 
   return LogGroup;
 };
+
+export let maybeReuseCode = _maybeReuseCode;
