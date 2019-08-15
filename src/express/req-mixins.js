@@ -1,4 +1,4 @@
-/* eslint-disable no-invalid-this */
+/* eslint-disable babel/no-invalid-this */
 import ResponseError from './res-error';
 import _ from 'lodash-firecloud';
 
