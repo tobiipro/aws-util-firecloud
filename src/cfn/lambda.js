@@ -1,21 +1,14 @@
 import _ from 'lodash-firecloud';
-import _add from './lambda.add';
 import _getCodeChecksumVariables from './lambda.get-code-checksum-variables';
 import _getCodeChecksums from './lambda.get-code-checksums';
-import _getStorageResources from './lambda.get-storage-resources';
-import _maybeReuseCode from './lambda.maybe-reuse-code';
 
 import {
   get as getPrincipal
 } from '../principal';
 
-export let add = _add;
-
 export let getCodeChecksumVariables = _getCodeChecksumVariables;
 
 export let getCodeChecksums = _getCodeChecksums;
-
-export let getStorageResources = _getStorageResources;
 
 export let getPolicyStatement = function({_env} = {}) {
   let Statement = [];
@@ -83,4 +76,25 @@ export let getLogGroup = function({functionName, _env}) {
   return LogGroup;
 };
 
-export let maybeReuseCode = _maybeReuseCode;
+export let maybeReuseCode = async function({
+  Lambda,
+  env
+}) {
+  let codeChecksumVariables = await getCodeChecksumVariables({
+    Code: Lambda.Properties.Code,
+    FunctionName: Lambda.Properties.FunctionName,
+    env
+  });
+
+  _.merge(Lambda, {
+    Properties: {
+      Code: {
+        S3Bucket: codeChecksumVariables.LAMBDA_CODE_S3BUCKET,
+        S3Key: codeChecksumVariables.LAMBDA_CODE_S3KEY
+      },
+      Environment: {
+        Variables: codeChecksumVariables
+      }
+    }
+  });
+};
