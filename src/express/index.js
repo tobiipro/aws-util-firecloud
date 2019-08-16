@@ -71,8 +71,9 @@ let _bootstrap = async function(fn, e, ctx) {
     app.use(`/${basePath}`, app._router);
   }
 
-  app.use(responseTime());
-  app.use(cors({
+  let defaultMiddlewares = {};
+  defaultMiddlewares.responseTime = responseTime();
+  defaultMiddlewares.cors = cors({
     exposedHeaders: [
       'date',
       'etag',
@@ -80,15 +81,22 @@ let _bootstrap = async function(fn, e, ctx) {
       'x-response-time'
     ],
     maxAge: 24 * 60 * 60 // 24 hours
-  }));
-  app.use(bearerToken());
-  app.use(middlewares.applyMixins());
-  app.use(middlewares.xForward());
-
-  app.use(function(_req, res, next) {
+  });
+  defaultMiddlewares.bearerToken = bearerToken();
+  defaultMiddlewares.applyMixins = middlewares.applyMixins();
+  defaultMiddlewares.xForward = middlewares.xForward();
+  defaultMiddlewares.noCache = function(_req, res, next) {
     res.set('cache-control', 'max-age=0, no-store');
     next();
+  };
+
+  _.forEach(defaultMiddlewares, function(_middlewarerWrapper, name) {
+    app.use(function(req, res, next) {
+      defaultMiddlewares[name](req, res, next);
+    });
   });
+
+  app.defaultMiddlewares = defaultMiddlewares;
 
   await fn(app, e, ctx);
 
