@@ -81,7 +81,13 @@ let _bootstrap = async function(fn, e, ctx) {
     next();
   };
 
-  _.forEach(defaultMiddlewares, function(_middlewarerWrapper, name) {
+  _.forEach(defaultMiddlewares, function(middleware, name) {
+    middleware.disable = function() {
+      defaultMiddlewares[name] = function(_req, _res, next) {
+        next();
+      };
+    };
+
     app.use(function(req, res, next) {
       defaultMiddlewares[name](req, res, next);
     });
