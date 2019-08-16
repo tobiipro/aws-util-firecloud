@@ -77,6 +77,7 @@ let _bootstrap = async function(fn, e, ctx) {
     exposedHeaders: [
       'date',
       'etag',
+      'link',
       'location',
       'x-response-time'
     ],
