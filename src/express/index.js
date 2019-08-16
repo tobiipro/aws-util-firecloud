@@ -6,7 +6,6 @@ import bearerToken from 'express-bearer-token';
 import cors from 'cors';
 import middlewares from './middlewares';
 import responseTime from 'response-time';
-import urlLib from 'url';
 
 import {
   bootstrap as bootstrapLambda
@@ -61,15 +60,6 @@ let _bootstrap = async function(fn, e, ctx) {
   app.disable('etag');
   app.enable('trust proxy');
   app.set('json spaces', 2);
-
-  // FIXME hack!!!
-  let host = _.get(e, 'headers.Host', _.get(e, 'headers.host'));
-  if (_.startsWith(host, 'api-git.')) {
-    // using the api-git apigateway-domainname (ci stack)
-    let basePath = _.split(urlLib.parse(e.path).pathname, '/')[1];
-    app.lazyrouter();
-    app.use(`/${basePath}`, app._router);
-  }
 
   let defaultMiddlewares = {};
   defaultMiddlewares.responseTime = responseTime();
