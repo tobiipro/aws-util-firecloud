@@ -1,7 +1,7 @@
 import _ from 'lodash-firecloud';
 import aws from 'aws-sdk';
 
-let _memoizeResolver = function({
+let _getResolver = function({
   ctx,
   tags = [
     'default'
@@ -11,39 +11,36 @@ let _memoizeResolver = function({
     env
   } = ctx;
 
-  return [
+  return _.join([
     env.AWS_ACCOUNT_ID,
     env.AWS_LAMBDA_FUNCTION_ALIAS,
     env.AWS_LAMBDA_FUNCTION_NAME,
     env.AWS_REGION,
-    env.ENV_NAME
-  ].concat(tags).join();
+    env.ENV_NAME,
+    ...tags
+  ]);
 };
 
 let _get = async function({ctx, tags}) {
   let {
     env
   } = ctx;
-  // eslint-disable-next-line fp/no-arguments
-  let cacheKey = _memoizeResolver(...arguments);
+
   let s3 = new aws.S3({
     region: env.AWS_REGION,
     signatureVersion: 'v4'
   });
 
   let Body;
-  let ETag;
 
   await ctx.log.trackTime('aws-util-firecloud.lambda._get: Fetching env ctx...', async function() {
     let result = await s3.getObject({
       Bucket: env.S3_CONFIG_BUCKET,
-      Key: `${env.ENV_NAME}.json`,
-      IfMatch: (_.defaultTo(_get.oldCache[cacheKey], {})).etag
+      Key: `${env.ENV_NAME}.json`
     }).promise();
 
     ({
-      Body,
-      ETag
+      Body
     } = result);
   });
   Body = JSON.parse(Body.toString());
@@ -53,35 +50,27 @@ let _get = async function({ctx, tags}) {
     newCtx = _.merge(newCtx, _.defaultTo(Body[tag], {}));
   });
 
-  return {
-    ctx: newCtx,
-    etag: ETag,
-    lastFetched: Date.now()
-  };
+  return newCtx;
 };
-_get = _.memoize(_get, _memoizeResolver);
-_get.oldCache = new _.memoize.Cache();
+_get = _.memoizeTtl(60 * 1000, _get, _getResolver);
 
 let _getAndRefresh = async function(...args) {
-  let cacheKey = _memoizeResolver(...args);
-  let cachedResult = _get.cache[cacheKey];
-  cachedResult = _.defaultTo(cachedResult, _get.oldCache[cacheKey]);
-  cachedResult = _.defaultTo(cachedResult, {});
-  let aMinuteAgo = Date.now() - 60 * 1000;
+  let cacheKey = _getResolver(...args);
+  if (_get.cache.has(cacheKey)) {
+    let {
+      value,
+      expires
+    } = _get.cache.get(cacheKey);
 
-  if (!cachedResult.ctx) {
-    cachedResult = await _get(...args);
+    if (expires <= Date.now()) {
+      // schedule a refresh
+      _get(...args);
+    }
+
+    return value;
   }
 
-  if (cachedResult.lastFetched < aMinuteAgo) {
-    _get.oldCache.set(cacheKey, _get.cache[cacheKey]);
-    _get.cache.delete(cacheKey);
-    // don't await, we refresh the ctx for next call
-    // await _get(...args);
-    _get(...args);
-  }
-
-  return cachedResult.ctx;
+  return await _get(...args);
 };
 
 export let merge = async function({e, ctx, pkg}) {
