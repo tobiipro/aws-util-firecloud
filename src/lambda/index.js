@@ -77,6 +77,24 @@ export let getRequestInstance = function(req) {
 export let bootstrap = function(fn, {
   pkg
 }) {
+  process.on('uncaughtException', function(err) {
+    // eslint-disable-next-line no-console
+    console.error('FATAL uncaughtException');
+    // eslint-disable-next-line no-console
+    console.error(err.stack);
+    // eslint-disable-next-line no-process-exit
+    process.exit(1);
+  });
+
+  process.on('unhandledRejection', function(err) {
+    // eslint-disable-next-line no-console
+    console.error('FATAL unhandledRejection');
+    // eslint-disable-next-line no-console
+    console.error(err.stack);
+    // eslint-disable-next-line no-process-exit
+    process.exit(1);
+  });
+
   return async function(e, ctx, awsNext) {
     try {
       let result = await _bootstrap(fn, e, ctx, pkg);
@@ -86,7 +104,9 @@ export let bootstrap = function(fn, {
       // return awsNext(err);
 
       // eslint-disable-next-line no-console
-      console.error(err);
+      console.error('FATAL try-catch-lambda-bootstrap');
+      // eslint-disable-next-line no-console
+      console.error(err.stack);
       // eslint-disable-next-line no-process-exit
       process.exit(1);
     }
