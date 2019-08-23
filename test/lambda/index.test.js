@@ -37,16 +37,22 @@ describe('lambda', function() {
       let spyEnvCtxMerge = jest.spyOn(envCtx, 'merge')
         .mockImplementationOnce(_.noop);
 
+      let expectedMsg = 'FATAL try-catch-lambda-bootstrap';
       let expectedErr = new Error();
       // eslint-disable-next-line no-console
       let originalConsoleError = _.bind(console.error, console);
       let spyConsoleError = jest.spyOn(console, 'error')
         .mockImplementationOnce(function(...args) {
-          let receivedErr = args[0];
-          if (receivedErr !== expectedErr) {
+          if (args[0] !== expectedMsg) {
             originalConsoleError(...args);
           }
-          expect(receivedErr).toBe(expectedErr);
+          expect(args[0]).toBe(expectedMsg);
+        })
+        .mockImplementationOnce(function(...args) {
+          if (args[0] !== expectedErr.stack) {
+            originalConsoleError(...args);
+          }
+          expect(args[0]).toBe(expectedErr.stack);
         });
 
       let spyProcessExitD = _.defer();
