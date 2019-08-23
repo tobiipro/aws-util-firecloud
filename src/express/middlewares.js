@@ -59,7 +59,9 @@ export let handleResponseError = function() {
       ctx
     } = res;
 
-    ctx.log.error({err});
+    ctx.log.error('Handling response error...', {
+      err
+    });
 
     if (res.headersSent) {
       ctx.log.error("Headers already sent. Can't send error.");
