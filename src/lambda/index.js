@@ -55,6 +55,9 @@ let _bootstrap = async function(fn, e, ctx, pkg) {
     'Running fn...',
     async function() {
       result = await fn(e, ctx);
+      await ctx.log.trace('Fn result:', {
+        result
+      });
     }
   );
 
