@@ -27,7 +27,7 @@ let _logger = function(awsSdkMessage, rawLogger) {
     });
   }
 
-  rawLogger.warn('Making an AWS SDK call.', {
+  rawLogger.info('Making an AWS SDK call.', {
     aws: {
       serviceIdentifier,
       status,
