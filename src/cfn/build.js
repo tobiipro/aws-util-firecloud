@@ -62,12 +62,21 @@ export let build = async function(args) {
       return inc;
     }
 
+    if (!_.isString(inc)) {
+      throw new Error(`Received inc as '${inc}' but expected a string at this point.`);
+    }
+
     if (!path.isAbsolute(inc)) {
       inc = path.join(process.cwd(), inc);
     }
+    let incModule = inc;
     // eslint-disable-next-line global-require
-    inc = require(inc);
+    inc = require(incModule);
     inc = inc.__esModule ? inc.default : inc;
+
+    if (!_.isFunction(inc)) {
+      throw new Error(`Received inc as '${inc}' (from module '${incModule}') but expected a function at this point.`);
+    }
     return inc;
   });
 
