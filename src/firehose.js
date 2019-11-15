@@ -14,7 +14,6 @@ let _putRecordBatches = async function({
 }) {
   let processedCount = 0;
 
-  // eslint-disable-next-line fp/no-loops, better/no-fors
   for (let recordBatch of recordBatches) {
     delete recordBatch.byteSize;
     await firehose.putRecordBatch(recordBatch).promise();

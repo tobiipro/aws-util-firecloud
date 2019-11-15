@@ -64,6 +64,7 @@ export let dcScan = async function(args, iteratee) {
       if (results[Segment]) {
         iteratorArgs.ExclusiveStartKey = results[Segment].LastEvaluatedKey;
       }
+      // eslint-disable-next-line require-atomic-updates
       results[Segment] = await dc.scan(iteratorArgs).promise();
     }));
 
@@ -89,6 +90,7 @@ export let dcScan = async function(args, iteratee) {
     }
 
     if (limit) {
+      // eslint-disable-next-line require-atomic-updates
       args.Limit = _.ceil(limit / args.TotalSegments);
     }
 

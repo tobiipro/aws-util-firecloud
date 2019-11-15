@@ -30,18 +30,21 @@ export let getOutputBucketName = function({
   return name;
 };
 
-export let pollQueryCompletedState = async function({
-  athena,
-  QueryExecutionId,
-  pollingDelay = 1000
-}) {
+export let pollQueryCompletedState = async function(args) {
+  _.defaults(args, {
+    pollingDelay: 1000
+  });
+  let {
+    athena,
+    QueryExecutionId,
+    pollingDelay
+  } = args;
   let data = await athena.getQueryExecution({QueryExecutionId}).promise();
   let state = data.QueryExecution.Status.State;
   if (state === 'RUNNING' || state === 'QUEUED' || state === 'SUBMITTED') {
     await _.sleep(pollingDelay);
 
-    // eslint-disable-next-line fp/no-arguments
-    return await pollQueryCompletedState(...arguments);
+    return await pollQueryCompletedState(args);
   }
 
   return state;
