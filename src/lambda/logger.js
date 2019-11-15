@@ -39,20 +39,11 @@ let _setupAwsLogger = function({ctx}) {
 };
 
 let _setupLongStacktraces = function({ctx}) {
-  if (ctx.log._canTrace) {
-    Error.stackTraceLimit = Infinity;
-
-    if (_.isFunction(Promise.config)) {
-      Promise.config({
-        warnings: true,
-        longStackTraces: true
-      });
-    }
-
-    ctx.log.trace('Long stack traces enabled.');
-  } else if (Error.stackTraceLimit === Infinity && /^prod/.test(process.env.NODE_ENV)) {
-    ctx.log.error('Long stack traces cannot be disabled in this lambda instance!');
+  if (!ctx.log._canTrace) {
+    return;
   }
+  Error.stackTraceLimit = Infinity;
+  ctx.log.trace('Long stack traces enabled.');
 };
 
 export let setup = function({ctx}) {
