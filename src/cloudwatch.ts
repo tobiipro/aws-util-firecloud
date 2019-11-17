@@ -5,6 +5,14 @@ import {
   Fn
 } from 'lodash-firecloud/types';
 
+// TODO
+// declare module 'aws-sdk/clients/cloudwatch' {
+//   interface GetMetricStatisticsInput {
+//     StartTime: Date | string | number;
+//     EndTime: Date | string | number;
+//   }
+// }
+
 type DimensionMetric = Omit<aws.CloudWatch.Metric, 'Dimension'> & {
   Dimension: aws.CloudWatch.Dimension;
 };
@@ -133,14 +141,17 @@ export let getDimensionMetricDatapoints = async function({
     Datapoints,
     Label
   } = await cloudwatch.getMetricStatistics({
-    // @ts-ignore
     Namespace,
     Dimensions: [
       Dimension
     ],
     MetricName,
-    StartTime: new Date(StartTime).toISOString(),
-    EndTime: new Date(EndTime).toISOString(),
+    // TODO
+    // StartTime: new Date(StartTime).toISOString(),
+    StartTime: new Date(StartTime),
+    // TODO
+    // EndTime: new Date(EndTime).toISOString(),
+    EndTime: new Date(EndTime),
     Period,
     Statistics: [
       'Average',
