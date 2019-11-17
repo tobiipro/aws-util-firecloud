@@ -67,10 +67,7 @@ let _bootstrap = async function(fn, e, ctx, pkg) {
   return result;
 };
 
-export let getRequestInstance = function(req) {
-  let {
-    ctx
-  } = req;
+export let getRequestInstance = function({ctx}) {
   return `${ctx.invokedFunctionArn}#request:${ctx.awsRequestId}`;
 };
 

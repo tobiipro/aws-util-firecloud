@@ -44,7 +44,7 @@ let _sendResponseError = function(res, err) {
     body
   } = err;
 
-  body.instance = getRequestInstance(res.req);
+  body.instance = getRequestInstance({ctx: res.ctx});
 
   res.status(status);
   res.type(contentType);
