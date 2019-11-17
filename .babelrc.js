@@ -12,6 +12,7 @@ srcFuns = _.concat(srcFuns, _.map(minlogFuns, function(level) {
 
 module.exports = {
   presets: [
+    '@babel/preset-typescript',
     ['firecloud', {
       '@babel/preset-env': {
         targets: {
