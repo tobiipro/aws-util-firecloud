@@ -13,9 +13,9 @@ export let isIntrinsicFun = function(Value) {
 
 export let reduceToDependsOn = function(acc, statement) {
   if (isIntrinsicFun(statement)) {
-    if (statement.Ref) {
+    if (_.isDefined(statement.Ref)) {
       acc = acc.concat(statement.Ref);
-    } else if (statement['Fn::GetAtt']) {
+    } else if (_.isDefined(statement['Fn::GetAtt'])) {
       // {'Fn::GetAtt': ['Ref', 'Att']}
       acc = acc.concat(statement['Fn::GetAtt'][0]);
     } else if (_.isString(statement['Fn::Sub'])) {
@@ -25,7 +25,7 @@ export let reduceToDependsOn = function(acc, statement) {
         return /^AWS::.+/.test(subRef);
       });
       _.forEach(subRefs, function(subRef) {
-        subRef = subRef.match(/\$\{([^!][^.}]+)(\..+)?\}/)[1];
+        subRef = _.defaultTo(/\$\{([^!][^.}]+)(\..+)?\}/.exec(subRef), [])[1];
         acc.push(subRef);
       });
     } else if (_.isArray(statement['Fn::Sub'])) {

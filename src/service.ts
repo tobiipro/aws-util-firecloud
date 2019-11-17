@@ -72,6 +72,6 @@ export let services = [
   'swf',
   'waf',
   'workspaces'
-];
+] as const;
 
 export default services;

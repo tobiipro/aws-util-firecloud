@@ -1,8 +1,18 @@
 import _ from 'lodash-firecloud';
 import http from 'http';
 
+import {
+  JsonObject
+} from 'lodash-firecloud/types';
+
 export class ResponseError extends Error {
-  constructor(status, extensions = {}) {
+  code: number;
+
+  contentType: string;
+
+  body: JsonObject;
+
+  constructor(status: number, extensions = {}) {
     super(http.STATUS_CODES[status]);
 
     this.code = status;

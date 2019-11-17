@@ -1,6 +1,16 @@
 import _ from 'lodash-firecloud';
 import aws from 'aws-sdk';
 
+import {
+  LambdaContext
+} from './types';
+
+type RecordBatch = {
+  StreamName: aws.Kinesis.StreamName;
+  Records: aws.Kinesis.PutRecordsRequestEntry[];
+  byteSize: number;
+};
+
 // see https://docs.aws.amazon.com/kinesis/latest/APIReference/API_PutRecords.html
 export let limits = {
   batchByteSize: 5 * 1024 * 1024,
@@ -11,12 +21,17 @@ export let limits = {
 let _putRecordBatches = async function({
   kinesis,
   recordBatches
-}) {
+}: {
+  kinesis: aws.Kinesis;
+  recordBatches: RecordBatch[];
+}): Promise<number> {
   let processedCount = 0;
 
   for (let recordBatch of recordBatches) {
-    delete recordBatch.byteSize;
-    await kinesis.putRecordBatch(recordBatch).promise();
+    await kinesis.putRecords({
+      StreamName: recordBatch.StreamName,
+      Records: recordBatch.Records
+    }).promise();
     processedCount = processedCount + recordBatch.Records.length;
   }
 
@@ -30,18 +45,27 @@ export let putRecords = async function({
   ctx,
   kinesis = new aws.Kinesis(),
   records
-}) {
-  let largeRecords = [];
-  let recordBatches = [];
+}: {
+  ExplicitHashKey: aws.Kinesis.HashKey;
+  PartitionKey: aws.Kinesis.PartitionKey;
+  StreamName: aws.Kinesis.StreamName;
+  ctx: LambdaContext;
+  kinesis: aws.Kinesis;
+  records: any[];
+}): Promise<void | {
+    largeRecords: aws.Kinesis.PutRecordsRequestEntry[];
+  }> {
+  let largeRecords = [] as aws.Kinesis.PutRecordsRequestEntry[];
+  let recordBatches = [] as RecordBatch[];
   let recordBatch = {
     StreamName,
     Records: [],
     byteSize: 0
-  };
+  } as RecordBatch;
 
   let toProcessCount = records.length;
 
-  _.forEach(records, function(record) {
+  for (let record of records) {
     let Data = JSON.stringify(record);
     let dataByteSize = Buffer.byteLength(JSON.stringify({
       Data: record,
@@ -51,12 +75,12 @@ export let putRecords = async function({
 
     if (dataByteSize > limits.recordByteSize) {
       largeRecords.push(record);
-      ctx.log.error(`Skipping record larger than ${limits.recordByteSize / 1024} KB: \
+      await ctx.log.error(`Skipping record larger than ${limits.recordByteSize / 1024} KB: \
 ${dataByteSize / 1024} KB.`, {
         record
       });
       toProcessCount = toProcessCount - 1;
-      return;
+      continue;
     }
 
     if (recordBatch.byteSize + dataByteSize > limits.batchByteSize ||
@@ -66,7 +90,7 @@ ${dataByteSize / 1024} KB.`, {
         StreamName,
         Records: [],
         byteSize: 0
-      };
+      } as RecordBatch;
     }
 
     recordBatch.byteSize = recordBatch.byteSize + dataByteSize;
@@ -75,7 +99,7 @@ ${dataByteSize / 1024} KB.`, {
       Data,
       PartitionKey
     });
-  });
+  }
 
   recordBatches.push(recordBatch);
   recordBatches = _.reject(recordBatches, {

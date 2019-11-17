@@ -18,7 +18,7 @@ let _surfaceDependsOn = function(tpl) {
     deps = _.intersection(deps, _.keys(tpl.Resources));
     Resource.DependsOn = _.defaultTo(Resource.DependsOn, []);
     Resource.DependsOn = [].concat(Resource.DependsOn).concat(deps);
-    Resource.DependsOn = Resource.DependsOn.length ? Resource.DependsOn : undefined;
+    Resource.DependsOn = Resource.DependsOn.length > 0 ? Resource.DependsOn : undefined;
   });
 };
 
@@ -47,6 +47,9 @@ export let build = async function(args) {
   let {
     incs = [],
     partial = false
+  }: {
+    incs: any[];
+    partial: boolean;
   } = args;
 
   // e.g. {env, resNs, vars}
@@ -70,9 +73,9 @@ export let build = async function(args) {
       inc = path.join(process.cwd(), inc);
     }
     let incModule = inc;
-    // eslint-disable-next-line global-require
+    // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports
     inc = require(incModule);
-    inc = inc.__esModule ? inc.default : inc;
+    inc = (inc.__esModule as boolean) ? inc.default : inc;
 
     if (!_.isFunction(inc)) {
       throw new Error(`Received inc as '${inc}' (from module '${incModule}') but expected a function at this point.`);

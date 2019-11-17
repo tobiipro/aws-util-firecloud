@@ -10,6 +10,10 @@ import {
   get as getConfig
 } from '../config';
 
+import {
+  Env
+} from '../types';
+
 // workaround for AWS's limit of 10 Managed Policies per Group
 // ref http://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-limits.html
 export let addStatementFromArns = async function({
@@ -32,15 +36,16 @@ export let addStatementFromArns = async function({
       VersionId: Policy.DefaultVersionId
     }).promise();
     let stmts = JSON.parse(unescape(PolicyVersion.Document)).Statement;
-    stmts = _.map(stmts, function(stmt, index) {
+    stmts = _.map(stmts, function(stmt, index: number) {
+      let indexPrefix = _.toString(index + 1);
       if (stmts.length === 0) {
-        index = '';
+        indexPrefix = '';
       }
       stmt = _.merge({
         Sid: _.defaultTo(
           stmt.Sid,
-          // `${Policy.PolicyName}${PolicyVersion.VersionId}${index + 1}`
-          `${index + 1}${PolicyVersion.VersionId}${Policy.PolicyName}`
+          // `${Policy.PolicyName}${PolicyVersion.VersionId}${index}`
+          `${indexPrefix}${PolicyVersion.VersionId}${Policy.PolicyName}`
         )
       }, stmt);
       return stmt;
@@ -65,7 +70,7 @@ export let compactStatement = function({Statement}) {
       stmt.Resource,
       stmt.Condition
     ]);
-    map[key] = map[key] || [];
+    map[key] = _.defaultTo(map[key], []);
     map[key].push(stmt);
   });
   let cStatement = _.map(map, function(stmts) {
@@ -75,7 +80,9 @@ export let compactStatement = function({Statement}) {
       Resource,
       Condition
     } = stmts[0];
-    let Action = _.sortBy(_.uniq(_.flatten(_.map(stmts, function(stmt) {
+    let Action = _.sortBy(_.uniq(_.flatten(_.map(stmts, function(stmt: {
+      Action?: unknown;
+    }) {
       return _.isArray(stmt.Action) ? stmt.Action : [
         stmt.Action
       ];
@@ -89,7 +96,9 @@ export let compactStatement = function({Statement}) {
     };
   });
   _.forEach(cStatement, function(stmt) {
-    let wActions = _.filter(stmt.Action, /\*$/);
+    let wActions = _.filter(stmt.Action, function(action) {
+      return _.endsWith(action, '*');
+    });
     _.forEach(wActions, function(wAction) {
       let prefix = _.replace(wAction, /\*$/, '');
       stmt.Action = _.reject(stmt.Action, function(action) {
@@ -134,7 +143,10 @@ export let allowFullAccessToKinesisStream = function({
 };
 
 export let allowQueryAccessToAthena = function({
-  _env
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  env
+}: {
+  env?: Env;
 } = {}) {
   return {
     Sid: 'Allow query access to Athena',

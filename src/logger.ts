@@ -1,17 +1,21 @@
 import _ from 'lodash-firecloud';
+import {
+  MinLog
+} from 'minlog';
 
 let _awsLoggerRE =
   / *\[AWS ([^ ]+) ([^ ]+) ([^ ]+)s ([^ ]+) retries] ([^(]+)\(([^)]+)\).*/;
 
-let _logger = function(awsSdkMessage, rawLogger) {
+let _logger = function(awsSdkMessage, rawLogger: Console | InstanceType<MinLog>): void {
   let [
+    _ignore,
     serviceIdentifier,
     status,
     delta,
     retryCount,
     operation,
     params
-  ] = _awsLoggerRE.exec(awsSdkMessage).slice(1);
+  ] = _.defaultTo(_awsLoggerRE.exec(awsSdkMessage), []);
 
   try {
     // 'params' is essentially an output of util.format('%o', realParams)
@@ -20,6 +24,7 @@ let _logger = function(awsSdkMessage, rawLogger) {
     // eslint-disable-next-line no-eval
     params = eval(`(${paramsWithoutArrayLength})`);
   } catch (err) {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     rawLogger.warn("Couldn't eval 'params' of AWS SDK call.", {
       err,
       awsSdkMessage,
@@ -27,6 +32,7 @@ let _logger = function(awsSdkMessage, rawLogger) {
     });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   rawLogger.info('Making an AWS SDK call.', {
     aws: {
       serviceIdentifier,
@@ -39,10 +45,11 @@ let _logger = function(awsSdkMessage, rawLogger) {
   });
 };
 
-export let logger = function(awsSdkMessage, rawLogger = console) {
+export let logger = function(awsSdkMessage, rawLogger: Console | InstanceType<MinLog> = console): void {
   try {
     _logger(awsSdkMessage, rawLogger);
   } catch (err) {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     rawLogger.error('Failed while tracing AWS SDK call.', {
       err,
       awsSdkMessage

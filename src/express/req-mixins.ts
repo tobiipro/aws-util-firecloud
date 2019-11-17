@@ -3,10 +3,18 @@ import ResponseError from './res-error';
 import _ from 'lodash-firecloud';
 
 import {
+  ExpressLambdaRequest
+} from '../types';
+
+import {
+  JsonValue
+} from 'lodash-firecloud/types';
+
+import {
   URL
 } from 'url';
 
-export let getSelfUrl = function() {
+export let getSelfUrl = function(this: ExpressLambdaRequest): URL {
   let {
     env
   } = this.ctx;
@@ -14,18 +22,21 @@ export let getSelfUrl = function() {
   return selfUrl;
 };
 
-export let getPaginationUrl = function({
+export let getPaginationUrl = function(this: ExpressLambdaRequest, {
   perPage,
   ref
-}) {
+}: {
+  perPage: number;
+  ref: string;
+}): URL {
   let pageUrl = new URL(this.getSelfUrl().toString());
-  pageUrl.searchParams.set('per_page', perPage);
+  pageUrl.searchParams.set('per_page', _.toString(perPage));
   pageUrl.searchParams.set('ref', ref);
 
   return pageUrl;
 };
 
-export let getBody = function() {
+export let getBody = function(this: ExpressLambdaRequest): JsonValue {
   let {
     body
   } = this;

@@ -1,5 +1,6 @@
 import ResponseError from './res-error';
 import _ from 'lodash-firecloud';
+import express from 'express';
 import pkg from '../../package.json';
 import reqMixins from './req-mixins';
 import resMixins from './res-mixins';
@@ -8,17 +9,22 @@ import {
   getRequestInstance
 } from '../lambda';
 
+import {
+  ExpressLambdaRequest,
+  ExpressLambdaResponse
+} from '../types';
+
 let _reqMixins = _.omit(reqMixins, 'default');
 let _resMixins = _.omit(resMixins, 'default');
 
 export let applyMixins = function() {
-  return function(req, res, next) {
+  return function(req: ExpressLambdaRequest, res: ExpressLambdaResponse, next: express.NextFunction) {
     _.forEach(_reqMixins, function(fn, name) {
       req[name] = _.bind(fn, req);
     });
 
-    res.oldSend = res.send; // required by the res.send mixin
-    res.oldType = res.type; // required by the res.type mixin
+    res.oldSend = res.send.bind(res); // required by the res.send mixin
+    res.oldType = res.type.bind(res); // required by the res.type mixin
     _.forEach(_resMixins, function(fn, name) {
       res[name] = _.bind(fn, res);
     });
@@ -28,7 +34,7 @@ export let applyMixins = function() {
 };
 
 export let xForward = function() {
-  return function(req, _res, next) {
+  return function(req: ExpressLambdaRequest, _res: ExpressLambdaResponse, next: express.NextFunction) {
     req.headers = _.mapKeys(req.headers, function(_value, key) {
       return _.replace(key, /^X-Forward-/, '');
     });
@@ -37,7 +43,7 @@ export let xForward = function() {
   };
 };
 
-let _sendResponseError = function(res, err) {
+let _sendResponseError = function(res: ExpressLambdaResponse, err: ResponseError): void {
   let {
     code: status,
     contentType,
@@ -52,26 +58,31 @@ let _sendResponseError = function(res, err) {
 };
 
 export let handleResponseError = function() {
-  // function arity is important to distinguish to express
-  // that this is an error handler
-  return function(err, _req, res, _next) {
+  // function arity is important to distinguish to express that this is an error handler
+  // eslint-disable-next-line max-params
+  return async function(
+    err: Error,
+    _req: ExpressLambdaRequest,
+    res: ExpressLambdaResponse,
+    _next: express.NextFunction
+  ) {
     let {
       ctx
     } = res;
 
-    ctx.log.error('Handling response error...', {
+    await ctx.log.error('Handling response error...', {
       err
     });
 
     if (res.headersSent) {
-      ctx.log.error("Headers already sent. Can't send error.");
+      await ctx.log.error("Headers already sent. Can't send error.");
       // bypass express' final-handler
       // return next(err);
       return res._next(err);
     }
 
     if (err instanceof ResponseError) {
-      ctx.log.error(`Responding with ${err.code} ${err.message}...`);
+      await ctx.log.error(`Responding with ${err.code} ${err.message}...`);
       _sendResponseError(res, err);
       return;
     }
@@ -82,10 +93,10 @@ export let handleResponseError = function() {
       // AWS will freeze the lambda execution right after responding,
       // and kill the lambda on the subsequent request
 
-      ctx.log.info('Responding with trace...');
+      await ctx.log.info('Responding with trace...');
       let internalErr = new ResponseError(500, {
         renderer: pkg.name,
-        trace: err.stack ? _.split(err.stack, '\n') : err
+        trace: _.isDefined(err.stack) ? _.split(err.stack, '\n') : err
       });
       _sendResponseError(res, internalErr);
       return;

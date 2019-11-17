@@ -1,27 +1,40 @@
 import _ from 'lodash-firecloud';
 import aws from 'aws-sdk';
 
+import {
+  Fn
+} from 'lodash-firecloud/types';
+
+type DimensionMetric = Omit<aws.CloudWatch.Metric, 'Dimension'> & {
+  Dimension: aws.CloudWatch.Dimension;
+};
+
 export let listAllMetrics = async function({
   cloudwatch = new aws.CloudWatch(),
-  iteratee = undefined,
-  Token = undefined,
+  iteratee,
+  Token,
   Metrics = []
-} = {}) {
+}: {
+  cloudwatch?: aws.CloudWatch;
+  iteratee?: Fn<void, [aws.CloudWatch.Metrics]>;
+  Token?: aws.CloudWatch.NextToken;
+  Metrics?: aws.CloudWatch.Metrics;
+} = {}): Promise<aws.CloudWatch.Metrics> {
   let {
     Metrics: newMetrics,
     NextToken
   } = await cloudwatch.listMetrics({NextToken: Token}).promise();
 
 
-  if (_.isFunction(iteratee)) {
+  if (_.isDefined(iteratee)) {
     // eslint-disable-next-line callback-return
     await iteratee(newMetrics);
   } else {
     Metrics = Metrics.concat(newMetrics);
   }
 
-  if (!NextToken) {
-    return _.isFunction(iteratee) ? undefined : Metrics;
+  if (_.isUndefined(NextToken)) {
+    return _.isDefined(iteratee) ? undefined : Metrics;
   }
 
   return listAllMetrics({Token: NextToken, Metrics});
@@ -47,19 +60,21 @@ export let listAllMetrics = async function({
   }];
 */
 
-export let metricsToDimensionMetrics = function(metrics) {
+export let metricsToDimensionMetrics = function(metrics: aws.CloudWatch.Metrics): DimensionMetric[] {
   let dimensionMetrics = [];
 
   _.forEach(metrics, function(metric) {
     _.forEach(metric.Dimensions, function(dimension) {
-      let dimensionMetric = _.cloneDeep(metric);
+      let dimensionMetric = _.cloneDeep(metric) as DimensionMetric;
       _.unset(dimensionMetric, 'Dimensions');
       dimensionMetric.Dimension = dimension;
       dimensionMetrics.push(dimensionMetric);
     });
   });
 
-  dimensionMetrics = _.uniqBy(dimensionMetrics, _.unary(JSON.stringify));
+  dimensionMetrics = _.uniqBy(dimensionMetrics, function(dimensionMetric) {
+    return JSON.stringify(dimensionMetric);
+  });
   return dimensionMetrics;
 };
 
@@ -81,6 +96,7 @@ export let metricsToDimensionMetrics = function(metrics) {
   }
 */
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export let datapointToDmDatapoint = function({dmDatapointTpl, datapoint}) {
   let dmDatapoint = _.cloneDeep(dmDatapointTpl);
 
@@ -93,12 +109,19 @@ export let datapointToDmDatapoint = function({dmDatapointTpl, datapoint}) {
   return dmDatapoint;
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export let getDimensionMetricDatapoints = async function({
   cloudwatch,
   dimensionMetric,
   StartTime,
   EndTime,
   Period
+}: {
+  cloudwatch: aws.CloudWatch;
+  dimensionMetric: DimensionMetric;
+  StartTime: string | number | Date;
+  EndTime: string | number | Date;
+  Period: aws.CloudWatch.Period;
 }) {
   let {
     Namespace,
@@ -110,6 +133,7 @@ export let getDimensionMetricDatapoints = async function({
     Datapoints,
     Label
   } = await cloudwatch.getMetricStatistics({
+    // @ts-ignore
     Namespace,
     Dimensions: [
       Dimension
@@ -128,23 +152,24 @@ export let getDimensionMetricDatapoints = async function({
   }).promise();
 
   let dmDatapointTpl = {
+    timestamp: undefined as string,
     region: cloudwatch.config.region,
     namespace: Namespace,
     dimension_name: Dimension.Name,
     dimension_value: Dimension.Value,
     metric_name: MetricName,
-    start_time: StartTime.toISOString(),
-    end_time: EndTime.toISOString(),
+    start_time: new Date(StartTime).toISOString(),
+    end_time: new Date(EndTime).toISOString(),
     period: Period,
     label: Label,
-    datapoint: {}
+    datapoint: {} as aws.CloudWatch.Datapoint
   };
 
   let dmDatapoints = _.map(Datapoints, function(datapoint) {
     return datapointToDmDatapoint({dmDatapointTpl, datapoint});
   });
 
-  return dmDatapoints;
+  return dmDatapoints as (typeof dmDatapointTpl)[];
 };
 
 export default exports;

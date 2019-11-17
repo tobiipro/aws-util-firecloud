@@ -6,6 +6,11 @@ import {
   getDomain as getRegionDomain
 } from './region';
 
+import {
+  Env,
+  Region
+} from './types';
+
 // https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_website_region_endpoints
 let _hyphenRegions = [
   'us-east-1',
@@ -20,9 +25,13 @@ let _hyphenRegions = [
 
 let _getBucketName = function({
   prefix,
-  region,
-  env
-}) {
+  env,
+  region
+}: {
+  prefix: string;
+  env: Env;
+  region?: Region;
+}): string {
   region = _.defaultTo(region, getRegion({env}));
 
   let name = `${prefix}-${env.PROJECT_DOMAIN_NAME}-${region}`;
@@ -38,18 +47,26 @@ let _getBucketName = function({
 // one per whole project (like builds- or infra-)
 export let getProjectBucketName = function({
   prefix,
-  region,
-  env
-}) {
+  env,
+  region
+}: {
+  prefix: string;
+  env: Env;
+  region?: Region;
+}): string {
   return _getBucketName({prefix, env, region});
 };
 
 // one per AWS account (like logs- or config-)
 export let getAccountBucketName = function({
   prefix,
-  region,
-  env
-}) {
+  env,
+  region
+}: {
+  prefix: string;
+  env: Env;
+  region?: Region;
+}): string {
   prefix = `${prefix}-${AWS_ACCOUNT.ID}`;
   return _getBucketName({prefix, env, region});
 };
@@ -59,16 +76,24 @@ export let getEnvBucketName = function({
   prefix,
   env,
   region
-}) {
+}: {
+  prefix: string;
+  env: Env;
+  region?: Region;
+}): string {
   prefix = `${prefix}-${env.ENV_NAME}`;
   return _getBucketName({prefix, env, region});
 };
 
 export let getBucketDomainName = function({
   BucketName,
-  region,
-  env
-}) {
+  env,
+  region
+}: {
+  BucketName: string;
+  env: Env;
+  region?: Region;
+}): string {
   region = _.defaultTo(region, getRegion({env}));
   let domain = getWebsiteDomain({region, env});
 
@@ -76,9 +101,12 @@ export let getBucketDomainName = function({
 };
 
 export let getDomain = function({
-  region,
-  env
-}) {
+  env,
+  region
+}: {
+  env: Env;
+  region?: Region;
+}): string {
   region = _.defaultTo(region, getRegion({env}));
   let service = `s3-${region}`;
   if (region === 'us-east-1') {
@@ -89,9 +117,12 @@ export let getDomain = function({
 };
 
 export let getWebsiteDomain = function({
-  region,
-  env
-}) {
+  env,
+  region
+}: {
+  env: Env;
+  region?: Region;
+}): string {
   region = _.defaultTo(region, getRegion({env}));
   let domain = getRegionDomain({region, env});
 

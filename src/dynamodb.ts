@@ -1,7 +1,7 @@
 import _ from 'lodash-firecloud';
 import aws from 'aws-sdk';
 
-export let getDefaultTotalSegments = async function(TableName) {
+export let getDefaultTotalSegments = async function(TableName: aws.DynamoDB.TableName): Promise<number> {
   let db = new aws.DynamoDB();
   let {
     Table
@@ -11,8 +11,10 @@ export let getDefaultTotalSegments = async function(TableName) {
   return Math.floor(Table.TableSizeBytes / TwoGigabytesInBytes) + 1;
 };
 
-export let scanWithBackticks = function(args) {
-  if (!args.FilterExpression) {
+export let scanWithBackticks = function(
+  args: aws.DynamoDB.DocumentClient.ScanInput
+): aws.DynamoDB.DocumentClient.ScanInput {
+  if (_.isUndefined(args.FilterExpression)) {
     return args;
   }
 
@@ -33,7 +35,7 @@ export let scanWithBackticks = function(args) {
   return args;
 };
 
-export let dcScan = async function(args, iteratee) {
+export let dcScan = async function(args: aws.DynamoDB.DocumentClient.ScanInput, iteratee): Promise<void> {
   let dc = new aws.DynamoDB.DocumentClient();
 
   args = scanWithBackticks(args);
@@ -48,20 +50,20 @@ export let dcScan = async function(args, iteratee) {
     args.TotalSegments
   ]);
 
-  if (args.Limit) {
+  if (_.isDefined(args.Limit)) {
     args.Limit = _.ceil(args.Limit / args.TotalSegments);
   }
 
   let continueScan = true;
-  let results = [];
-  let limit;
+  let results = [] as aws.DynamoDB.DocumentClient.ScanOutput[];
+  let limit: aws.DynamoDB.DocumentClient.ScanInput['Limit'];
 
-  let scan = async function() {
+  let scan = async function(): Promise<void> {
     await Promise.all(_.map(_.range(0, args.TotalSegments), async function(Segment) {
       let iteratorArgs = _.cloneDeep(args);
       iteratorArgs.Segment = Segment;
 
-      if (results[Segment]) {
+      if (_.isDefined(results[Segment])) {
         iteratorArgs.ExclusiveStartKey = results[Segment].LastEvaluatedKey;
       }
       // eslint-disable-next-line require-atomic-updates
@@ -89,7 +91,7 @@ export let dcScan = async function(args, iteratee) {
       return;
     }
 
-    if (limit) {
+    if (_.isDefined(limit)) {
       // eslint-disable-next-line require-atomic-updates
       args.Limit = _.ceil(limit / args.TotalSegments);
     }
@@ -100,10 +102,12 @@ export let dcScan = async function(args, iteratee) {
   await scan();
 };
 
-export let dcPut = async function(args) {
+export let dcPut = async function(
+  args: aws.DynamoDB.DocumentClient.PutItemInput
+): Promise<aws.DynamoDB.DocumentClient.PutItemOutput> {
   let dc = new aws.DynamoDB.DocumentClient();
 
-  args.Item = _.mapValuesDeep(_.pickBy)(args.Item, function(value) {
+  args.Item = _.mapValuesDeep(_.pickBy.bind(_))(args.Item, function(value) {
     return _.isDefined(value) && value !== '';
   });
 

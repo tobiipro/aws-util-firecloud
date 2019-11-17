@@ -1,6 +1,11 @@
 import _ from 'lodash-firecloud';
 import env from './env';
 
+import {
+  Env,
+  Region
+} from './types';
+
 export let chinaRegions = [
   'cn-north-1',
   'cn-northwest-1'
@@ -35,11 +40,16 @@ export let regions = [
   'us-west-2'
 ];
 
-export let get = function({env}) {
+export let get = function({env}: {
+  env: Env;
+}): Region {
   return env.AWS_REGION;
 };
 
-export let getDomain = function({region, env}) {
+export let getDomain = function({env, region}: {
+  env: Env;
+  region?: Region;
+}): string {
   region = _.defaultTo(region, get({env}));
   let domain = 'amazonaws.com';
 
@@ -50,13 +60,13 @@ export let getDomain = function({region, env}) {
   return domain;
 };
 
-export let current;
+export let current: Region;
 
 // lazy init
 // eslint-disable-next-line fp/no-proxy
 export let currentProxy = new Proxy({}, {
   get: function(_target, property, _receiver) {
-    if (!current) {
+    if (_.isUndefined(current)) {
       current = get({env});
     }
 

@@ -1,5 +1,9 @@
 import _ from 'lodash-firecloud';
 
+import {
+  ValueOf
+} from './types';
+
 export let awsInstanceTypeToArch = {
   't1.micro': 'PV64',
   't2.nano': 'HVM64',
@@ -54,9 +58,11 @@ export let awsInstanceTypeToArch = {
   'hs1.8xlarge': 'HVM64',
   'cr1.8xlarge': 'HVM64',
   'cc2.8xlarge': 'HVM64'
-};
+} as const;
 
-export let getInstanceTypeToArch = function({instanceType}) {
+export let getInstanceTypeToArch = function({instanceType}: {
+  instanceType: keyof typeof awsInstanceTypeToArch;
+}): ValueOf<typeof awsInstanceTypeToArch> {
   if (!_.has(awsInstanceTypeToArch, instanceType)) {
     throw new Error(`Unknown instance type ${instanceType}.`);
   }

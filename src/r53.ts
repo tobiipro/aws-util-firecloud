@@ -4,6 +4,12 @@ import {
   get as getRegion
 } from './region';
 
+import {
+  Env,
+  Region,
+  Service
+} from './types';
+
 export let hostedZones = {
   apigateway: {
     'us-east-2': 'ZOJJZC49E0EPZ',
@@ -103,10 +109,14 @@ export let hostedZones = {
 };
 
 export let getHostedZoneId = function({
+  service,
   env,
-  region,
-  service
-}) {
+  region
+}: {
+  service: Service;
+  env: Env;
+  region?: Region;
+}): string {
   if (service === 'cloudfront') {
     return hostedZones[service];
   }

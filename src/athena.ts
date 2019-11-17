@@ -5,10 +5,15 @@ import {
   get as getRegion
 } from './region';
 
-export let getDatabaseName = function({
-  region,
-  env
-}) {
+import {
+  Env,
+  Region
+} from './types';
+
+export let getDatabaseName = function({env, region}: {
+  env: Env;
+  region?: Region;
+}): string {
   region = _.defaultTo(region, getRegion({env}));
 
   let name = `${env.ENV_NAME}-${env.PROJECT_DOMAIN_NAME}-${region}`;
@@ -19,10 +24,10 @@ export let getDatabaseName = function({
   return name;
 };
 
-export let getOutputBucketName = function({
-  region,
-  env
-}) {
+export let getOutputBucketName = function({env, region}: {
+  env: Env;
+  region?: Region;
+}): string {
   region = _.defaultTo(region, getRegion({env}));
 
   let name = `aws-athena-query-results-${env.AWS_ACCOUNT_ID}-${region}`;
@@ -30,27 +35,31 @@ export let getOutputBucketName = function({
   return name;
 };
 
-export let pollQueryCompletedState = async function(args) {
-  _.defaults(args, {
-    pollingDelay: 1000
-  });
-  let {
-    athena,
-    QueryExecutionId,
-    pollingDelay
-  } = args;
+export let pollQueryCompletedState = async function({
+  athena,
+  QueryExecutionId,
+  pollingDelay = 1000
+}: {
+  athena: aws.Athena;
+  QueryExecutionId: aws.Athena.QueryExecutionId;
+  pollingDelay: number;
+}): Promise<string> {
   let data = await athena.getQueryExecution({QueryExecutionId}).promise();
   let state = data.QueryExecution.Status.State;
   if (state === 'RUNNING' || state === 'QUEUED' || state === 'SUBMITTED') {
     await _.sleep(pollingDelay);
 
-    return await pollQueryCompletedState(args);
+    return await pollQueryCompletedState({
+      athena,
+      QueryExecutionId,
+      pollingDelay
+    });
   }
 
   return state;
 };
 
-export let queryResultToObjectsArray = function(queryResult) {
+export let queryResultToObjectsArray = function(queryResult: aws.Athena.GetQueryResultsOutput): object[] {
   let columnInfo = queryResult.ResultSet.ResultSetMetadata.ColumnInfo;
   let columns = _.map(columnInfo, function(column) {
     return _.pick(column, [
@@ -92,13 +101,15 @@ export let queryResultToObjectsArray = function(queryResult) {
   return rowsObjects;
 };
 
-export let queryResultToText = function(queryResult) {
+export let queryResultToText = function(queryResult: aws.Athena.GetQueryResultsOutput): string {
   let rows = queryResult.ResultSet.Rows;
-  let lines = _.map(rows, 'Data[0].VarCharValue');
+  let lines = _.map(rows, function(row) {
+    return row.Data[0].VarCharValue;
+  });
   return _.join(lines, '\n');
 };
 
-export let queryResultIsShowResult = function(queryResult) {
+export let queryResultIsShowResult = function(queryResult: aws.Athena.GetQueryResultsOutput): boolean {
   let showColumnSets = [
     [
       'createtab_stmt'
@@ -143,7 +154,12 @@ export let executeQuery = async function({
   },
   pollingDelay = 1000,
   initPollingDelay = pollingDelay
-}) {
+}: {
+  athena: aws.Athena;
+  params: aws.Athena.StartQueryExecutionInput;
+  pollingDelay: number;
+  initPollingDelay: number;
+}): Promise<object[] | string> {
   let queryExecutionData = await athena.startQueryExecution(params).promise();
   let {
     QueryExecutionId
@@ -160,8 +176,8 @@ export let executeQuery = async function({
     throw Error("Athena: query didn't succeed.");
   }
 
-  let queryResult;
-  let nextToken;
+  let queryResult: aws.Athena.GetQueryResultsOutput;
+  let nextToken: aws.Athena.GetQueryResultsOutput['NextToken'];
   let rows = [];
   do {
     queryResult = await athena.getQueryResults({QueryExecutionId, NextToken: nextToken}).promise();
@@ -175,7 +191,7 @@ export let executeQuery = async function({
     nextToken = queryResult.NextToken;
 
     rows = rows.concat(queryResultToObjectsArray(queryResult));
-  } while (nextToken);
+  } while (_.isDefined(nextToken));
 
   rows = _.drop(rows, 1); // first row is column names
   return rows;

@@ -1,12 +1,55 @@
 import _ from 'lodash-firecloud';
 import aws from 'aws-sdk';
 
+import {
+  LambdaContext,
+  LambdaEvent,
+  PackageJson
+} from '../types';
+
+/*
+  ctx = {
+    functionName: undefined,
+    functionVersion: undefined,
+    invokedFunctionArn: undefined,
+    memoryLimitInMB: undefined,
+    awsRequestId: undefined,
+    logGroupName: undefined,
+    logStreamName: undefined,
+    identity: {},
+    // From X-Amz-Client-Context (HTTP Request Header)
+    // For inspiration see
+    // http://docs.aws.amazon.com/mobileanalytics/latest/ug/PutEvents.html
+    clientContext: {},
+    // LAMBDA-HTTP CUSTOM
+    // e.stageVariables + process.env
+    env: {}
+  }
+
+  identity = {
+    cognitoIdentityPoolId: undefined,
+    accountId: undefined,
+    cognitoIdentityId: undefined,
+    caller: undefined,
+    apiKey: undefined,
+    sourceIp: undefined,
+    cognitoAuthenticationType: undefined,
+    cognitoAuthenticationProvider: undefined,
+    userArn: undefined,
+    userAgent: undefined,
+    user: undefined
+  }
+*/
+
 let _getResolver = function({
   ctx,
   tags = [
     'default'
   ]
-}) {
+}: {
+  ctx: LambdaContext;
+  tags: string[];
+}): string {
   let {
     env
   } = ctx;
@@ -21,40 +64,47 @@ let _getResolver = function({
   ]);
 };
 
-let _get = async function({ctx, tags}) {
-  let {
-    env
-  } = ctx;
+let _get = (function() {
+  let fn = async function({ctx, tags}: {
+    ctx: LambdaContext;
+    tags: string[];}
+  ): Promise<LambdaContext> {
+    let {
+      env
+    } = ctx;
 
-  let s3 = new aws.S3({
-    region: env.AWS_REGION,
-    signatureVersion: 'v4'
-  });
+    let s3 = new aws.S3({
+      region: env.AWS_REGION,
+      signatureVersion: 'v4'
+    });
 
-  let Body;
+    let Body: aws.S3.GetObjectOutput['Body'];
 
-  await ctx.log.trackTime('aws-util-firecloud.lambda._get: Fetching env ctx...', async function() {
-    let result = await s3.getObject({
-      Bucket: env.S3_CONFIG_BUCKET,
-      Key: `${env.ENV_NAME}.json`
-    }).promise();
+    await ctx.log.trackTime('aws-util-firecloud.lambda._get: Fetching env ctx...', async function() {
+      let result = await s3.getObject({
+        Bucket: env.S3_CONFIG_BUCKET,
+        Key: `${env.ENV_NAME}.json`
+      }).promise();
 
-    ({
-      Body
-    } = result);
-  });
-  Body = JSON.parse(Body.toString());
+      ({
+        Body
+      } = result);
+    });
+    Body = JSON.parse(Body.toString());
 
-  let newCtx = {};
-  _.forEach(tags, function(tag) {
-    newCtx = _.merge(newCtx, _.defaultTo(Body[tag], {}));
-  });
+    let newCtx = {} as LambdaContext;
+    _.forEach(tags, function(tag) {
+      newCtx = _.merge(newCtx, _.defaultTo(Body[tag], {}));
+    });
 
-  return newCtx;
-};
-_get = _.memoizeTtl(60 * 1000, _get, _getResolver);
+    return newCtx;
+  };
 
-let _getAndRefresh = async function(...args) {
+  let memoizedFn = _.memoizeTtl(60 * 1000, fn, _getResolver);
+  return memoizedFn;
+})();
+
+let _getAndRefresh = async function(...args: Parameters<typeof _getResolver>): Promise<LambdaContext> {
   let cacheKey = _getResolver(...args);
   if (_get.cache.has(cacheKey)) {
     let {
@@ -64,7 +114,9 @@ let _getAndRefresh = async function(...args) {
 
     if (expires <= Date.now()) {
       // schedule a refresh
-      _get(...args);
+      _.defer(async function() {
+        await _get(...args);
+      });
     }
 
     return value;
@@ -73,11 +125,19 @@ let _getAndRefresh = async function(...args) {
   return await _get(...args);
 };
 
-export let merge = async function({e, ctx, pkg}) {
+export let merge = async function({e, ctx, pkg}: {
+  e: LambdaEvent & {
+    stageVariables?: {
+      [key: string]: string;
+    };
+  };
+  ctx: LambdaContext;
+  pkg: PackageJson;
+}): Promise<void> {
   let AWS_ACCOUNT_ID =
       _.split(_.get(ctx, 'invokedFunctionArn', ''), ':')[4];
   AWS_ACCOUNT_ID =
-    _.defaultTo(_.get(e, 'requestContext.accountId'), AWS_ACCOUNT_ID);
+    _.defaultTo(_.get(e, 'requestContext.accountId'), AWS_ACCOUNT_ID) as string;
 
   let AWS_REGION =
       _.split(_.get(ctx, 'invokedFunctionArn', ''), ':')[3];

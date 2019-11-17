@@ -1,6 +1,15 @@
 import _ from 'lodash-firecloud';
-
+// eslint-disable-next-line import/no-unresolved
+import awsLambda from 'aws-lambda';
 import inspect from './inspect';
+
+import {
+  LambdaContext,
+  LambdaEvent,
+  LambdaHandler,
+  LambdaResult,
+  PackageJson
+} from '../types';
 
 import {
   merge as mergeEnvCtx
@@ -10,18 +19,30 @@ import {
   setup as setupLogger
 } from './logger';
 
-let _cleanup = async function({ctx}) {
-  if (global && global.gc) {
-    await ctx.log.trackTime(
-      'Garbage collection on demand...',
-      async function() {
-        global.gc();
-      }
-    );
+let _cleanup = async function({ctx}: {
+  ctx: LambdaContext;
+}): Promise<void> {
+  if (_.isUndefined(global.gc)) {
+    return;
   }
+  await ctx.log.trackTime(
+    'Garbage collection on demand...',
+    async function() {
+      global.gc();
+    }
+  );
 };
 
-let _bootstrap = async function(fn, e, ctx, pkg) {
+// eslint-disable-next-line max-params
+let _bootstrap = async function<
+  TEvent extends LambdaEvent,
+  TResult extends LambdaResult
+>(
+  fn: LambdaHandler<TEvent, TResult>,
+  e: TEvent,
+  ctx: LambdaContext,
+  pkg: PackageJson
+): Promise<TResult> {
   // temporary logger
   setupLogger({ctx});
 
@@ -36,7 +57,7 @@ let _bootstrap = async function(fn, e, ctx, pkg) {
     'Setting up logger...',
     async function() {
       setupLogger({ctx});
-      ctx.log.trace(`Logger started with level=${ctx.log.level()}`, {
+      await ctx.log.trace(`Logger started with level=${ctx.log.level()}`, {
         e,
         ctx
       });
@@ -46,11 +67,11 @@ let _bootstrap = async function(fn, e, ctx, pkg) {
   await ctx.log.trackTime(
     'Inspecting...',
     async function() {
-      await inspect({e, ctx});
+      await inspect({ctx});
     }
   );
 
-  let result;
+  let result: TResult;
   await ctx.log.trackTime(
     'Running fn...',
     async function() {
@@ -62,18 +83,27 @@ let _bootstrap = async function(fn, e, ctx, pkg) {
   );
 
   // don't wait for cleanup on purpose
-  _cleanup({ctx});
+  _.defer(async function() {
+    await _cleanup({ctx});
+  });
 
   return result;
 };
 
-export let getRequestInstance = function({ctx}) {
+export let getRequestInstance = function({ctx}: {
+  ctx: LambdaContext;
+}): string {
   return `${ctx.invokedFunctionArn}#request:${ctx.awsRequestId}`;
 };
 
-export let bootstrap = function(fn, {
+export let bootstrap = function<
+  TEvent extends LambdaEvent,
+  TResult extends LambdaResult
+>(fn: LambdaHandler<TEvent, TResult>, {
   pkg
-}) {
+}: {
+  pkg: PackageJson;
+}): awsLambda.Handler {
   process.on('uncaughtException', function(err) {
     // eslint-disable-next-line no-console
     console.error('FATAL uncaughtException');
@@ -83,7 +113,7 @@ export let bootstrap = function(fn, {
     process.exit(1);
   });
 
-  process.on('unhandledRejection', function(err) {
+  process.on('unhandledRejection', function(err: Error) {
     // eslint-disable-next-line no-console
     console.error('FATAL unhandledRejection');
     // eslint-disable-next-line no-console
@@ -92,10 +122,10 @@ export let bootstrap = function(fn, {
     process.exit(1);
   });
 
-  return async function(e, ctx, awsNext) {
+  return async function(e: TEvent, ctx: LambdaContext, awsNext: awsLambda.Callback) {
     try {
-      let result = await _bootstrap(fn, e, ctx, pkg);
-      return awsNext(undefined, result);
+      let result = await _bootstrap<TEvent, TResult>(fn, e, ctx, pkg);
+      awsNext(undefined, result);
     } catch (err) {
       // proxying the err to awsNext would not reset state (kill lambda)
       // return awsNext(err);

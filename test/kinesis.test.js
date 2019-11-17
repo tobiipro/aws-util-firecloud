@@ -26,15 +26,15 @@ describe('kinesis', function() {
         };
       });
 
-      let spy = jest.spyOn(kinesis, '_putRecordBatches')
-        .mockImplementation(async function() {
-          throw new Error();
-        })
-        .mockImplementationOnce(async function({recordBatches}) {
-          expect(recordBatches).toHaveLength(1);
-          expect(recordBatches[0].Records).toHaveLength(1);
-          return _.sum(_.map(recordBatches, 'Records.length'));
-        });
+      let spy = jest.spyOn(kinesis, '_putRecordBatches');
+      spy.mockImplementation(async function() {
+        throw new Error();
+      });
+      spy.mockImplementationOnce(async function({recordBatches}) {
+        expect(recordBatches).toHaveLength(1);
+        expect(recordBatches[0].Records).toHaveLength(1);
+        return _.sum(_.map(recordBatches, 'Records.length'));
+      });
 
       await kinesis.putRecords({
         PartitionKey,
@@ -56,16 +56,16 @@ when batch byteSize < ${kinesis.limits.batchByteSize / 1024 / 1024} MB`, async f
         };
       });
 
-      let spy = jest.spyOn(kinesis, '_putRecordBatches')
-        .mockImplementation(async function() {
-          throw new Error();
-        })
-        .mockImplementationOnce(async function({recordBatches}) {
-          expect(recordBatches).toHaveLength(2);
-          expect(recordBatches[0].Records).toHaveLength(kinesis.limits.batchRecord);
-          expect(recordBatches[1].Records).toHaveLength(1);
-          return _.sum(_.map(recordBatches, 'Records.length'));
-        });
+      let spy = jest.spyOn(kinesis, '_putRecordBatches');
+      spy.mockImplementation(async function() {
+        throw new Error();
+      });
+      spy.mockImplementationOnce(async function({recordBatches}) {
+        expect(recordBatches).toHaveLength(2);
+        expect(recordBatches[0].Records).toHaveLength(kinesis.limits.batchRecord);
+        expect(recordBatches[1].Records).toHaveLength(1);
+        return _.sum(_.map(recordBatches, 'Records.length'));
+      });
 
       await kinesis.putRecords({
         PartitionKey,
@@ -88,16 +88,16 @@ when batch count < ${kinesis.limits.batchRecord}`, async function() {
         };
       });
 
-      let spy = jest.spyOn(kinesis, '_putRecordBatches')
-        .mockImplementation(async function() {
-          throw new Error();
-        })
-        .mockImplementationOnce(async function({recordBatches}) {
-          expect(recordBatches).toHaveLength(2);
-          expect(recordBatches[0].Records).toHaveLength(maxRecordsInBatch);
-          expect(recordBatches[1].Records).toHaveLength(1);
-          return _.sum(_.map(recordBatches, 'Records.length'));
-        });
+      let spy = jest.spyOn(kinesis, '_putRecordBatches');
+      spy.mockImplementation(async function() {
+        throw new Error();
+      });
+      spy.mockImplementationOnce(async function({recordBatches}) {
+        expect(recordBatches).toHaveLength(2);
+        expect(recordBatches[0].Records).toHaveLength(maxRecordsInBatch);
+        expect(recordBatches[1].Records).toHaveLength(1);
+        return _.sum(_.map(recordBatches, 'Records.length'));
+      });
 
       await kinesis.putRecords({
         PartitionKey,
@@ -118,22 +118,22 @@ when batch count < ${kinesis.limits.batchRecord}`, async function() {
         };
       });
 
-      let spy = jest.spyOn(kinesis, '_putRecordBatches')
-        .mockImplementation(async function() {
-          throw new Error();
-        })
-        .mockImplementationOnce(async function({recordBatches}) {
-          expect(recordBatches).toHaveLength(0);
-          return _.sum(_.map(recordBatches, 'Records.length'));
-        });
+      let spy = jest.spyOn(kinesis, '_putRecordBatches');
+      spy.mockImplementation(async function() {
+        throw new Error();
+      });
+      spy.mockImplementationOnce(async function({recordBatches}) {
+        expect(recordBatches).toHaveLength(0);
+        return _.sum(_.map(recordBatches, 'Records.length'));
+      });
 
-      let spy2 = jest.fn()
-        .mockImplementation(function() {
-          throw new Error();
-        })
-        .mockImplementationOnce(function(...args) {
-          expect(args[1]).toMatch(/Skipping record larger than/);
-        });
+      let spy2 = jest.fn();
+      spy2.mockImplementation(function() {
+        throw new Error();
+      });
+      spy2.mockImplementationOnce(function(...args) {
+        expect(args[1]).toMatch(/Skipping record larger than/);
+      });
 
       await kinesis.putRecords({
         PartitionKey,
@@ -160,13 +160,13 @@ when batch count < ${kinesis.limits.batchRecord}`, async function() {
         };
       });
 
-      let spy = jest.spyOn(kinesis, '_putRecordBatches')
-        .mockImplementation(async function() {
-          throw new Error();
-        })
-        .mockImplementationOnce(async function() {
-          return records.length - 1; // one missing
-        });
+      let spy = jest.spyOn(kinesis, '_putRecordBatches');
+      spy.mockImplementation(async function() {
+        throw new Error();
+      });
+      spy.mockImplementationOnce(async function() {
+        return records.length - 1; // one missing
+      });
 
       let failed = false;
       try {

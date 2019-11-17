@@ -66,7 +66,9 @@ describe('express', function() {
 
       let spyProcessExitD = _.deferred();
       let spyProcessExit = jest.spyOn(process, 'exit')
+        // @ts-ignore
         .mockImplementationOnce(function(...args) {
+          // @ts-ignore
           spyProcessExitD.resolve(args);
         });
 
@@ -127,7 +129,9 @@ describe('express', function() {
 
       let spyProcessExitD = _.deferred();
       let spyProcessExit = jest.spyOn(process, 'exit')
+        // @ts-ignore
         .mockImplementationOnce(function(...args) {
+          // @ts-ignore
           spyProcessExitD.resolve(args);
         });
 
@@ -190,7 +194,9 @@ describe('express', function() {
 
       let spyProcessExitD = _.deferred();
       let spyProcessExit = jest.spyOn(process, 'exit')
+        // @ts-ignore
         .mockImplementationOnce(function(...args) {
+          // @ts-ignore
           spyProcessExitD.resolve(args);
         });
 

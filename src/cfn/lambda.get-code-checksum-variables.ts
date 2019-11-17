@@ -34,7 +34,7 @@ export let getCodeChecksumVariables = async function({
     return codeChecksumVariables;
   }
 
-  if (!LAMBDA_CODE_SHA256SUM_CORE) {
+  if (_.isUndefined(LAMBDA_CODE_SHA256SUM_CORE)) {
     return codeChecksumVariables;
   }
 

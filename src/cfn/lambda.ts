@@ -6,11 +6,20 @@ import {
   get as getPrincipal
 } from '../principal';
 
+import {
+  Env
+} from '../types';
+
 export let getCodeChecksumVariables = _getCodeChecksumVariables;
 
 export let getCodeChecksums = _getCodeChecksums;
 
-export let getPolicyStatement = function({_env} = {}) {
+export let getPolicyStatement = function({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  env
+}: {
+  env?: Env;
+} = {}) {
   let Statement = [];
 
   Statement.push({
@@ -27,7 +36,11 @@ export let getPolicyStatement = function({_env} = {}) {
   return Statement;
 };
 
-export let getPolicy = function({env}) {
+export let getPolicy = function({
+  env
+}: {
+  env?: Env;
+}) {
   let Policy = {
     Type: 'AWS::IAM::ManagedPolicy',
     Properties: {
