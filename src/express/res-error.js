@@ -1,18 +1,19 @@
 import _ from 'lodash-firecloud';
 import http from 'http';
 
-export let ResponseError = function(status, extensions = {}) {
-  this.code = status;
-  this.message = http.STATUS_CODES[status];
+export class ResponseError extends Error {
+  constructor(status, extensions = {}) {
+    super(http.STATUS_CODES[status]);
 
-  this.contentType = 'application/problem+json';
-  let body = _.merge({
-    type: 'about:blank',
-    title: this.message,
-    status: this.code
-  }, extensions);
-  this.body = body;
-};
-ResponseError.prototype = new Error();
+    this.code = status;
+    this.contentType = 'application/problem+json';
+    let body = _.merge({
+      type: 'about:blank',
+      title: this.message,
+      status: this.code
+    }, extensions);
+    this.body = body;
+  }
+}
 
 export default ResponseError;
