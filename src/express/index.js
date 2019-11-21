@@ -4,6 +4,7 @@ import _ from 'lodash-firecloud';
 import _express from 'express';
 import bearerToken from 'express-bearer-token';
 import cors from 'cors';
+import http from 'http';
 import middlewares from './middlewares';
 import responseTime from 'response-time';
 
@@ -116,7 +117,7 @@ export let bootstrap = function(fn, {
     );
 
     let result;
-    ctx.log.info('Creating HTTP server (handling request)...');
+    await ctx.log.info(`Handling ${e.httpMethod} ${e.path}...`);
     await ctx.log.trackTime(
       'Creating HTTP server (handling request)...',
       _.promisify(function(done) {
@@ -130,6 +131,7 @@ export let bootstrap = function(fn, {
       })
     );
 
+    await ctx.log.info(`Handled with ${result.statusCode} ${http.STATUS_CODES[result.statusCode]}...`);
     return result;
   }, {
     pkg
