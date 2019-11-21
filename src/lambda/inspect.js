@@ -77,7 +77,9 @@ export let inspect = async function({ctx}) {
   }
 
   for (let key in inspection) {
-    await ctx.log.trace(`Inspecting '${key}'`, inspection[key]);
+    await ctx.log.trace(`Inspecting '${key}'`, {
+      key: inspection[key]
+    });
   }
 };
 
