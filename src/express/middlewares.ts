@@ -1,7 +1,6 @@
 import ResponseError from './res-error';
 import _ from 'lodash-firecloud';
 import express from 'express';
-import pkg from '../../package.json';
 import reqMixins from './req-mixins';
 import resMixins from './res-mixins';
 
@@ -95,7 +94,7 @@ export let handleResponseError = function() {
 
       await ctx.log.info('Responding with trace...');
       let internalErr = new ResponseError(500, {
-        renderer: pkg.name,
+        renderer: 'aws-util-firecloud',
         trace: _.isDefined(err.stack) ? _.split(err.stack, '\n') : err
       });
       _sendResponseError(res, internalErr);
