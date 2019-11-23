@@ -76,11 +76,11 @@ export let inspect = async function({ctx}) {
     }, {});
   }
 
-  for (let key in inspection) {
-    await ctx.log.trace(`Inspecting '${key}'`, {
-      key: inspection[key]
+  _.forEach(inspection, function(value, key) {
+    ctx.log.trace(`Inspecting '${key}'`, {
+      key: value
     });
-  }
+  });
 };
 
 export default inspect;
