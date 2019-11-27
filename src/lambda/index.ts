@@ -19,6 +19,12 @@ import {
   setup as setupLogger
 } from './logger';
 
+import {
+  MinLog
+} from 'minlog';
+
+let _logger = undefined as MinLog;
+
 let _cleanup = async function({ctx}: {
   ctx: LambdaContext;
 }): Promise<void> {
@@ -44,7 +50,7 @@ let _bootstrap = async function<
   pkg: PackageJson
 ): Promise<TResult> {
   // temporary logger
-  setupLogger({ctx});
+  _logger = setupLogger({ctx});
 
   await ctx.log.trackTime(
     'Merging env ctx...',
@@ -57,7 +63,7 @@ let _bootstrap = async function<
     'Setting up logger...',
     async function() {
       setupLogger({ctx});
-      await ctx.log.trace(`Logger started with level=${ctx.log.level()}`, {
+      ctx.log.trace(`Logger started with level=${ctx.log.level()}`, {
         e,
         ctx
       });
@@ -76,7 +82,7 @@ let _bootstrap = async function<
     'Running fn...',
     async function() {
       result = await fn(e, ctx);
-      await ctx.log.trace('Fn result:', {
+      ctx.log.trace('Fn result:', {
         result
       });
     }
@@ -96,6 +102,7 @@ export let getRequestInstance = function({ctx}: {
   return `${ctx.invokedFunctionArn}#request:${ctx.awsRequestId}`;
 };
 
+/* eslint-disable no-console */
 export let bootstrap = function<
   TEvent extends LambdaEvent,
   TResult extends LambdaResult
@@ -104,19 +111,39 @@ export let bootstrap = function<
 }: {
   pkg: PackageJson;
 }): awsLambda.Handler {
-  process.on('uncaughtException', function(err) {
-    // eslint-disable-next-line no-console
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  process.on('uncaughtException', async function(err: Error) {
+    if (_.isDefined(_logger)) {
+      let logger = _logger;
+      _logger = undefined;
+      try {
+        await logger.flush();
+      } catch (minlogFlushErr) {
+        console.error('FATAL MinLog.flush');
+        console.error(minlogFlushErr.stack);
+      }
+    }
+
     console.error('FATAL uncaughtException');
-    // eslint-disable-next-line no-console
     console.error(err.stack);
     // eslint-disable-next-line no-process-exit
     process.exit(1);
   });
 
-  process.on('unhandledRejection', function(err: Error) {
-    // eslint-disable-next-line no-console
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  process.on('unhandledRejection', async function(err: Error) {
+    if (_.isDefined(_logger)) {
+      let logger = _logger;
+      _logger = undefined;
+      try {
+        await logger.flush();
+      } catch (minlogFlushErr) {
+        console.error('FATAL MinLog.flush');
+        console.error(minlogFlushErr.stack);
+      }
+    }
+
     console.error('FATAL unhandledRejection');
-    // eslint-disable-next-line no-console
     console.error(err.stack);
     // eslint-disable-next-line no-process-exit
     process.exit(1);
@@ -127,17 +154,27 @@ export let bootstrap = function<
       let result = await _bootstrap<TEvent, TResult>(fn, e, ctx, pkg);
       awsNext(undefined, result);
     } catch (err) {
+      if (_.isDefined(_logger)) {
+        let logger = _logger;
+        _logger = undefined;
+        try {
+          await logger.flush();
+        } catch (minlogFlushErr) {
+          console.error('FATAL MinLog.flush');
+          console.error(minlogFlushErr.stack);
+        }
+      }
+
       // proxying the err to awsNext would not reset state (kill lambda)
       // return awsNext(err);
 
-      // eslint-disable-next-line no-console
       console.error('FATAL try-catch-lambda-bootstrap');
-      // eslint-disable-next-line no-console
       console.error(err.stack);
       // eslint-disable-next-line no-process-exit
       process.exit(1);
     }
   };
+  /* eslint-enable no-console */
 };
 
 export default exports;

@@ -67,7 +67,7 @@ let _setupLongStacktraces = function({ctx}: {
 
 export let setup = function({ctx}: {
   ctx: LambdaContext;
-}): void {
+}): MinLog {
   let level = _.get(ctx, 'env.LOG_LEVEL', 'info');
 
   let _logger = new MinLog({
@@ -97,6 +97,8 @@ export let setup = function({ctx}: {
   ctx.log = logger;
   _setupAwsLogger({ctx});
   _setupLongStacktraces({ctx});
+
+  return logger;
 };
 
 export default exports;

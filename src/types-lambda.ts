@@ -16,7 +16,7 @@ export interface LambdaLoggerExtensions {
   level: () => string;
 }
 
-export type LambdaLogger = InstanceType<MinLog> & LambdaLoggerExtensions;
+export type LambdaLogger = MinLog & LambdaLoggerExtensions;
 
 export interface LambdaContextExtensions {
   env: Env;

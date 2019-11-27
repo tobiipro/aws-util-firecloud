@@ -153,7 +153,7 @@ export let bootstrap = function<
       );
 
       let result: TResult;
-      await ctx.log.info(`Handling ${e.httpMethod} ${e.path}...`);
+      ctx.log.info(`Handling ${e.httpMethod} ${e.path}...`);
       await ctx.log.trackTime(
         'Creating HTTP server (handling request)...',
         _.promisify(function(done: (err?: Error) => void) {
@@ -167,7 +167,7 @@ export let bootstrap = function<
         })
       );
 
-      await ctx.log.info(`Handled with ${result.statusCode} ${http.STATUS_CODES[result.statusCode]}...`);
+      ctx.log.info(`Handled with ${result.statusCode} ${http.STATUS_CODES[result.statusCode]}...`);
       return result;
     }, {
       pkg

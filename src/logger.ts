@@ -1,4 +1,5 @@
 import _ from 'lodash-firecloud';
+
 import {
   MinLog
 } from 'minlog';
@@ -6,7 +7,7 @@ import {
 let _awsLoggerRE =
   / *\[AWS ([^ ]+) ([^ ]+) ([^ ]+)s ([^ ]+) retries] ([^(]+)\(([^)]+)\).*/;
 
-let _logger = function(awsSdkMessage, rawLogger: Console | InstanceType<MinLog>): void {
+let _logger = function(awsSdkMessage, rawLogger: Console | MinLog): void {
   let [
     _ignore,
     serviceIdentifier,
@@ -45,7 +46,7 @@ let _logger = function(awsSdkMessage, rawLogger: Console | InstanceType<MinLog>)
   });
 };
 
-export let logger = function(awsSdkMessage, rawLogger: Console | InstanceType<MinLog> = console): void {
+export let logger = function(awsSdkMessage, rawLogger: Console | MinLog = console): void {
   try {
     _logger(awsSdkMessage, rawLogger);
   } catch (err) {
