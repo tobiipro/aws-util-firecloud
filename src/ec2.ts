@@ -69,5 +69,3 @@ export let getInstanceTypeToArch = function({instanceType}: {
 
   return awsInstanceTypeToArch[instanceType];
 };
-
-export default exports;

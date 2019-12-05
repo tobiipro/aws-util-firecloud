@@ -173,5 +173,3 @@ export let bootstrap = function<
       pkg
     });
 };
-
-export default exports;

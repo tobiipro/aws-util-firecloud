@@ -176,5 +176,3 @@ export let bootstrap = function<
   };
   /* eslint-enable no-console */
 };
-
-export default exports;

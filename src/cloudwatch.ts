@@ -182,5 +182,3 @@ export let getDimensionMetricDatapoints = async function({
 
   return dmDatapoints as (typeof dmDatapointTpl)[];
 };
-
-export default exports;

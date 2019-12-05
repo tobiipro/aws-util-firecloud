@@ -102,5 +102,3 @@ ${dataByteSize / 1024} KB.`, {
     largeRecords
   };
 };
-
-export default exports;

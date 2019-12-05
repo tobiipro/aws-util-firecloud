@@ -133,5 +133,3 @@ export let getWebsiteDomain = function({
 
   return `s3-website${sep}${region}.${domain}`;
 };
-
-export default exports;

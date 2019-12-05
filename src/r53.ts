@@ -126,5 +126,3 @@ export let getHostedZoneId = function({
   let hostedZoneId = hostedZones[service][region];
   return hostedZoneId;
 };
-
-export default exports;

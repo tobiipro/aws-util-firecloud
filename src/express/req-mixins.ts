@@ -62,5 +62,3 @@ export let getBody = function(this: ExpressLambdaRequest): JsonValue {
 
   return body;
 };
-
-export default exports;

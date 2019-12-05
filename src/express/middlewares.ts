@@ -1,8 +1,8 @@
+import * as reqMixins from './req-mixins';
+import * as resMixins from './res-mixins';
 import ResponseError from './res-error';
 import _ from 'lodash-firecloud';
 import express from 'express';
-import reqMixins from './req-mixins';
-import resMixins from './res-mixins';
 
 import {
   getRequestInstance
@@ -13,18 +13,15 @@ import {
   ExpressLambdaResponse
 } from '../types';
 
-let _reqMixins = _.omit(reqMixins, 'default');
-let _resMixins = _.omit(resMixins, 'default');
-
 export let applyMixins = function() {
   return function(req: ExpressLambdaRequest, res: ExpressLambdaResponse, next: express.NextFunction) {
-    _.forEach(_reqMixins, function(fn, name) {
+    _.forEach(reqMixins, function(fn, name) {
       req[name] = _.bind(fn, req);
     });
 
     res.oldSend = res.send.bind(res); // required by the res.send mixin
     res.oldType = res.type.bind(res); // required by the res.type mixin
-    _.forEach(_resMixins, function(fn, name) {
+    _.forEach(resMixins, function(fn, name) {
       res[name] = _.bind(fn, res);
     });
 
@@ -111,5 +108,3 @@ export let handleResponseError = function() {
     res._next(err);
   };
 };
-
-export default exports;

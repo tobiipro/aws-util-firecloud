@@ -196,5 +196,3 @@ export let executeQuery = async function({
   rows = _.drop(rows, 1); // first row is column names
   return rows;
 };
-
-export default exports;

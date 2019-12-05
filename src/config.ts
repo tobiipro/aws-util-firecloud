@@ -29,5 +29,3 @@ export let get = function({
 };
 
 export let current = get({env});
-
-export default exports;

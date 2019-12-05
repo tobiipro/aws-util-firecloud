@@ -113,5 +113,3 @@ export let dcPut = async function(
 
   return await dc.put(args).promise();
 };
-
-export default exports;

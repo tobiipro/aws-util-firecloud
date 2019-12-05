@@ -59,5 +59,3 @@ export let type = function(this: ExpressLambdaResponse, type: string): void {
 
   this.oldType(type);
 };
-
-export default exports;

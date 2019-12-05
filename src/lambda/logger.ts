@@ -100,5 +100,3 @@ export let setup = function({ctx}: {
 
   return logger;
 };
-
-export default exports;

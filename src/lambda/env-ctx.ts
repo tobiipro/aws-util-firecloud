@@ -185,5 +185,3 @@ export let merge = async function({e, ctx, pkg}: {
   });
   _.defaultsDeep(ctx, envCtx);
 };
-
-export default exports;

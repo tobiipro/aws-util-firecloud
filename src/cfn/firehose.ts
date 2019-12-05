@@ -138,5 +138,3 @@ export let addFirehoseToS3 = function({
   Resources[`${resName}P`] = policy;
   Resources[`${resName}R`] = role;
 };
-
-export default exports;

@@ -24,5 +24,3 @@ export let get = function({
     Service: `${service}.${domain}`
   };
 };
-
-export default exports;
