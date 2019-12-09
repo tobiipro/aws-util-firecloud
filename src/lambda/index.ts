@@ -150,28 +150,44 @@ export let bootstrap = function<
   });
 
   return async function(e: TEvent, ctx: LambdaContext, awsNext: awsLambda.Callback) {
-    try {
-      let result = await _bootstrap<TEvent, TResult>(fn, e, ctx, pkg);
-      awsNext(undefined, result);
-    } catch (err) {
-      if (_.isDefined(_logger)) {
-        let logger = _logger;
-        _logger = undefined;
-        try {
-          await logger.flush();
-        } catch (minlogFlushErr) {
-          console.error('FATAL MinLog.flush');
-          console.error(minlogFlushErr.stack);
-        }
-      }
+    let result: TResult;
+    let err: Error;
 
+    try {
+      result = await _bootstrap<TEvent, TResult>(fn, e, ctx, pkg);
+    } catch (err2) {
+      err = err2;
+    }
+
+    if (_.isDefined(_logger)) {
+      let logger = _logger;
+      _logger = undefined;
+      try {
+        await logger.flush();
+      } catch (minlogFlushErr) {
+        console.error('FATAL MinLog.flush');
+        console.error(minlogFlushErr.stack);
+      }
+    }
+
+    if (_.isDefined(err)) {
       // proxying the err to awsNext would not reset state (kill lambda)
-      // return awsNext(err);
+      // if (_.isFunction(awsNext)) {
+      //   return awsNext(err);
+      // } else {
+      //   throw err;
+      // }
 
       console.error('FATAL try-catch-lambda-bootstrap');
       console.error(err.stack);
       // eslint-disable-next-line no-process-exit
       process.exit(1);
+    }
+
+    if (_.isFunction(awsNext)) {
+      awsNext(undefined, result);
+    } else {
+      return result;
     }
   };
   /* eslint-enable no-console */
