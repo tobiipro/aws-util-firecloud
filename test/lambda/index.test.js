@@ -3,6 +3,7 @@
 import * as envCtx from '../../src/lambda/env-ctx';
 import * as lambda from '../../src/lambda';
 import _ from 'lodash-firecloud';
+import waitForExpect from 'wait-for-expect';
 
 describe('lambda', function() {
   describe('bootstrap', function() {
@@ -57,13 +58,9 @@ describe('lambda', function() {
         expect(args[0]).toBe(expectedErr.stack);
       });
 
-      let spyProcessExitD = _.deferred();
       let spyProcessExit = jest.spyOn(process, 'exit');
       // @ts-ignore
-      spyProcessExit.mockImplementationOnce(function(...args) {
-        // @ts-ignore
-        spyProcessExitD.resolve(args);
-      });
+      spyProcessExit.mockImplementationOnce(_.noop);
 
       let handler = async function(_e, _ctx) {
         throw expectedErr;
@@ -79,16 +76,14 @@ describe('lambda', function() {
       let ctx = {};
       bHandler(e, ctx, _.noop);
 
-      let processExitArgs = await spyProcessExitD.promise;
-      expect(processExitArgs).toStrictEqual([
-        1
-      ]);
+      await waitForExpect(function() {
+        expect(spyProcessExit).toHaveBeenCalledTimes(1);
+        expect(spyProcessExit).toHaveBeenCalledWith(1);
+      });
+      spyProcessExit.mockRestore();
 
       expect(spyConsoleError).toHaveBeenCalled();
       spyConsoleError.mockRestore();
-
-      expect(spyProcessExit).toHaveBeenCalledTimes(1);
-      spyProcessExit.mockRestore();
 
       expect(spyEnvCtxMerge).toHaveBeenCalled();
       spyEnvCtxMerge.mockRestore();
