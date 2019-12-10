@@ -1,4 +1,5 @@
 /* eslint-disable no-invalid-this */
+import * as middlewares from './middlewares';
 import Layer from 'express/lib/router/layer';
 import _ from 'lodash-firecloud';
 import _express from 'express';
@@ -7,7 +8,6 @@ import awsLambda from 'aws-lambda';
 import bearerToken from 'express-bearer-token';
 import cors from 'cors';
 import http from 'http';
-import middlewares from './middlewares';
 import responseTime from 'response-time';
 
 import {
