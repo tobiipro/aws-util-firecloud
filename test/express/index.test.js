@@ -6,8 +6,10 @@ import _ from 'lodash-firecloud';
 
 describe('express', function() {
   describe('bootstrap', function() {
-    it("should call AWS' next with the handler's HTTP response", function(done) {
+    it("should call AWS' next with the handler's HTTP response", async function() {
+      let d = _.deferred();
       let spyEnvCtxMerge = jest.spyOn(envCtx, 'merge');
+      // @ts-ignore
       spyEnvCtxMerge.mockImplementation(_.noop);
 
       let expectedResult = 'expected result';
@@ -25,7 +27,7 @@ describe('express', function() {
 
       let e = {};
       let ctx = {};
-      bHandler(e, ctx, function(err, result) {
+      bHandler(e, ctx, async function(err, result) {
         expect(err).toBeUndefined();
         expect(result).toMatchObject({
           statusCode: 200,
@@ -35,10 +37,14 @@ describe('express', function() {
           body: expectedResult
         });
 
-        expect(spyMergeEnvCtx).toHaveBeenCalled();
-        spyMergeEnvCtx.mockRestore();
-        done();
+        expect(spyEnvCtxMerge).toHaveBeenCalled();
+        spyEnvCtxMerge.mockRestore();
+
+        await ctx.log.flush();
+        d.resolve();
       });
+
+      await d.promise;
     });
 
     it("should call AWS' next with the handler's exception", async function() {
