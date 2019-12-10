@@ -1,5 +1,6 @@
 import * as firehose from '../src/firehose';
 import _ from 'lodash-firecloud';
+import waitForExpect from 'wait-for-expect';
 
 let generate = function({byteSize = 5} = {}) {
   return _.join(_.times(byteSize, function() {
@@ -122,13 +123,11 @@ when batch count < ${firehose.limits.batchRecord}`, async function() {
       });
 
       let spy2 = jest.fn();
-      let spy2Called = _.deferred();
       spy2.mockImplementation(function() {
         throw new Error();
       });
       spy2.mockImplementationOnce(function(...args) {
         expect(args[1]).toMatch(/Skipping record larger than/);
-        spy2Called.resolve();
       });
 
       await firehose.putRecords({
@@ -140,7 +139,9 @@ when batch count < ${firehose.limits.batchRecord}`, async function() {
         }
       });
 
-      await spy2Called.promise;
+      await waitForExpect(function() {
+        expect(spy2).toHaveBeenCalled();
+      });
       expect(spy).toHaveBeenCalled();
       expect(spy2).toHaveBeenCalled();
 
