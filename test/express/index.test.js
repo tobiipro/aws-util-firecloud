@@ -1,9 +1,8 @@
 /* eslint-disable jest/no-test-callback */
-
+import * as express from '../../src/express';
 import ResponseError from '../../src/express/res-error';
 import _ from 'lodash-firecloud';
 import envCtx from '../../src/lambda/env-ctx';
-import express from '../../src/express';
 
 describe('express', function() {
   describe('bootstrap', function() {

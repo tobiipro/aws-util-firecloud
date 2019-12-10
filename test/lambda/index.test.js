@@ -1,8 +1,8 @@
 /* eslint-disable jest/no-test-callback */
 
+import * as envCtx from '../../src/lambda/env-ctx';
+import * as lambda from '../../src/lambda';
 import _ from 'lodash-firecloud';
-import envCtx from '../../src/lambda/env-ctx';
-import lambda from '../../src/lambda';
 
 describe('lambda', function() {
   describe('bootstrap', function() {
