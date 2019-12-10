@@ -122,11 +122,13 @@ when batch count < ${firehose.limits.batchRecord}`, async function() {
       });
 
       let spy2 = jest.fn();
+      let spy2Called = _.deferred();
       spy2.mockImplementation(function() {
         throw new Error();
       });
       spy2.mockImplementationOnce(function(...args) {
         expect(args[1]).toMatch(/Skipping record larger than/);
+        spy2Called.resolve();
       });
 
       await firehose.putRecords({
@@ -138,6 +140,7 @@ when batch count < ${firehose.limits.batchRecord}`, async function() {
         }
       });
 
+      await spy2Called.promise;
       expect(spy).toHaveBeenCalled();
       expect(spy2).toHaveBeenCalled();
 
