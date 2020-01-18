@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../src/cfn/.eslintrc.js"],"names":[],"mappings":"aAAA,MAAM,CAAC,OAAP,GAAiB;AACf,EAAA,IAAI,EAAE,KADS;;AAGf,EAAA,KAAK,EAAE;AACL,wDAAoD,KAD/C,EAHQ,EAAjB","file":".eslintrc.js","sourcesContent":["module.exports = {\n  root: false,\n\n  rules: {\n    '@typescript-eslint/explicit-function-return-type': 'off'\n  }\n};\n"]}
