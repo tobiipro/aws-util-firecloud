@@ -1,15 +1,20 @@
-/* eslint-disable jest/no-test-callback */
-
-import ResponseError from '../../src/express/res-error';
+import * as envCtx from '../../src/lambda/env-ctx';
+import * as express from '../../src/express';
 import _ from 'lodash-firecloud';
-import envCtx from '../../src/lambda/env-ctx';
-import express from '../../src/express';
 
 describe('express', function() {
   describe('bootstrap', function() {
-    it("should call AWS' next with the handler's HTTP response", function(done) {
-      let spyMergeEnvCtx = jest.spyOn(envCtx, 'merge')
-        .mockImplementation(_.noop);
+    it("should call AWS' next with the handler's HTTP response", async function() {
+      let e = {
+        httpMethod: 'GET',
+        path: __filename
+      };
+      let ctx = {};
+
+      let d = _.deferred();
+      let spyEnvCtxMerge = jest.spyOn(envCtx, 'merge');
+      // @ts-ignore
+      spyEnvCtxMerge.mockImplementation(_.noop);
 
       let expectedResult = 'expected result';
       let handler = async function(app, _e, _ctx) {
@@ -23,10 +28,8 @@ describe('express', function() {
           name: 'test'
         }
       });
-
-      let e = {};
-      let ctx = {};
-      bHandler(e, ctx, function(err, result) {
+      // @ts-ignore
+      bHandler(e, ctx, async function(err, result) {
         expect(err).toBeUndefined();
         expect(result).toMatchObject({
           statusCode: 200,
@@ -36,39 +39,52 @@ describe('express', function() {
           body: expectedResult
         });
 
-        expect(spyMergeEnvCtx).toHaveBeenCalled();
-        spyMergeEnvCtx.mockRestore();
-        done();
+        expect(spyEnvCtxMerge).toHaveBeenCalled();
+        spyEnvCtxMerge.mockRestore();
+
+        await ctx.log.flush();
+        d.resolve();
       });
+
+      await d.promise;
     });
 
     it("should call AWS' next with the handler's exception", async function() {
-      let spyEnvCtxMerge = jest.spyOn(envCtx, 'merge')
-        .mockImplementationOnce(_.noop);
+      let e = {
+        httpMethod: 'GET',
+        path: __filename
+      };
+      let ctx = {};
+
+      let spyEnvCtxMerge = jest.spyOn(envCtx, 'merge');
+      // @ts-ignore
+      spyEnvCtxMerge.mockImplementationOnce(_.noop);
 
       let expectedMsg = 'FATAL try-catch-lambda-bootstrap';
       let expectedErr = new Error();
       // eslint-disable-next-line no-console
       let originalConsoleError = _.bind(console.error, console);
-      let spyConsoleError = jest.spyOn(console, 'error')
-        .mockImplementationOnce(function(...args) {
-          if (args[0] !== expectedMsg) {
-            originalConsoleError(...args);
-          }
-          expect(args[0]).toBe(expectedMsg);
-        })
-        .mockImplementationOnce(function(...args) {
-          if (args[0] !== expectedErr.stack) {
-            originalConsoleError(...args);
-          }
-          expect(args[0]).toBe(expectedErr.stack);
-        });
+      let spyConsoleError = jest.spyOn(console, 'error');
+      spyConsoleError.mockImplementationOnce(function(...args) {
+        if (args[0] !== expectedMsg) {
+          originalConsoleError(...args);
+        }
+        expect(args[0]).toBe(expectedMsg);
+      });
+      spyConsoleError.mockImplementationOnce(function(...args) {
+        if (args[0] !== expectedErr.stack) {
+          originalConsoleError(...args);
+        }
+        expect(args[0]).toBe(expectedErr.stack);
+      });
 
       let spyProcessExitD = _.deferred();
-      let spyProcessExit = jest.spyOn(process, 'exit')
-        .mockImplementationOnce(function(...args) {
-          spyProcessExitD.resolve(args);
-        });
+      let spyProcessExit = jest.spyOn(process, 'exit');
+      // @ts-ignore
+      spyProcessExit.mockImplementationOnce(function(...args) {
+        // @ts-ignore
+        spyProcessExitD.resolve(args);
+      });
 
       let handler = async function(_e, _ctx) {
         throw expectedErr;
@@ -79,9 +95,7 @@ describe('express', function() {
           name: 'test'
         }
       });
-
-      let e = {};
-      let ctx = {};
+      // @ts-ignore
       bHandler(e, ctx, _.noop);
 
       let processExitArgs = await spyProcessExitD.promise;
@@ -97,171 +111,6 @@ describe('express', function() {
 
       expect(spyEnvCtxMerge).toHaveBeenCalled();
       spyEnvCtxMerge.mockRestore();
-    });
-
-    it("should call AWS' next with the (sync) middleware's exception", async function() {
-      let spyEnvCtxMerge = jest.spyOn(envCtx, 'merge')
-        .mockImplementationOnce(_.noop);
-
-      let expectedMsg = 'FATAL try-catch-lambda-bootstrap';
-      let expectedErr = new Error();
-      // eslint-disable-next-line no-console
-      let originalConsoleError = _.bind(console.error, console);
-      let spyConsoleError = jest.spyOn(console, 'error')
-        .mockImplementationOnce(function(...args) {
-          // assume it's 'ctx.log.error({err});' from handleResponseError
-          originalConsoleError(...args);
-        })
-        .mockImplementationOnce(function(...args) {
-          if (args[0] !== expectedMsg) {
-            originalConsoleError(...args);
-          }
-          expect(args[0]).toBe(expectedMsg);
-        })
-        .mockImplementationOnce(function(...args) {
-          if (args[0] !== expectedErr.stack) {
-            originalConsoleError(...args);
-          }
-          expect(args[0]).toBe(expectedErr.stack);
-        });
-
-      let spyProcessExitD = _.deferred();
-      let spyProcessExit = jest.spyOn(process, 'exit')
-        .mockImplementationOnce(function(...args) {
-          spyProcessExitD.resolve(args);
-        });
-
-      let handler = async function(app, _e, _ctx) {
-        app.use(function(_req, _res, _next) {
-          throw expectedErr;
-        });
-      };
-
-      let bHandler = express.bootstrap(handler, {
-        pkg: {
-          name: 'test'
-        }
-      });
-
-      let e = {};
-      let ctx = {};
-      bHandler(e, ctx, _.noop);
-
-      let processExitArgs = await spyProcessExitD.promise;
-      expect(processExitArgs).toStrictEqual([
-        1
-      ]);
-
-      expect(spyConsoleError).toHaveBeenCalled();
-      spyConsoleError.mockRestore();
-
-      expect(spyProcessExit).toHaveBeenCalledTimes(1);
-      spyProcessExit.mockRestore();
-
-      expect(spyEnvCtxMerge).toHaveBeenCalled();
-      spyEnvCtxMerge.mockRestore();
-    });
-
-    it("should call AWS' next with the (async) middleware's exception", async function() {
-      let spyEnvCtxMerge = jest.spyOn(envCtx, 'merge')
-        .mockImplementationOnce(_.noop);
-
-      let expectedMsg = 'FATAL try-catch-lambda-bootstrap';
-      let expectedErr = new Error();
-      // eslint-disable-next-line no-console
-      let originalConsoleError = _.bind(console.error, console);
-      let spyConsoleError = jest.spyOn(console, 'error')
-        .mockImplementationOnce(function(...args) {
-          // assume it's 'ctx.log.error({err});' from handleResponseError
-          originalConsoleError(...args);
-        })
-        .mockImplementationOnce(function(...args) {
-          if (args[0] !== expectedMsg) {
-            originalConsoleError(...args);
-          }
-          expect(args[0]).toBe(expectedMsg);
-        })
-        .mockImplementationOnce(function(...args) {
-          if (args[0] !== expectedErr.stack) {
-            originalConsoleError(...args);
-          }
-          expect(args[0]).toBe(expectedErr.stack);
-        });
-
-      let spyProcessExitD = _.deferred();
-      let spyProcessExit = jest.spyOn(process, 'exit')
-        .mockImplementationOnce(function(...args) {
-          spyProcessExitD.resolve(args);
-        });
-
-      let handler = async function(app, _e, _ctx) {
-        app.use(async function(_req, _res, _next) {
-          throw expectedErr;
-        });
-      };
-
-      let bHandler = express.bootstrap(handler, {
-        pkg: {
-          name: 'test'
-        }
-      });
-
-      let e = {};
-      let ctx = {};
-      bHandler(e, ctx, _.noop);
-
-      let processExitArgs = await spyProcessExitD.promise;
-      expect(processExitArgs).toStrictEqual([
-        1
-      ]);
-
-      expect(spyConsoleError).toHaveBeenCalled();
-      spyConsoleError.mockRestore();
-
-      expect(spyProcessExit).toHaveBeenCalledTimes(1);
-      spyProcessExit.mockRestore();
-
-      expect(spyEnvCtxMerge).toHaveBeenCalled();
-      spyEnvCtxMerge.mockRestore();
-    });
-
-    it("should call AWS' next with the (async) middleware's ResponseError", function(done) {
-      let spyMergeEnvCtx = jest.spyOn(envCtx, 'merge')
-        .mockImplementation(_.noop);
-
-      let expectedStatusCode = 404;
-      let expectedDetails = {
-        test: true
-      };
-      let handler = async function(app, _e, _ctx) {
-        app.use(async function(_req, _res, _next) {
-          throw new ResponseError(expectedStatusCode, expectedDetails);
-        });
-      };
-
-      let bHandler = express.bootstrap(handler, {
-        pkg: {
-          name: 'test'
-        }
-      });
-
-      let e = {};
-      let ctx = {};
-
-      bHandler(e, ctx, function(err, result) {
-        expect(err).toBeUndefined();
-        expect(result).toMatchObject({
-          statusCode: expectedStatusCode,
-          headers: {
-            'content-type': 'application/problem+json; charset=utf-8'
-          }
-        });
-        expect(JSON.parse(result.body)).toMatchObject(expectedDetails);
-
-        expect(spyMergeEnvCtx).toHaveBeenCalled();
-        spyMergeEnvCtx.mockRestore();
-        done();
-      });
     });
   });
 });
