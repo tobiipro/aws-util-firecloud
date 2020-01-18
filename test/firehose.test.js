@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import * as firehose from '../src/firehose';
 import _ from 'lodash-firecloud';
 import waitForExpect from 'wait-for-expect';

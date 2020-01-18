@@ -30,6 +30,7 @@ describe('express', function() {
         let ctx = {};
 
         let spyEnvCtxMerge = jest.spyOn(envCtx, 'merge');
+        // @ts-ignore
         spyEnvCtxMerge.mockImplementationOnce(_.noop);
 
         let spyConsoleInfoD = _.deferred();
@@ -77,10 +78,12 @@ describe('express', function() {
 
         let spyProcessExitD = _.deferred();
         let spyProcessExit = jest.spyOn(process, 'exit');
+        // @ts-ignore
         spyProcessExit.mockImplementationOnce(function() {
           spyProcessExitD.resolve();
         });
 
+        // @ts-ignore
         let bHandler = express.bootstrap(handler, {
           pkg: {
             name: 'test'

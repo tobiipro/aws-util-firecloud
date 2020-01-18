@@ -14,6 +14,7 @@ describe('express', function() {
 
       let d = _.deferred();
       let spyEnvCtxMerge = jest.spyOn(envCtx, 'merge');
+      // @ts-ignore
       spyEnvCtxMerge.mockImplementation(_.noop);
 
       let expectedStatusCode = 404;
@@ -31,6 +32,7 @@ describe('express', function() {
           name: 'test'
         }
       });
+      // @ts-ignore
       bHandler(e, ctx, async function(err, result) {
         expect(err).toBeUndefined();
         expect(result).toMatchObject({

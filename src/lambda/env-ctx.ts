@@ -1,3 +1,5 @@
+/* eslint-disable import/prefer-default-export */
+
 import _ from 'lodash-firecloud';
 import aws from 'aws-sdk';
 

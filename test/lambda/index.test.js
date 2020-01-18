@@ -25,6 +25,7 @@ describe('lambda', function() {
 
       let e = {};
       let ctx = {};
+      // @ts-ignore
       bHandler(e, ctx, function(err, result) {
         expect(err).toBeUndefined();
         expect(result).toBe(expectedResult);
@@ -74,6 +75,7 @@ describe('lambda', function() {
 
       let e = {};
       let ctx = {};
+      // @ts-ignore
       bHandler(e, ctx, _.noop);
 
       await waitForExpect(function() {

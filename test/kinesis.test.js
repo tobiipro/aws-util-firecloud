@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import * as kinesis from '../src/kinesis';
 import _ from 'lodash-firecloud';
 import waitForExpect from 'wait-for-expect';

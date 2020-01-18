@@ -1,3 +1,5 @@
+/* eslint-disable import/prefer-default-export */
+
 /* eslint-disable no-invalid-this */
 import * as middlewares from './middlewares';
 import Layer from 'express/lib/router/layer';

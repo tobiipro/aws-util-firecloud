@@ -13,14 +13,14 @@ export type PackageJson = { // JsonObject & {
 };
 
 export interface Account {
+  // TODO figure out how to remove string[] from the line below. Only needed because of NS
+  [key: string]: string | Account | string[];
   NAME: string;
   ID: string;
   NS: string[];
   // `ID`: [Circular]
   // `NAME`: [Circular]
   // `prefix`: [Circular]
-  // TODO figure out how to remove string[] from the line below. Only needed because of NS
-  [key: string]: string | Account | string[];
 }
 
 export interface Env {

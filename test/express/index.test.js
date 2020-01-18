@@ -28,6 +28,7 @@ describe('express', function() {
           name: 'test'
         }
       });
+      // @ts-ignore
       bHandler(e, ctx, async function(err, result) {
         expect(err).toBeUndefined();
         expect(result).toMatchObject({
@@ -56,6 +57,7 @@ describe('express', function() {
       let ctx = {};
 
       let spyEnvCtxMerge = jest.spyOn(envCtx, 'merge');
+      // @ts-ignore
       spyEnvCtxMerge.mockImplementationOnce(_.noop);
 
       let expectedMsg = 'FATAL try-catch-lambda-bootstrap';
@@ -93,6 +95,7 @@ describe('express', function() {
           name: 'test'
         }
       });
+      // @ts-ignore
       bHandler(e, ctx, _.noop);
 
       let processExitArgs = await spyProcessExitD.promise;
