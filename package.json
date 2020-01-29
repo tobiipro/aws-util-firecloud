@@ -13,10 +13,12 @@
     "/src/",
     "/lib/"
   ],
+  "peerDependencies": {
+    "@types/node": ">=10"
+  },
   "dependencies": {
     "@types/aws-lambda": "^8.10.36",
     "@types/express": "^4.17.2",
-    "@types/node": "^12.12.6",
     "aws-sdk": "^2.205.0",
     "cors": "^2.8.4",
     "express": "^4.16.2",
@@ -35,6 +37,7 @@
     "@babel/runtime": "^7.2.0",
     "@getify/eslint-plugin-proper-arrows": "^8.0.1",
     "@types/jest": "^24.0.19",
+    "@types/node": "^10.17.14",
     "@typescript-eslint/eslint-plugin": "^2.6.0",
     "@typescript-eslint/parser": "^2.6.0",
     "babel-core": "^7.0.0-bridge.0",
