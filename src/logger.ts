@@ -34,7 +34,7 @@ let _logger = function(awsSdkMessage, rawLogger: Console | MinLog): void {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  rawLogger.info('Making an AWS SDK call.', {
+  rawLogger.warn('Making an AWS SDK call.', {
     aws: {
       serviceIdentifier,
       status,
