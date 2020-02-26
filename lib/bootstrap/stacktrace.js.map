@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../src/bootstrap/stacktrace.ts"],"names":[],"mappings":"aAAA,KAAK,CAAC,eAAN,GAAwB,QAAxB","file":"stacktrace.js","sourcesContent":["Error.stackTraceLimit = Infinity;\n"]}
