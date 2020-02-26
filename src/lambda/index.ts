@@ -25,6 +25,22 @@ import {
 
 let _logger = undefined as MinLog;
 
+let _maybeFlushMinlog = async function(): Promise<void> {
+  if (_.isUndefined(_logger)) {
+    return;
+  }
+  let logger = _logger;
+  _logger = undefined;
+  try {
+    await logger.flush();
+  } catch (minlogFlushErr) {
+    // eslint-disable-next-line no-console
+    console.error('FATAL MinLog.flush');
+    // eslint-disable-next-line no-console
+    console.error(minlogFlushErr.stack);
+  }
+};
+
 let _cleanup = async function({ctx}: {
   ctx: LambdaContext;
 }): Promise<void> {
@@ -40,7 +56,7 @@ let _cleanup = async function({ctx}: {
 };
 
 // eslint-disable-next-line max-params
-let _bootstrap = async function<
+let _bootstrap = async function <
   TEvent extends LambdaEvent,
   TResult extends LambdaResult
 >(
@@ -89,9 +105,9 @@ let _bootstrap = async function<
   );
 
   // don't wait for cleanup on purpose
-  _.defer(async function() {
+  _.defer(_.asyncCb(async function() {
     await _cleanup({ctx});
-  });
+  }));
 
   return result;
 };
@@ -103,7 +119,7 @@ export let getRequestInstance = function({ctx}: {
 };
 
 /* eslint-disable no-console */
-export let bootstrap = function<
+export let bootstrap = function <
   TEvent extends LambdaEvent,
   TResult extends LambdaResult
 >(fn: LambdaHandler<TEvent, TResult>, {
@@ -111,42 +127,22 @@ export let bootstrap = function<
 }: {
   pkg: PackageJson;
 }): awsLambda.Handler {
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  process.on('uncaughtException', async function(err: Error) {
-    if (_.isDefined(_logger)) {
-      let logger = _logger;
-      _logger = undefined;
-      try {
-        await logger.flush();
-      } catch (minlogFlushErr) {
-        console.error('FATAL MinLog.flush');
-        console.error(minlogFlushErr.stack);
-      }
-    }
-
-    console.error('FATAL uncaughtException');
-    console.error(err.stack);
-    // eslint-disable-next-line no-process-exit
-    process.exit(1);
+  process.on('uncaughtException', function(err: Error) {
+    _maybeFlushMinlog().finally(function() {
+      console.error('FATAL uncaughtException');
+      console.error(err.stack);
+      // eslint-disable-next-line no-process-exit
+      process.exit(1);
+    });
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  process.on('unhandledRejection', async function(err: Error) {
-    if (_.isDefined(_logger)) {
-      let logger = _logger;
-      _logger = undefined;
-      try {
-        await logger.flush();
-      } catch (minlogFlushErr) {
-        console.error('FATAL MinLog.flush');
-        console.error(minlogFlushErr.stack);
-      }
-    }
-
-    console.error('FATAL unhandledRejection');
-    console.error(err.stack);
-    // eslint-disable-next-line no-process-exit
-    process.exit(1);
+  process.on('unhandledRejection', function(err: Error) {
+    _maybeFlushMinlog().finally(function() {
+      console.error('FATAL unhandledRejection');
+      console.error(err.stack);
+      // eslint-disable-next-line no-process-exit
+      process.exit(1);
+    });
   });
 
   return async function(e: TEvent, ctx: LambdaContext, awsNext: awsLambda.Callback) {
