@@ -24,7 +24,7 @@
     "express": "^4.16.2",
     "express-bearer-token": "^2.1.1",
     "http-lambda": "git://github.com/tobiipro/http-lambda.git#semver:~0.4.0",
-    "lodash-firecloud": "git://github.com/tobiipro/lodash-firecloud.git#semver:~0.5.23",
+    "lodash-firecloud": "git://github.com/tobiipro/lodash-firecloud.git#semver:~0.5.24",
     "minlog": "git://github.com/tobiipro/minlog.git#semver:~0.8.0",
     "response-time": "^2.3.2"
   },
@@ -46,7 +46,7 @@
     "babel-preset-firecloud": "git://github.com/tobiipro/babel-preset-firecloud.git#semver:~0.2.5",
     "eclint": "^2.6.0",
     "eslint": "^6.5.1",
-    "eslint-config-firecloud": "git://github.com/tobiipro/eslint-config-firecloud.git#semver:~0.10.4",
+    "eslint-config-firecloud": "git://github.com/tobiipro/eslint-config-firecloud.git#semver:~0.10.21",
     "eslint-import-resolver-node": "^0.3.3",
     "eslint-plugin-async-await": "^0.0.0",
     "eslint-plugin-babel": "^5.3.0",

@@ -116,9 +116,9 @@ let _getAndRefresh = async function(...args: Parameters<typeof _getResolver>): P
 
     if (expires <= Date.now()) {
       // schedule a refresh
-      _.defer(_.asyncCb(async function() {
+      _.defer(async function() {
         await _get(...args);
-      }));
+      });
     }
 
     return value;

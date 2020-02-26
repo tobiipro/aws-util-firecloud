@@ -105,9 +105,9 @@ let _bootstrap = async function <
   );
 
   // don't wait for cleanup on purpose
-  _.defer(_.asyncCb(async function() {
+  _.defer(async function() {
     await _cleanup({ctx});
-  }));
+  });
 
   return result;
 };
