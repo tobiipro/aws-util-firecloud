@@ -1,3 +1,4 @@
+# This has been DEPRECATED; use [build-support-aws-utils](https://github.com/tobiipro/build-support-aws-utils) in new projects instead
 # aws-util-firecloud [![Build Status][2]][1]
 
 `aws-util-firecloud` is a collection of AWS utils.
